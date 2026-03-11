@@ -1,9 +1,9 @@
 ﻿namespace SupplierHub.Constants
 {
-	public enum SlotStatus
+	public enum DeliverySlotStatus
 	{
-		Open = 1,
-		Booked = 2,
-		Closed = 3
+		Open = 0,
+		Booked = 1,
+		Closed = 2
 	}
 }

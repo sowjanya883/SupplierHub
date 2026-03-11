@@ -2,9 +2,9 @@
 {
 	public enum ShipmentStatus
 	{
-		Planned = 1,
-		Shipped = 2,
-		Delivered = 3,
-		Exception = 4
+		Planned = 0,
+		Shipped = 1,
+		Delivered = 2,
+		Exception = 3
 	}
 }
