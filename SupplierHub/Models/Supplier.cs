@@ -41,5 +41,10 @@ namespace SupplierHub.Models
 		public virtual ICollection<ComplianceDoc> ComplianceDocs { get; set; }
 		public virtual ICollection<SupplierRisk> Risks { get; set; }
 		public virtual ICollection<Catalog> Catalogs { get; set; }
+
+		public virtual ICollection<Bid> Bids { get; set; }
+
+		public virtual ICollection<RFxInvite> RFxInvites { get; set; }
+		public virtual ICollection<Award> Awards { get; set; }
 	}
 }

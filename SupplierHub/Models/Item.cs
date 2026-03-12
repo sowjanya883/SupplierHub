@@ -42,5 +42,6 @@ namespace SupplierHub.Models
 
 		public virtual ICollection<CatalogItem> CatalogItems { get; set; }
 		public virtual ICollection<Contract> Contracts { get; set; }
+		public virtual ICollection<RFxLine> RFxLines { get; set; }
 	}
 }

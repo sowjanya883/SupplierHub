@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SupplierHub.Constants.Enum;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SupplierHub.Models
@@ -25,7 +26,7 @@ namespace SupplierHub.Models
 
 		public string Notes { get; set; }
 
-		public string Status { get; set; }
+		public AwardStatus Status { get; set; }
 
 		public bool IsDeleted { get; set; } = false;
 	}
