@@ -29,6 +29,7 @@ namespace SupplierHub.Config
 		public DbSet<NCR> NCRs => Set<NCR>();
 		public DbSet<Notification> Notifications => Set<Notification>();
 		public DbSet<Organization> Organizations => Set<Organization>();
+		public DbSet<Permission> Permissions => Set<Permission>();
 		public DbSet<PoAck> PoAcks => Set<PoAck>();
 		public DbSet<POLine> POLines => Set<POLine>();
 		public DbSet<PORevision> PORevisions => Set<PORevision>();
@@ -37,7 +38,7 @@ namespace SupplierHub.Config
 		public DbSet<Requisition> Requisitions => Set<Requisition>();
 		public DbSet<RFxEvent> RFxEvents => Set<RFxEvent>();
 		public DbSet<Role> Roles => Set<Role>();
-		public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+		public DbSet<Rolepermission> RolePermissions => Set<Rolepermission>();
 		public DbSet<Scorecard> Scorecards => Set<Scorecard>();
 		public DbSet<Shipment> Shipments => Set<Shipment>();
 		public DbSet<Supplier> Suppliers => Set<Supplier>();
