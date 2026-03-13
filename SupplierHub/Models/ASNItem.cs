@@ -3,32 +3,37 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	public class ASNItem
+	public class AsnItem
 	{
 		[Key]
-		public long ASNItemID { get; set; }
+		public long AsnItemID { get; set; }
 
 		[Required]
-		public long ASNID { get; set; }
+		public long AsnID { get; set; }
 
 		[Required]
-		public long POLineID { get; set; }
+		public long PoLineID { get; set; }
+
+		public decimal? ShippedQty { get; set; }
+
+		[MaxLength(100)]
+		public string? LotBatch { get; set; }
+
+		public string? SerialJson { get; set; }
+
+		[MaxLength(500)]
+		public string? Notes { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
-		public decimal ShippedQty { get; set; }
+		public bool IsDeleted { get; set; }
 
-		[StringLength(100)]
-		public string LotBatch { get; set; }
+		[Required]
+		public DateTime CreatedOn { get; set; }
 
-		[StringLength(int.MaxValue)]
-		public string SerialJSON { get; set; }
-
-		[StringLength(500)]
-		public string Notes { get; set; }
-
-		// Navigation Properties
-		public virtual ASN ASN { get; set; }
-
-		public virtual POLine POLine { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

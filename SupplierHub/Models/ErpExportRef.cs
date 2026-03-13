@@ -1,17 +1,34 @@
-﻿using SupplierHub.Constants.Enum;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
 	public class ErpExportRef
 	{
-		public long ErpRefId { get; set; }
-		public EntityType EntityType { get; set; }
+		[Key]
+		public long ErprefID { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string EntityType { get; set; }
+
+		[MaxLength(500)]
 		public string? PayloadUri { get; set; }
-		public string? CorrelationId { get; set; }
-		public DateTime? ExportDate { get; set; }
-		public ErpExportRefStatus Status { get; set; } = ErpExportRefStatus.Queued;
-		public DateTime CreatedOn { get; set; }
-		public DateTime? UpdatedOn { get; set; }
+
+		[MaxLength(100)]
+		public string? CorrelationID { get; set; }
+
+		[Required]
 		public bool IsDeleted { get; set; }
+
+		public DateTime? ExportDate { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

@@ -1,30 +1,26 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	// maps to table: user_role
-	[Table("user_role")]
-	public class Userrole
+	public class UserRole
 	{
-		// Composite PK (UserId, RoleId) -> configured in Fluent API
-		public int UserId { get; set; }    // FK → users(UserId)
+		[Required]
+		public long UserID { get; set; }
 
-		public int RoleId { get; set; }    // FK → role(role_id) — if you have a Role table
+		[Required]
+		public long RoleID { get; set; }
 
-		// Keep status as string to match your style & the spreadsheet (VARCHAR(30) DEFAULT 'ACTIVE')
-		public string Status { get; set; } = "ACTIVE";
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
+		[Required]
 		public DateTime CreatedOn { get; set; }
+
+		[Required]
 		public DateTime UpdatedOn { get; set; }
 
-		public bool IsDeleted { get; set; }  
-		// default -> false
-											 // Optional navigations (uncomment when Role entity exists)
-											 // [ForeignKey(nameof(UserId))]
-											 // public User User { get; set; }
-											 //
-											 // [ForeignKey(nameof(RoleId))]
-											 // public Role Role { get; set; }
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }

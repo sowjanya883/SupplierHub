@@ -1,33 +1,39 @@
-﻿using SupplierHub.Constants.Enum;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SupplierHub.Models
 {
 	public class Award
 	{
 		[Key]
-		public int AwardID { get; set; }
+		public long AwardID { get; set; }
 
 		[Required]
-		public int RFxID { get; set; }
-		[ForeignKey("RFxID")]
-		public virtual RFxEvent RFxEvent { get; set; }
+		public long RfxID { get; set; }
 
-		public int SupplierId { get; set; }
-		[ForeignKey(nameof(SupplierId))] 
-	    public virtual Supplier Supplier { get; set; }
-		
+		[Required]
+		public long SupplierID { get; set; }
 
-		public DateTime AwardDate { get; set; }
+		public DateTime? AwardDate { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal AwardValue { get; set; }
+		public decimal? AwardValue { get; set; }
 
-		public string Notes { get; set; }
+		[Required]
+		public bool IsDeleted { get; set; }
 
-		public AwardStatus Status { get; set; }
+		[MaxLength(10)]
+		public string? Currency { get; set; }
 
-		public bool IsDeleted { get; set; } = false;
+		[MaxLength(500)]
+		public string? Notes { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

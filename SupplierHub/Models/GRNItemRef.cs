@@ -1,38 +1,38 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("grn_item_ref")]
-	public class GRNItemRef
+	public class GrnItemRef
 	{
 		[Key]
-		public int GRNItemID { get; set; }
+		public long GrnItemID { get; set; }
 
 		[Required]
-		public int GRNID { get; set; }
+		public long GrnID { get; set; }
 
 		[Required]
-		public int POLineID { get; set; }
+		public long PoLineID { get; set; }
 
-		[Required]
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal ReceivedQty { get; set; }
+		public decimal? ReceivedQty { get; set; }
 
-		[Required]
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal AcceptedQty { get; set; }
+		public decimal? AcceptedQty { get; set; }
 
-		[Required]
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal RejectedQty { get; set; }
+		public decimal? RejectedQty { get; set; }
 
 		[MaxLength(200)]
 		public string? Reason { get; set; }
 
-		// Navigation
-		[ForeignKey(nameof(GRNID))]
-		public virtual GRNRef GRN { get; set; }
-        public bool IsDeleted { get; set; }  // default -> false
-    }
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public bool IsDeleted { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
+	}
 }

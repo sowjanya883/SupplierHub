@@ -1,20 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("supplier_contact")]
 	public class SupplierContact
 	{
 		[Key]
-		public long ContactId { get; set; }
+		public long ContactID { get; set; }
 
 		[Required]
-		public long SupplierId { get; set; }
+		public long SupplierID { get; set; }
 
 		[Required, MaxLength(150)]
-		public string Name { get; set; }
+		public required string SupplierName { get; set; }
 
 		[MaxLength(150)]
 		public string? Email { get; set; }
@@ -25,18 +23,16 @@ namespace SupplierHub.Models
 		[MaxLength(100)]
 		public string? Role { get; set; }
 
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
 		[Required]
-		public SupplierContactStatus Status { get; set; }
+		public bool IsDeleted { get; set; }
 
 		[Required]
 		public DateTime CreatedOn { get; set; }
 
-		public DateTime? UpdatedOn { get; set; }
-
-		public bool IsDeleted { get; set; }  // default -> false
-
-		// Navigation
-		[ForeignKey(nameof(SupplierId))]
-		public virtual Supplier Supplier { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

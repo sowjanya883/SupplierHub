@@ -1,25 +1,36 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants.Enum;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
 	public class SystemConfig
 	{
 		[Key]
-		public int ConfigID { get; set; }
-		[StringLength(100)]
-		public string? Key { get; set; }
-		
-		public string? value {  get; set; }
+		public long ConfigID { get; set; }
 
-		public Scope? Scope {  get; set; }
-		public int UpdatedBy { get; set; }
-		[ForeignKey(nameof(UpdatedBy))]
-		public User? LastEditor { get; set; }
-		public DateTime UpdatedDate { get; set; }
+		[Required, MaxLength(100)]
+		public required string ConfigKey { get; set; }
 
-		public bool IsDeleted { get; set; } = false;
+		[MaxLength(1000)]
+		public string? Value { get; set; }
 
+		[Required, MaxLength(20)]
+		public required string Scope { get; set; }
+
+		public long? UpdatedBy { get; set; }
+
+		public DateTime? UpdatedDate { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
+
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }

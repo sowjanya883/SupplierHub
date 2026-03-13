@@ -1,45 +1,35 @@
-﻿using SupplierHub.Constants.Enum;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SupplierHub.Models
 {
-	[Table("po_revision")]
-	public class PORevision
+	public class PoRevision
 	{
 		[Key]
-		[Column("porev_id")]
-		public long PoRevId { get; set; }
+		public long PorevID { get; set; }
 
 		[Required]
-		[Column("po_id")]
-		public long PoId { get; set; }
-
-		[ForeignKey("PoId")]
-		public virtual PurchaseOrder PurchaseOrder { get; set; }
+		public long PoID { get; set; }
 
 		[Required]
-		[Column("revision_no")]
 		public int RevisionNo { get; set; }
 
-		[Column("changed_by")]
-		public long? ChangedBy { get; set; } // FK → app_user(user_id)
+		public long? ChangedBy { get; set; }
 
-		[Column("changelog_json")]
-		public string ChangelogJson { get; set; }
-		[Column("change_date")]
-		public DateTime ChangeDate { get; set; } = DateTime.Now;
+		public string? ChangelogJson { get; set; }
+
+		public DateTime? ChangeDate { get; set; }
 
 		[Required]
-		[Column("status")]
-		[StringLength(30)]
-		public PoRevisionStatus Status { get; set; } = PoRevisionStatus.Active;
-
-		[Column("createdon")]
-		public DateTime CreatedOn { get; set; } = DateTime.Now;
-
-		[Column("updatedon")]
-		public DateTime UpdatedOn { get; set; } = DateTime.Now;
 		public bool IsDeleted { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

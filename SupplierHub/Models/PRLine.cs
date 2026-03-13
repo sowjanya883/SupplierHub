@@ -1,46 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SupplierHub.Models;
 
 namespace SupplierHub.Models
 {
-	public class PRLine
+	public class PrLine
 	{
 		[Key]
-		public long PRLineID { get; set; }
+		public long PrLineID { get; set; }
 
 		[Required]
-		public long PRID { get; set; }
+		public long PrID { get; set; }
 
-		[Required]
-		public long ItemID { get; set; }
+		public long? ItemID { get; set; }
 
-		[StringLength(int.MaxValue)]
-		public string Description { get; set; }
+		[MaxLength(500)]
+		public string? Description { get; set; }
 
-		[Required]
-		public decimal Qty { get; set; }
+		public decimal? Qty { get; set; }
 
-		[StringLength(20)]
-		public string UoM { get; set; }
+		[MaxLength(30)]
+		public string? Uom { get; set; }
 
-		[Required]
-		public decimal TargetPrice { get; set; }
+		public decimal? TargetPrice { get; set; }
 
-		[StringLength(3)]
-		public string Currency { get; set; } = "USD";
+		[MaxLength(10)]
+		public string? Currency { get; set; }
 
 		public long? SupplierPreferredID { get; set; }
 
-		[StringLength(500)]
-		public string Notes { get; set; }
+		[MaxLength(500)]
+		public string? Notes { get; set; }
 
-		// Navigation Properties
-		public virtual Requisition Requisition { get; set; }
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
-		public virtual Item Item { get; set; }
+		[Required]
+		public DateTime CreatedOn { get; set; }
 
-		public virtual Supplier SupplierPreferred { get; set; }
+		[Required]
+		public bool IsDeleted { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

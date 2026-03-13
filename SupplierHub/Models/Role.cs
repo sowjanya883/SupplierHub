@@ -1,29 +1,26 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
 
 namespace SupplierHub.Models
 {
-	[Table("role")]
 	public class Role
 	{
 		[Key]
-		[Column("role_id")]
-		public int RoleId { get; set; }  // AUTO_INCREMENT / Identity
+		public long RoleID { get; set; }
 
 		[Required, MaxLength(100)]
-		public string Name { get; set; }
+		public required string RoleName { get; set; }
 
-		[MaxLength(255)]
-		public string? Description { get; set; }
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
-		// Stored as string via EF conversion (see configuration)
-		public RoleStatus Status { get; set; } = RoleStatus.Active;
-
+		[Required]
 		public DateTime CreatedOn { get; set; }
+
+		[Required]
 		public DateTime UpdatedOn { get; set; }
 
-		public bool IsDeleted { get; set; }  // default -> false
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }

@@ -1,31 +1,29 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
 
 namespace SupplierHub.Models
 {
-	[Table("permission")]
 	public class Permission
 	{
 		[Key]
-		[Column("permission_id")]
-		public int PermissionId { get; set; }   // AUTO_INCREMENT (use int to match EF)
+		public long PermissionID { get; set; }
 
 		[Required, MaxLength(120)]
 		public string Code { get; set; }
 
 		[Required, MaxLength(150)]
-		public string Name { get; set; }
+		public required string PermissionName { get; set; }
 
-		[MaxLength(255)]
-		public string? Description { get; set; }
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
-		public PermissionStatus Status { get; set; } = PermissionStatus.Active;
-
+		[Required]
 		public DateTime CreatedOn { get; set; }
+
+		[Required]
 		public DateTime UpdatedOn { get; set; }
 
-		public bool IsDeleted { get; set; }  // default -> false
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }

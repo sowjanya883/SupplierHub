@@ -1,37 +1,36 @@
-﻿using SupplierHub.Constants.Enum;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SupplierHub.Models
 {
 	public class Bid
 	{
 		[Key]
-		public int BidID { get; set; }
+		public long BidID { get; set; }
 
 		[Required]
-		public int RFxID { get; set; }
-		[ForeignKey("RFxID")]
-		public virtual RFxEvent RFxEvent { get; set; }
+		public long RfxID { get; set; }
 
-		public int SupplierId { get; set; }
-		[ForeignKey(nameof(SupplierId))]
+		[Required]
+		public long SupplierID { get; set; }
 
-		public virtual Supplier Supplier { get; set; }
+		public DateTime? BidDate { get; set; }
 
-		public DateTime BidDate { get; set; }
+		public decimal? TotalValue { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal TotalValue { get; set; }
+		[MaxLength(10)]
+		public string? Currency { get; set; }
 
-		[StringLength(3)]
-		public string Currency { get; set; } 
+		[Required]
+		public bool IsDeleted { get; set; }
 
-		[StringLength(20)]
-		public BidStatus Status { get; set; }
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
-		public bool IsDeleted { get; set; } = false;
+		[Required]
+		public DateTime CreatedOn { get; set; }
 
-		public virtual ICollection<BidLine> BidLines { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

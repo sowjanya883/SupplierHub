@@ -1,39 +1,36 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("compliance_doc")]
 	public class ComplianceDoc
 	{
 		[Key]
-		public long DocId { get; set; }
+		public long DocID { get; set; }
 
 		[Required]
-		public long SupplierId { get; set; }
+		public long SupplierID { get; set; }
 
 		[Required, MaxLength(50)]
-		public string DocType { get; set; }
+		public required string DocType { get; set; }
 
 		[MaxLength(500)]
 		public string? FileUri { get; set; }
 
-		public DateOnly? IssueDate { get; set; }
-		public DateOnly? ExpiryDate { get; set; }
+		public DateTime? IssueDate { get; set; }
+
+		public DateTime? ExpiryDate { get; set; }
 
 		[Required]
-		public ComplianceDocStatus Status { get; set; }
+		public bool IsDeleted { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
 		public DateTime CreatedOn { get; set; }
 
-		public DateTime? UpdatedOn { get; set; }
-
-		public bool IsDeleted { get; set; }  // default -> false
-
-		// Navigation
-		[ForeignKey(nameof(SupplierId))]
-		public virtual Supplier Supplier { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

@@ -1,29 +1,39 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
 	public class BidLine
 	{
 		[Key]
-		public int BidLineID { get; set; }
+		public long BidLineID { get; set; }
 
 		[Required]
-		public int BidID { get; set; }
-		[ForeignKey("BidID")]
-		public virtual Bid Bid { get; set; }
+		public long BidID { get; set; }
 
-		public int RFxLineID { get; set; } 
-		[ForeignKey("RFxLineID")]
-		public virtual RFxLine RFxLine { get; set; }
+		[Required]
+		public long RfxLineID { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal UnitPrice { get; set; }
+		public decimal? UnitPrice { get; set; }
 
-		public int LeadTimeDays { get; set; }
+		public int? LeadTimeDays { get; set; }
 
-		public string Notes { get; set; }
+		[MaxLength(10)]
+		public string? Currency { get; set; }
 
-		public bool IsDeleted { get; set; } = false;
+		[Required]
+		public bool IsDeleted { get; set; }
+
+		[MaxLength(500)]
+		public string? Notes { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

@@ -12,7 +12,7 @@ namespace SupplierHub.Models
 		public long SiteID { get; set; }
 
 		[Required]
-		public DateTime SlotDate { get; set; }
+		public DateTime Date { get; set; }
 
 		[Required]
 		public TimeSpan StartTime { get; set; }
@@ -21,13 +21,14 @@ namespace SupplierHub.Models
 		public TimeSpan EndTime { get; set; }
 
 		[Required]
-		public int Capacity { get; set; }
+		public bool IsDeleted { get; set; }
+
+		public int? Capacity { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
-		[StringLength(20)]
-		public string Status { get; set; }
-
-		// Navigation Properties
-		public virtual Site Site { get; set; }
+		public DateTime UpdatedOn { get; set; }
 	}
 }

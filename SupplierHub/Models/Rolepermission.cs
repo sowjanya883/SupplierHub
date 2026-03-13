@@ -1,25 +1,26 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("role_permission")]
-	public class Rolepermission
+	public class RolePermission
 	{
-		// Composite Key (configured in Fluent API)
-		public int RoleId { get; set; }          // FK → role(role_id)
-		public int PermissionId { get; set; }    // FK → permission(permission_id)
+		[Required]
+		public long RoleID { get; set; }
 
-		// Status as VARCHAR(30) with default 'ACTIVE'
-		public string Status { get; set; } = "ACTIVE";
+		[Required]
+		public long PermissionID { get; set; }
 
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
 		public DateTime CreatedOn { get; set; }
+
+		[Required]
 		public DateTime UpdatedOn { get; set; }
 
-		public bool IsDeleted { get; set; }  // default -> false
-											 // OPTIONAL Navigation properties (enable when Role & Permission models exist)
-
-		// public Role Role { get; set; }
-		// public Permission Permission { get; set; }
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }

@@ -1,26 +1,36 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("scorecard")]
 	public class Scorecard
 	{
 		[Key]
-		public int ScorecardID { get; set; }
+		public long ScorecardID { get; set; }
 
 		[Required]
-		public int SupplierID { get; set; }
+		public long SupplierID { get; set; }
 
-		[Required, MinLength(7), MaxLength(7)]
-		public string Period { get; set; }
+		[Required, MaxLength(20)]
+		public required string Period { get; set; }
 
-		public string? MetricsJSON { get; set; }
+		public string? MetricsJson { get; set; }
 
 		public int? Rank { get; set; }
 
 		[MaxLength(500)]
 		public string? Notes { get; set; }
-        public bool IsDeleted { get; set; }  // default -> false
-    }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
+
+		[Required]
+		public bool IsDeleted { get; set; }
+	}
 }

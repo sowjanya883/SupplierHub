@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SupplierHub;
 using SupplierHub.Config;
 
 var builder = WebApplication.CreateBuilder(args);

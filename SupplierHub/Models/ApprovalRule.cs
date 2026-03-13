@@ -1,25 +1,28 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants.Enum;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("approval_rule")]
 	public class ApprovalRule
 	{
 		[Key]
-		public int? RuleID { get; set; }
-
-		[MaxLength(20)]
-		public string? Scope { get; set; }
-
-		public string? ExpressionJSON { get; set; }
+		public long RuleID { get; set; }
 
 		[Required]
-		public RuleSeverity Severity { get; set; }
+		[MaxLength(30)]
+		public required string Scope { get; set; }
 
 		[Required]
-		public bool Status { get; set; }
-		public bool IsDeleted { get; set; }=false;
+		[MaxLength(10)]
+		public required string Severity { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public bool IsDeleted { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

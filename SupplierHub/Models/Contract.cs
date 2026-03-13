@@ -1,46 +1,39 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("contract")]
 	public class Contract
 	{
 		[Key]
-		public long ContractId { get; set; }
+		public long ContractID { get; set; }
 
 		[Required]
-		public long SupplierId { get; set; }
+		public long SupplierID { get; set; }
 
-		public long? ItemId { get; set; }
+		public long? ItemID { get; set; }
 
 		public string? TermsJson { get; set; }
 
-		[Column(TypeName = "decimal(18,4)")]
 		public decimal? Rate { get; set; }
 
 		[MaxLength(10)]
 		public string? Currency { get; set; }
 
-		public DateOnly? ValidFrom { get; set; }
-		public DateOnly? ValidTo { get; set; }
+		public DateTime? ValidFrom { get; set; }
 
 		[Required]
-		public ContractStatus Status { get; set; }
+		public bool IsDeleted { get; set; }
+
+		public DateTime? ValidTo { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
 		public DateTime CreatedOn { get; set; }
 
-		public DateTime? UpdatedOn { get; set; }
-
-		public bool IsDeleted { get; set; }  // default -> false
-
-		// Navigation
-		[ForeignKey(nameof(SupplierId))]
-		public virtual Supplier Supplier { get; set; }
-
-		[ForeignKey(nameof(ItemId))]
-		public virtual Item? Item { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

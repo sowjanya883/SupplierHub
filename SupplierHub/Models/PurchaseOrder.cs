@@ -1,49 +1,40 @@
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants.Enum;
 
 namespace SupplierHub.Models
 {
-    [Table("purchase_order")]
-    public class PurchaseOrder
-    {
-        [Key]
-        [Column("po_id")]
-        public long PoId { get; set; }
+	public class PurchaseOrder
+	{
+		[Key]
+		public long PoID { get; set; }
 
-        [Required]
-        [Column("org_id")]
-        public long OrgId { get; set; }
+		[Required]
+		public long OrgID { get; set; }
 
-        [Required]
-        [Column("supplier_id")]
-        public long SupplierId { get; set; }
+		[Required]
+		public long SupplierID { get; set; }
 
-		[Column("po_date", TypeName = "date")]
-        public DateTime PoDate { get; set; } = DateTime.Now;
+		public DateTime? PoDate { get; set; }
 
-        [Column("currency")]
-        [StringLength(10)]
-        public string ? Currency { get; set; }
+		[MaxLength(10)]
+		public string? Currency { get; set; }
 
-        [Column("incoterms")]
-        [StringLength(50)]
-        public string ? Incoterms { get; set; }
+		[MaxLength(50)]
+		public string? Incoterms { get; set; }
 
-        [Column("payment_terms")]
-        [StringLength(100)]
-        public string ? PaymentTerms { get; set; }
-        [Required]
-        [Column("status")]
-        [StringLength(50)]
-		public virtual ICollection<POLine> OrderLines { get; set; } = new List<POLine>();
-		public PurchaseOrderStatus Status { get; set; } = PurchaseOrderStatus.Open;
+		[MaxLength(100)]
+		public string? PaymentTerms { get; set; }
 
-        [Column("createdon")]
-        public DateTime CreatedOn { get; set; } = DateTime.Now;
+		[Required, MaxLength(50)]
+		public required string Status { get; set; }
 
-        [Column("updatedon")]
-        public DateTime UpdatedOn { get; set; } = DateTime.Now;
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
+
+		[Required]
 		public bool IsDeleted { get; set; }
 	}
 }

@@ -1,20 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("item")]
 	public class Item
 	{
 		[Key]
-		public long ItemId { get; set; }
+		public long ItemID { get; set; }
 
 		[Required]
-		public long CategoryId { get; set; }
+		public long CategoryID { get; set; }
 
 		[Required, MaxLength(100)]
-		public string Sku { get; set; }
+		public required string Sku { get; set; }
 
 		[MaxLength(500)]
 		public string? Description { get; set; }
@@ -26,22 +24,16 @@ namespace SupplierHub.Models
 
 		public string? SpecsJson { get; set; }
 
-		[Required]
-		public ItemStatus Status { get; set; }
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
 		public DateTime CreatedOn { get; set; }
 
-		public DateTime? UpdatedOn { get; set; }
+		[Required]
+		public bool IsDeleted { get; set; }
 
-		public bool IsDeleted { get; set; }  // default -> false
-
-		// Navigation
-		[ForeignKey(nameof(CategoryId))]
-		public virtual Category Category { get; set; }
-
-		public virtual ICollection<CatalogItem> CatalogItems { get; set; }
-		public virtual ICollection<Contract> Contracts { get; set; }
-		public virtual ICollection<RFxLine> RFxLines { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

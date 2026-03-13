@@ -1,51 +1,37 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
 
 namespace SupplierHub.Models
 {
-	// Maps to the spreadsheet table: notification
-	[Table("notification")]
 	public class Notification
 	{
 		[Key]
-		[Column("notification_id")]
-		public int NotificationId { get; set; }  // AUTO_INCREMENT / Identity
+		public long NotificationID { get; set; }
 
-		[Column("user_id")]
-		public int UserId { get; set; }          // FK → app_user(user_id)
+		[Required]
+		public long UserID { get; set; }
 
 		[Required, MaxLength(500)]
-		[Column("message")]
-		public string Message { get; set; }
+		public required string Message { get; set; }
 
-		// Stored as string via EF conversion (see configuration)
-		[Column("category")]
-		public NotificationTableCategory Category { get; set; }
+		[MaxLength(30)]
+		public string? Category { get; set; }
 
-		[Column("ref_entity_id")]
-		public int? RefEntityId { get; set; }
+		public long? RefEntityID { get; set; }
 
-		[Column("status")]
-		public NotificationTableStatus Status { get; set; } = NotificationTableStatus.Unread;
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
-		// Per sheet: both created_date and createdon exist
-		[Column("created_date")]
+		[Required]
 		public DateTime CreatedDate { get; set; }
 
-		[Column("createdon")]
+		[Required]
 		public DateTime CreatedOn { get; set; }
 
-		[Column("updatedon")]
+		[Required]
 		public DateTime UpdatedOn { get; set; }
 
-		public bool IsDeleted { get; set; }  // default -> false
-
-											 // Optional navigation (enable when AppUser is in your DbContext)
-											 // [ForeignKey(nameof(UserId))]
-											 // public AppUser User { get; set; }
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }
-
-

@@ -1,51 +1,37 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants.Enum;
-using SupplierHub.Models;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	public class RFxEvent
+	public class RfxEvent
 	{
 		[Key]
-		public int RFxID { get; set; }
+		public long RfxID { get; set; }
+
+		[Required, MaxLength(10)]
+		public required string Type { get; set; }
+
+		[Required, MaxLength(200)]
+		public required string Title { get; set; }
+
+		public long? CategoryID { get; set; }
+
+		public long? CreatedBy { get; set; }
+
+		public DateTime? OpenDate { get; set; }
+
+		public DateTime? CloseDate { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
-		public RFxType Type { get; set; } 
+		public DateTime CreatedOn { get; set; }
 
 		[Required]
-		[StringLength(200)]
-		public string? Title { get; set; }
-		
-		public int CategoryID { get; set; }
-		[ForeignKey(nameof(CategoryID))]
-
-		public Category Category { get; set; }
-
-
-		public int CreatedBy { get; set; }
-		[ForeignKey(nameof(CreatedBy))]
-
-		public virtual User? User { get; set; }
-
+		public DateTime UpdatedOn { get; set; }
 
 		[Required]
-		public DateTime OpenDate { get; set; }
-
-		[Required]
-		public DateTime CloseDate { get; set; }
-
-		[Required]
-		[StringLength(20)]
-		public RFxStatus Status { get; set; }
-
-		public bool IsDeleted { get; set; } = false;
-
-		public Award Award { get; set; }
-		public virtual ICollection<RFxLine> RFxLines { get; set; }
-		public virtual ICollection<RFxInvite> RFxInvites { get; set; }
-		public virtual ICollection<Bid> Bids { get; set; }
-
-
+		public bool IsDeleted { get; set; }
 	}
 }

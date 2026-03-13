@@ -1,58 +1,37 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
 
 namespace SupplierHub.Models
 {
-	// Maps to the spreadsheet's table: user
-	[Table("user")]
 	public class User
 	{
 		[Key]
-		[Column("user_id")]
-		public int AppUserId { get; set; } // AUTO_INCREMENT / Identity
+		public long UserID { get; set; }
 
-		[Column("org_id")]
-		public int OrgId { get; set; }     // FK → organization(org_id) (add FK later if Org model exists)
+		public long? OrgID { get; set; }
 
 		[Required, MaxLength(150)]
-		[Column("name")]
-		public string Name { get; set; }
+		public required string UserName { get; set; }
 
 		[Required, MaxLength(150)]
-		[Column("email")]
-		public string Email { get; set; }
+		public required string Email { get; set; }
 
 		[MaxLength(30)]
-		[Column("phone")]
 		public string? Phone { get; set; }
 
-
 		[MaxLength(255)]
-		[Column("password_hash")]
 		public string? PasswordHash { get; set; }
 
-		// Stored as string via EF conversion; defaults to "Active" in config to match sheet's 'ACTIVE'
-		[Column("status")]
-		public UserTableStatus Status { get; set; } = UserTableStatus.Active;
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
-		
-
-
-		[Column("createdon")]
+		[Required]
 		public DateTime CreatedOn { get; set; }
 
-
-		[Column("updatedon")]
+		[Required]
 		public DateTime UpdatedOn { get; set; }
+
+		[Required]
 		public bool IsDeleted { get; set; }
-
-	
-
-		public ICollection<RFxEvent> Events { get; set; }
-
-		public ICollection<SystemConfig> systemConfigs { get; set; }
-
 	}
 }

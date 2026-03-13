@@ -1,38 +1,33 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("catalog")]
 	public class Catalog
 	{
 		[Key]
-		public long CatalogId { get; set; }
+		public long CatalogID { get; set; }
 
 		[Required]
-		public long SupplierId { get; set; }
+		public long SupplierID { get; set; }
 
 		[Required, MaxLength(200)]
-		public string Name { get; set; }
+		public required string CatalogName { get; set; }
 
-		public DateOnly? ValidFrom { get; set; }
-		public DateOnly? ValidTo { get; set; }
+		public DateTime? ValidFrom { get; set; }
+
+		public DateTime? ValidTo { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
-		public CatalogStatus Status { get; set; }
+		public bool IsDeleted { get; set; }
 
 		[Required]
 		public DateTime CreatedOn { get; set; }
 
-		public DateTime? UpdatedOn { get; set; }
-
-		public bool IsDeleted { get; set; }  // default -> false
-
-		// Navigation
-		[ForeignKey(nameof(SupplierId))]
-		public virtual Supplier Supplier { get; set; }
-
-		public virtual ICollection<CatalogItem> CatalogItems { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

@@ -1,50 +1,36 @@
-﻿using SupplierHub.Constants.Enum;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SupplierHub.Models
 {
-	[Table("invoice_line")]
 	public class InvoiceLine
 	{
 		[Key]
-		[Column("inv_line_id")]
-		public long InvLineId { get; set; }
+		public long InvLineID { get; set; }
 
 		[Required]
-		[Column("invoice_id")]
-		public long InvoiceId { get; set; }
+		public long InvoiceID { get; set; }
 
-		[ForeignKey("InvoiceId")]
-		public virtual Invoice Invoice { get; set; }
+		public long? PoLineID { get; set; }
 
-		[Column("po_line_id")]
-		public long? PoLineId { get; set; }
+		public decimal? Qty { get; set; }
 
-		[ForeignKey("PoLineId")]
-		public virtual POLine POLine { get; set; }
+		public decimal? UnitPrice { get; set; }
 
-		[Column("qty", TypeName = "decimal(18,3)")]
-		public decimal Qty { get; set; }
+		public decimal? LineTotal { get; set; }
 
-		[Column("unit_price", TypeName = "decimal(18,4)")]
-		public decimal UnitPrice { get; set; }
+		public string? TaxJson { get; set; }
 
-		[Column("line_total", TypeName = "decimal(18,2)")]
-		public decimal LineTotal { get; set; }
+		[MaxLength(20)]
+		public string? MatchStatus { get; set; }
 
-		[Column("tax_json")]
-		public string TaxJson { get; set; }
+		[Required]
+		public DateTime CreatedOn { get; set; }
 
-		[Column("match_status")]
-		[StringLength(20)]
-		public MatchStatus MatchStatus { get; set; }
-
-		[Column("createdon")]
+		[Required]
 		public bool IsDeleted { get; set; }
-		public DateTime CreatedOn { get; set; } = DateTime.Now;
 
-		[Column("updatedon")]
-		public DateTime UpdatedOn { get; set; } = DateTime.Now;
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }

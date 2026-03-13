@@ -1,31 +1,33 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("inspection")]
 	public class Inspection
 	{
 		[Key]
-		public int InspID { get; set; }
+		public long InspID { get; set; }
 
 		[Required]
-		public int GRNItemID { get; set; }
+		public long GrnItemID { get; set; }
 
-		[Required, MaxLength(10)]
-		public string Result { get; set; }
+		[MaxLength(10)]
+		public string? Result { get; set; }
 
-		public string? FindingsJSON { get; set; }
+		public long? InspectorID { get; set; }
+
+		public DateTime? InspDate { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
-		public int InspectorID { get; set; }
+		public bool IsDeleted { get; set; }
 
 		[Required]
-		public DateTime InspDate { get; set; }
+		public DateTime CreatedOn { get; set; }
 
-		// Navigation
-		[ForeignKey(nameof(GRNItemID))]
-		public virtual GRNItemRef GRNItem { get; set; }
-        public bool IsDeleted { get; set; }  // default -> false
-    }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
+	}
 }

@@ -1,30 +1,32 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("grn_ref")]
-	public class GRNRef
+	public class GrnRef
 	{
 		[Key]
-		public int GRNID { get; set; }
+		public long GrnID { get; set; }
 
 		[Required]
-		public int POID { get; set; }
+		public long PoID { get; set; }
 
-		public int? ASNID { get; set; }
+		public long? AsnID { get; set; }
+
+		public DateTime? ReceivedDate { get; set; }
+
+		public long? ReceivedBy { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
-		public DateTime ReceivedDate { get; set; }
+		public DateTime CreatedOn { get; set; }
 
-		[Required, MaxLength(150)]
-		public string ReceivedBy { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 
-		[Required, MaxLength(20)]
-		public string Status { get; set; }
-
-		// Navigation
-		public virtual ICollection<GRNItemRef> Items { get; set; }
-        public bool IsDeleted { get; set; }  // default -> false
-    }
+		[Required]
+		public bool IsDeleted { get; set; }
+	}
 }

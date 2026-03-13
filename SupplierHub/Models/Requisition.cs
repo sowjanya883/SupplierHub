@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SupplierHub.Constants;
 
 namespace SupplierHub.Models
 {
 	public class Requisition
 	{
 		[Key]
-		public long PRID { get; set; }
+		public long PrID { get; set; }
 
 		[Required]
 		public long RequesterID { get; set; }
@@ -16,29 +14,26 @@ namespace SupplierHub.Models
 		[Required]
 		public long OrgID { get; set; }
 
-		[StringLength(100)]
+		[MaxLength(50)]
 		public string? CostCenter { get; set; }
 
-		[StringLength(int.MaxValue)]
+		[MaxLength(500)]
 		public string? Justification { get; set; }
 
-		[Required]
-		public DateTime RequestedDate { get; set; }
+		public DateTime? RequestedDate { get; set; }
 
 		public DateTime? NeededByDate { get; set; }
 
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
 		[Required]
-		public RequisitionStatus Status { get; set; }
+		public DateTime CreatedOn { get; set; }
 
-		// Navigation Properties
-		public virtual User Requester { get; set; }
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 
-		public virtual Organization Organization { get; set; }
-
-		public virtual ICollection<PRLine> PRLines { get; set; } = new List<PRLine>();
-
-		public virtual ICollection<ApprovalStep> ApprovalSteps { get; set; } = new List<ApprovalStep>();
-
-		public virtual ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }

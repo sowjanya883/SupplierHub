@@ -1,53 +1,36 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants;
 
 namespace SupplierHub.Models
 {
-	// Maps to the spreadsheet table: audit_log
-	[Table("audit_log")]
 	public class AuditLog
 	{
 		[Key]
-		[Column("audit_id")]
-		public int AuditId { get; set; }  // AUTO_INCREMENT / Identity
+		public long AuditID { get; set; }
 
-		[Column("user_id")]
-		public int? UserId { get; set; }  // FK → app_user(user_id); nullable for system actions
+		public long? UserID { get; set; }
 
-		// As per sheet: VARCHAR(100/200) NOT NULL
 		[Required, MaxLength(100)]
-		[Column("action")]
-		public string Action { get; set; } = string.Empty;
+		public required string Action { get; set; }
 
 		[Required, MaxLength(200)]
-		[Column("resource")]
-		public string Resource { get; set; } = string.Empty;
+		public required string Resource { get; set; }
 
-		// JSON payload (store as text/json)
-		[Column("metadata")]
-		public string? MetadataJson { get; set; }
+		public string? Metadata { get; set; }
 
-		// Timestamp defaults to CURRENT_TIMESTAMP in DB
-		[Column("timestamp")]
+		[Required]
 		public DateTime Timestamp { get; set; }
 
-		// status VARCHAR(30) NOT NULL DEFAULT 'ACTIVE' (we use enum + string conversion)
-		[Column("status")]
-		public AuditTableStatus Status { get; set; } = AuditTableStatus.Active;
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
-		[Column("createdon")]
+		[Required]
 		public DateTime CreatedOn { get; set; }
 
-		[Column("updatedon")]
+		[Required]
 		public DateTime UpdatedOn { get; set; }
 
-		public bool IsDeleted { get; set; }  // default -> false
-
-											 // Optional navigation (enable when AppUser is in your DbContext)
-											 // [ForeignKey(nameof(UserId))]
-											 // public AppUser? User { get; set; }
+		[Required]
+		public bool IsDeleted { get; set; }
 	}
 }
-

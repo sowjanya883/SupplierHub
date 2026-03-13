@@ -1,40 +1,39 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SupplierHub.Models
 {
-	/// <summary>
-	/// Roll-up KPIs per supplier per period (YYYY-MM).
-	/// </summary>
-	public class SupplierKPI
+	public class SupplierKpi
 	{
 		[Key]
-		public int KPIID { get; set; }
+		public long KpiID { get; set; }
 
 		[Required]
-		public int SupplierID { get; set; }
+		public long SupplierID { get; set; }
 
-		/// <summary>YYYY-MM</summary>
-		[Required, MinLength(7), MaxLength(7)]
-		public string Period { get; set; }
+		[Required, MaxLength(20)]
+		public required string Period { get; set; }
 
-		[Range(0, 100)]
-		public decimal? OTIFPct { get; set; }
+		public decimal? NcrRatePpm { get; set; }
 
-		[Range(0, 10000000000000000.00)]
-		public decimal? NCRRatePPM { get; set; }
-
-		[Range(0, 1000000000.00)]
 		public decimal? AvgAckTimeHrs { get; set; }
 
-		[Range(0, 100)]
 		public decimal? PriceAdherencePct { get; set; }
 
 		public decimal? Score { get; set; }
 
+		public DateTime? GeneratedDate { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
+
 		[Required]
-		public DateTime GeneratedDate { get; set; }
-        public bool IsDeleted { get; set; }  // default -> false
-    }
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
+
+		[Required]
+		public bool IsDeleted { get; set; }
+	}
 }

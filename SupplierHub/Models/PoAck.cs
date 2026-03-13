@@ -1,48 +1,37 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SupplierHub.Constants.Enum;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	[Table("po_ack")]
 	public class PoAck
 	{
 		[Key]
-		[Column("pocfm_id")]
-		public long PoCfmId { get; set; }
+		public long PocfmID { get; set; }
 
 		[Required]
-		[Column("po_id")]
-		public long PoId { get; set; }
-
-		[ForeignKey("PoId")]
-		public virtual PurchaseOrder PurchaseOrder { get; set; }
+		public long PoID { get; set; }
 
 		[Required]
-		[Column("supplier_id")]
-		public long SupplierId { get; set; }
+		public long SupplierID { get; set; }
 
-		[Column("acknowledge_date")]
 		public DateTime? AcknowledgeDate { get; set; }
 
-		[Column("decision")]
-		[StringLength(30)]
-		public PoAckDecision Decision { get; set; } = PoAckDecision.Accept;
+		[MaxLength(30)]
+		public string? Decision { get; set; }
 
-		[Column("counternotes")]
-		[StringLength(500)]
-		public string CounterNotes { get; set; }
+		[MaxLength(500)]
+		public string? Counternotes { get; set; }
+
+		[Required, MaxLength(30)]
+		public required string Status { get; set; }
 
 		[Required]
-		[Column("status")]
-		[StringLength(30)]
-		public PoAckStatus Status { get; set; } = PoAckStatus.ACTIVE;
-
-		[Column("createdon")]
-		public DateTime CreatedOn { get; set; } = DateTime.Now;
-
-		[Column("updatedon")]
-		public DateTime UpdatedOn { get; set; } = DateTime.Now;
 		public bool IsDeleted { get; set; }
+
+		[Required]
+		public DateTime CreatedOn { get; set; }
+
+		[Required]
+		public DateTime UpdatedOn { get; set; }
 	}
 }
