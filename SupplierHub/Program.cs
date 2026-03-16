@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SupplierHub;
-using SupplierHub.Config;
+using SupplierHub.MapProfile;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +11,10 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Make overload resolution unambiguous by passing a Type so the params Type[] overload is selected
+builder.Services.AddAutoMapper(typeof(ApplicationMapperProfile).Assembly);
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -19,12 +23,14 @@ if (app.Environment.IsDevelopment())
 	app.MapOpenApi();
 }
 
+
 app.UseHttpsRedirection();
-
-//2478608
 app.UseAuthorization();
-
-
 app.MapControllers();
 
 app.Run();
+
+
+
+
+

@@ -9,7 +9,7 @@ namespace SupplierHub.Models
 		public long SupplierID { get; set; }
 
 		[Required, MaxLength(200)]
-		public string LegalName { get; set; }
+		public required string LegalName { get; set; }
 
 		[MaxLength(50)]
 		public string? DunsOrRegNo { get; set; }
