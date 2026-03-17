@@ -35,5 +35,8 @@ namespace SupplierHub.Models
 
 		[Required]
 		public bool IsDeleted { get; set; }
+
+		// Navigation Properties
+		public virtual User Requester { get; set; } = null!;
 	}
 }

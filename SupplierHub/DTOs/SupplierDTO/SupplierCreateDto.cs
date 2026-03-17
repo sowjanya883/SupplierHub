@@ -1,10 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.DTOs.SupplierDTO
-{ 
-
-	// Create (POST) payload
-	public class CreateSupplierDto
+{
+	public class SupplierCreateDto
 	{
 		[Required, MaxLength(200)]
 		public required string LegalName { get; init; }

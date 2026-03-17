@@ -5,7 +5,9 @@ namespace SupplierHub.Models
 {
 	public class Bid
 	{
-		[Key]
+		
+
+
 		public long BidID { get; set; }
 
 		[Required]
@@ -14,7 +16,9 @@ namespace SupplierHub.Models
 		[Required]
 		public long SupplierID { get; set; }
 
+
 		public DateTime? BidDate { get; set; }
+
 
 		public decimal? TotalValue { get; set; }
 
@@ -26,6 +30,7 @@ namespace SupplierHub.Models
 
 		[Required, MaxLength(30)]
 		public required string Status { get; set; }
+
 
 		[Required]
 		public DateTime CreatedOn { get; set; }

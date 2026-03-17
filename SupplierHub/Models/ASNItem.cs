@@ -33,7 +33,21 @@ namespace SupplierHub.Models
 		[Required]
 		public DateTime CreatedOn { get; set; }
 
+<<<<<<< HEAD
+		[StringLength(int.MaxValue)]
+		public string SerialJSON { get; set; }
+
+		[StringLength(500)]
+		public string Notes { get; set; }
+		public bool IsDeleted { get; set; }  // default -> false
+
+		// Navigation Properties
+		public virtual ASN ASN { get; set; }
+
+		public virtual POLine POLine { get; set; }
+=======
 		[Required]
 		public DateTime UpdatedOn { get; set; }
+>>>>>>> f5b24b19b20cc4f606a8ea7902667aadcbaffb0f
 	}
 }

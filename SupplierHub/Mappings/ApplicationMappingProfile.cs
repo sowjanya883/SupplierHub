@@ -16,8 +16,8 @@ namespace SupplierHub.MapProfile
 
 			// Supplier
 			CreateMap<Supplier, SupplierResponseDto>().ReverseMap();
-			CreateMap<Supplier, CreateSupplierDto>().ReverseMap();
-			CreateMap<Supplier, UpdateSupplierDto>().ReverseMap();
+			CreateMap<Supplier, SupplierCreateDto>().ReverseMap();
+			CreateMap<Supplier, SupplierUpdateDto>().ReverseMap();
 			CreateMap<Supplier, SupplierListDto>().ReverseMap();
 
 			//User

@@ -2,6 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using SupplierHub;
 using SupplierHub.MapProfile;
 
+
+
+using SupplierHub.Repositories;
+using SupplierHub.Repositories.Interface;
+using SupplierHub.Services;
+using SupplierHub.Services.Interface;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,6 +23,20 @@ builder.Services.AddOpenApi();
 builder.Services.AddAutoMapper(typeof(ApplicationMapperProfile).Assembly);
 
 
+
+
+
+
+// register services before Build
+builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
+builder.Services.AddScoped<ISuppliersService, SuppliersService>();
+
+
+
+
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -22,6 +44,7 @@ if (app.Environment.IsDevelopment())
 {
 	app.MapOpenApi();
 }
+
 
 
 app.UseHttpsRedirection();

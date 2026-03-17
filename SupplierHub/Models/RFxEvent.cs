@@ -5,7 +5,7 @@ namespace SupplierHub.Models
 {
 	public class RfxEvent
 	{
-		[Key]
+		
 		public long RfxID { get; set; }
 
 		[Required, MaxLength(10)]
@@ -33,5 +33,6 @@ namespace SupplierHub.Models
 
 		[Required]
 		public bool IsDeleted { get; set; }
+
 	}
 }

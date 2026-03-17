@@ -6,7 +6,7 @@ namespace SupplierHub.DTOs.SupplierDTO
 
 	// GET/Response DTO with identity and auditing info.
 	// Inherits common fields from CreateSupplierDto.
-	public class SupplierResponseDto : CreateSupplierDto
+	public class SupplierResponseDto : SupplierCreateDto
 	{
 		public long SupplierID { get; init; }
 		public DateTime CreatedOn { get; init; }
