@@ -3,7 +3,6 @@ using SupplierHub.Models;
 
 // DTOs
 using SupplierHub.DTOs.SupplierDTO;
-using SupplierHub.DTOs.InspectionDTO;
 namespace SupplierHub.MapProfile
 {
 	// This is the Mapping profile for AutoMapper to map our DTO's
@@ -18,10 +17,6 @@ namespace SupplierHub.MapProfile
 			CreateMap<Supplier, UpdateSupplierDto>().ReverseMap();
 			CreateMap<Supplier, SupplierListDto>().ReverseMap();
 
-			//Inspection
-			CreateMap<Inspection, InspectionCreateDto>().ReverseMap();
-			CreateMap<Inspection, InspectionReadDto>().ReverseMap();
-			CreateMap<Inspection, InspectionUpdateDto>().ReverseMap();
 
         }
 	}

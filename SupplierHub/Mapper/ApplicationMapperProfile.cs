@@ -7,6 +7,8 @@ using SupplierHub.DTOs.OrganizationDTO;
 using SupplierHub.DTOs.SupplierContactDTO;
 using SupplierHub.DTOs.ComplianceDocDTO;
 using SupplierHub.DTOs.SupplierRiskDTO;
+using SupplierHub.DTOs.InspectionDTO;
+using SupplierHub.DTOs.GRNRefDTO;
 
 namespace SupplierHub.MapProfile
 {
@@ -40,6 +42,17 @@ namespace SupplierHub.MapProfile
 			CreateMap<SupplierRisk, SupplierRiskCreateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskUpdateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskResponseDto>().ReverseMap();
-		}
+
+            //Inspection
+            CreateMap<Inspection, InspectionCreateDto>().ReverseMap();
+            CreateMap<Inspection, InspectionReadDto>().ReverseMap();
+            CreateMap<Inspection, InspectionUpdateDto>().ReverseMap();
+
+            //GRNRef
+            CreateMap<GRNRef, GRNCreateDto>().ReverseMap();
+            CreateMap<GRNRef, GRNReadDto>().ReverseMap();
+            CreateMap<GRNRef, GRNStatusUpdateDto>().ReverseMap();
+            CreateMap<GRNRef, GRNUpdateDto>().ReverseMap();
+        }
 	}
 }
