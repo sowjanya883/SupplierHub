@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using SupplierHub.Constants.Enum;
 
 namespace SupplierHub.Models
 {
@@ -16,13 +17,13 @@ namespace SupplierHub.Models
 		public long? GrnID { get; set; }
 
 		[MaxLength(20)]
-		public string? Result { get; set; }
+		public MatchResult Result { get; set; }
 
 		[MaxLength(500)]
 		public string? Notes { get; set; }
 
 		[Required, MaxLength(30)]
-		public required string Status { get; set; }
+		public MatchRefStatus Status { get; set; }
 
 		[Required]
 		public bool IsDeleted { get; set; }

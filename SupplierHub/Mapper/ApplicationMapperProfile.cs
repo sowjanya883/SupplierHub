@@ -22,17 +22,13 @@ using SupplierHub.Models;
 
 //Neeraj DTOs
 using SupplierHub.DTOs.PurchaseOrderDTO;
-using SupplierHub.DTOs.POLineDTO;
+using SupplierHub.DTOs.PoLineDTO;
 using SupplierHub.DTOs.PoAckDTO;
 using SupplierHub.DTOs.PoRevisionDTO;
 using SupplierHub.DTOs.ErpExportRefDTO;
 using SupplierHub.DTOs.InvoiceDTO;
 using SupplierHub.DTOs.InvoiceLineDTO;
 using SupplierHub.DTOs.MatchRefDTO;
-
-
-using SupplierHub.DTOs.GrnRefDTO;
-using SupplierHub.Models;
 
 namespace SupplierHub.MapProfile
 {
@@ -120,10 +116,10 @@ namespace SupplierHub.MapProfile
 			CreateMap<PurchaseOrder, PurchaseOrderUpdateDto>().ReverseMap();
 			CreateMap<PurchaseOrder, PurchaseOrderResponseDto>().ReverseMap();
 
-			// POLine mappings
-			CreateMap<POLine, POLineCreateDto>().ReverseMap();
-			CreateMap<POLine, POLineUpdateDto>().ReverseMap();
-			CreateMap<POLine, POLineResponseDto>().ReverseMap();
+			// PoLine mappings
+			CreateMap<PoLine, PoLineCreateDto>().ReverseMap();
+			CreateMap<PoLine, PoLineUpdateDto>().ReverseMap();
+			CreateMap<PoLine, PoLineResponseDto>().ReverseMap();
 
 			//PoAck mappings
 			CreateMap<PoAck, PoAckCreateDto>().ReverseMap();

@@ -62,7 +62,7 @@ namespace SupplierHub
 
 		// Purchase Orders, Acknowledgement, Revision, ERP Export
 		public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
-		public DbSet<PoLine> PLines { get; set; }
+		public DbSet<SupplierHub.Models.PoLine> PLines { get; set; }
 		public DbSet<PoAck> PoAcks { get; set; }
 		public DbSet<PoRevision> PoRevisions { get; set; }
 		public DbSet<ErpExportRef> ErpExportRefs { get; set; }

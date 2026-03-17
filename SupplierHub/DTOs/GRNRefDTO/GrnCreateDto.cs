@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-<<<<<<< HEAD
+
 namespace SupplierHub.DTOs.GrnRefDTO
-=======
-namespace SupplierHub.DTOs.GRNRefDTO
->>>>>>> eb1722ce27b7598596a49576b61ea83ff529f00a
+
 {
     public class GrnCreateDto
     {

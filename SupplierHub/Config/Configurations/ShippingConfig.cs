@@ -78,7 +78,7 @@ namespace SupplierHub.Config.Configurations
 
 			builder.HasOne<Asn>().WithMany().HasForeignKey(x => x.AsnID)
 				   .OnDelete(DeleteBehavior.Restrict).IsRequired();
-			builder.HasOne<PoLine>().WithMany().HasForeignKey(x => x.PoLineID)
+			builder.HasOne<SupplierHub.Models.PoLine>().WithMany().HasForeignKey(x => x.PoLineID)
 				   .OnDelete(DeleteBehavior.Restrict).IsRequired();
 		}
 	}

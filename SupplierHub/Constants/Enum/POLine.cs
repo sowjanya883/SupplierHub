@@ -1,11 +1,11 @@
 ﻿namespace SupplierHub.Constants.Enum
 {
-	public enum POLine
+	public enum PoLine
 	{
-		ACTIVE = 1,
-		CANCELLED = 2,
-		RECEIVED = 3,
-		RETURNED = 4,
-		CLOSED = 5
+		Active = 1,
+		Cancelled = 2,
+		Recieved = 3,
+		Returned = 4,
+		Closed = 5
 	}
 }

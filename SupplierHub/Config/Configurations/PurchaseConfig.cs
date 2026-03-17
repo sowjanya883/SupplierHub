@@ -20,7 +20,7 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.PaymentTerms).HasMaxLength(100);
 
 			builder.Property(x => x.Status).HasMaxLength(50).IsRequired()
-				   .HasDefaultValue("OPEN");
+				   .HasDefaultValue("Open");
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -34,8 +34,8 @@ namespace SupplierHub.Config.Configurations
 		}
 	}
 
-	// POLine
-	public class POLineConfiguration : IEntityTypeConfiguration<SupplierHub.Models.PoLine>
+	// PoLine
+	public class PoLineConfiguration : IEntityTypeConfiguration<SupplierHub.Models.PoLine>
 	{
 		public void Configure(EntityTypeBuilder<SupplierHub.Models.PoLine> builder)
 		{
@@ -50,7 +50,7 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.DeliveryDate).HasColumnType("date");
 
 			builder.Property(x => x.Status).HasMaxLength(30).IsRequired()
-				   .HasDefaultValue("ACTIVE");
+				   .HasDefaultValue("Active");
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -77,7 +77,7 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.Counternotes).HasMaxLength(500);
 
 			builder.Property(x => x.Status).HasMaxLength(30).IsRequired()
-				   .HasDefaultValue("ACTIVE");
+				   .HasDefaultValue("Active");
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -104,7 +104,7 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.ChangeDate);
 
 			builder.Property(x => x.Status).HasMaxLength(30).IsRequired()
-				   .HasDefaultValue("ACTIVE");
+				   .HasDefaultValue("Active");
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -132,7 +132,7 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.ExportDate);
 
 			builder.Property(x => x.Status).HasMaxLength(30).IsRequired()
-				   .HasDefaultValue("QUEUED");
+				   .HasDefaultValue("Queued");
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")
