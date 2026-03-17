@@ -54,11 +54,11 @@ namespace SupplierHub.MapProfile
             CreateMap<Inspection, InspectionUpdateDto>().ReverseMap();
 
             //GRNRef
-            CreateMap<GRNRef, GRNCreateDto>().ReverseMap();
-            CreateMap<GRNRef, GRNReadDto>().ReverseMap();
-            CreateMap<GRNRef, GRNStatusUpdateDto>().ReverseMap();
-            CreateMap<GRNRef, GRNUpdateDto>().ReverseMap();
-        }
+            CreateMap<GrnRef, GrnCreateDto>().ReverseMap();
+            CreateMap<GrnRef, GrnReadDto>().ReverseMap();
+            CreateMap<GrnRef, GrnStatusUpdateDto>().ReverseMap();
+            CreateMap<GrnRef, GrnUpdateDto>().ReverseMap();
+        
 			CreateMap<RfxEvent, RFxEventCreateDto>().ReverseMap();
 			CreateMap<RfxEvent, RFxEventReadDto>().ReverseMap();
 			CreateMap<RfxEvent, RFxEventUpdateDto>().ReverseMap();
