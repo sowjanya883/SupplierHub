@@ -31,9 +31,6 @@ namespace SupplierHub.Models
 		[Required]
 
 		public DateTime UpdatedOn { get; set; }
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 	}
 }

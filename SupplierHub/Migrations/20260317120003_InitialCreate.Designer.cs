@@ -12,15 +12,15 @@ using SupplierHub;
 namespace SupplierHub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260312112745_SupplierHubDb")]
-    partial class SupplierHubDb
+    [Migration("20260317120003_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -1040,7 +1040,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("SUBMITTED");
+                        .HasDefaultValue("Submitted");
 
                     b.Property<long>("SupplierID")
                         .HasColumnType("bigint");
@@ -1217,6 +1217,7 @@ namespace SupplierHub.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Result")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -1225,7 +1226,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("ACTIVE");
+                        .HasDefaultValue("Active");
 
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAddOrUpdate()
@@ -1790,6 +1791,9 @@ namespace SupplierHub.Migrations
                     b.Property<long>("RequesterID")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("RequesterUserID")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -1807,6 +1811,8 @@ namespace SupplierHub.Migrations
                     b.HasIndex("OrgID");
 
                     b.HasIndex("RequesterID");
+
+                    b.HasIndex("RequesterUserID");
 
                     b.ToTable("Requisitions");
                 });
@@ -2922,6 +2928,14 @@ namespace SupplierHub.Migrations
                         .HasForeignKey("RequesterID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("SupplierHub.Models.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequesterUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Requester");
                 });
 
             modelBuilder.Entity("SupplierHub.Models.RfxEvent", b =>

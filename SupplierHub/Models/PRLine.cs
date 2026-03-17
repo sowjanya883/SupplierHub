@@ -28,10 +28,7 @@ namespace SupplierHub.Models
 
 		public long? SupplierPreferredID { get; set; }
 
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 		[MaxLength(500)]
 		public string? Notes { get; set; }
 

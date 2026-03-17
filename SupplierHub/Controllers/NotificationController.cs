@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SupplierHub.Models;
 
 namespace SupplierHub.Controllers
@@ -13,10 +14,12 @@ namespace SupplierHub.Controllers
 	public class NotificationController : ControllerBase
 	{
 		private readonly AppDbContext _db;
+		private readonly ILogger<NotificationController> _logger;
 
-		public NotificationController(AppDbContext db)
+		public NotificationController(AppDbContext db, ILogger<NotificationController> logger)
 		{
 			_db = db;
+			_logger = logger;
 		}
 
 		// GET: api/notifications
@@ -53,21 +56,40 @@ namespace SupplierHub.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody] Notification model, CancellationToken ct = default)
 		{
-			if (!ModelState.IsValid)
-				return ValidationProblem(ModelState);
+			try
+			{
+				if (!ModelState.IsValid)
+					return ValidationProblem(ModelState);
 
-			// Server-side timestamps and defaults
-			var now = DateTime.UtcNow;
-			model.NotificationID = 0; // ensure new
-			if (model.CreatedDate == default) model.CreatedDate = now;
-			model.CreatedOn = now;
-			model.UpdatedOn = now;
-			model.IsDeleted = false;
+				// Server-side timestamps and defaults
+				var now = DateTime.UtcNow;
+				model.NotificationID = 0; // ensure new
+				if (model.CreatedDate == default) model.CreatedDate = now;
+				model.CreatedOn = now;
+				model.UpdatedOn = now;
+				model.IsDeleted = false;
 
-			_db.Notifications.Add(model);
-			await _db.SaveChangesAsync(ct);
+				// Ensure referenced user exists to avoid FK/constraint errors
+				var userExists = await _db.Users.AnyAsync(u => u.UserID == model.UserID, ct);
+				if (!userExists)
+					return BadRequest($"User with id {model.UserID} does not exist.");
 
-			return Ok(model);
+				_db.Notifications.Add(model);
+				await _db.SaveChangesAsync(ct);
+				return Ok(model);
+			}
+			catch (DbUpdateException dbEx)
+			{
+				_logger.LogError(dbEx, "DbUpdateException while creating Notification for UserID {UserId}", model?.UserID);
+				var detail = dbEx.InnerException?.Message ?? dbEx.Message;
+				return Problem(detail, statusCode: 400);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Unexpected exception while creating Notification for UserID {UserId}", model?.UserID);
+				var detail = ex.InnerException?.Message ?? ex.Message;
+				return Problem(detail, statusCode: 500);
+			}
 		}
 
 		// PUT: api/notifications/{id}
@@ -114,7 +136,7 @@ namespace SupplierHub.Controllers
 
 		// POST: api/notifications/{id}/restore
 		// Restore a soft-deleted notification
-		[HttpPost("{id:long}/restore")]
+		[HttpPost("{id:long}/restore")]				
 		public async Task<IActionResult> Restore(long id, CancellationToken ct = default)
 		{
 			var entity = await _db.Notifications.FirstOrDefaultAsync(n => n.NotificationID == id, ct);

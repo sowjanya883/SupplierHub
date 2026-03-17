@@ -74,7 +74,7 @@ namespace SupplierHub.Config.Configurations
             builder.Property(x => x.Status)
 				   .HasConversion<string>()
 				   .HasMaxLength(30).IsRequired()
-				   .HasDefaultValue(MatchRefStatus.Active.ToString());
+				   .HasDefaultValue(MatchRefStatus.Active);
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")

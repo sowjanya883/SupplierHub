@@ -3,10 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 
 namespace SupplierHub.DTOs.GrnRefDTO
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 {
     public class GrnReadDto
     {
