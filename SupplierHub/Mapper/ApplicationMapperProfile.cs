@@ -1,12 +1,17 @@
 ﻿using AutoMapper;
-using SupplierHub.Models;
-
+using SupplierHub.DTOs.ComplianceDocDTO;
+using SupplierHub.DTOs.OrganizationDTO;
+using SupplierHub.DTOs.RfxEventDTO;
+using SupplierHub.DTOs.RFxLineDTO;
+using SupplierHub.DTOs.BidDTO;
+using SupplierHub.DTOs.BidLineDTO;
+using SupplierHub.DTOs.AwardDTO;
+using SupplierHub.DTOs.RfxInviteDTO;
+using SupplierHub.DTOs.SupplierContactDTO;
 // DTOs
 using SupplierHub.DTOs.SupplierDTO;
-using SupplierHub.DTOs.OrganizationDTO;
-using SupplierHub.DTOs.SupplierContactDTO;
-using SupplierHub.DTOs.ComplianceDocDTO;
 using SupplierHub.DTOs.SupplierRiskDTO;
+using SupplierHub.Models;
 
 namespace SupplierHub.MapProfile
 {
@@ -40,6 +45,34 @@ namespace SupplierHub.MapProfile
 			CreateMap<SupplierRisk, SupplierRiskCreateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskUpdateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskResponseDto>().ReverseMap();
+
+			CreateMap<RfxEvent, RFxEventCreateDto>().ReverseMap();
+			CreateMap<RfxEvent, RFxEventReadDto>().ReverseMap();
+			CreateMap<RfxEvent, RFxEventUpdateDto>().ReverseMap();
+
+			CreateMap<RfxLine, RfxLineCreateDto>().ReverseMap();
+			CreateMap<RfxLine, RfxLineReadDto>().ReverseMap();
+			CreateMap<RfxLine, RfxLineUpdateDto>().ReverseMap();
+
+			// Bid mappings
+			CreateMap<Bid, BidCreateDto>().ReverseMap();
+			CreateMap<Bid, BidReadDto>().ReverseMap();
+			CreateMap<Bid, BidUpdateDto>().ReverseMap();
+
+			// BidLine mappings
+			CreateMap<BidLine, BidLineCreateDto>().ReverseMap();
+			CreateMap<BidLine, BidLineReadDto>().ReverseMap();
+			CreateMap<BidLine, BidLineUpdateDto>().ReverseMap();
+
+			// Award mappings
+			CreateMap<Award, AwardCreateDto>().ReverseMap();
+			CreateMap<Award, AwardReadDto>().ReverseMap();
+			CreateMap<Award, AwardUpdateDto>().ReverseMap();
+
+			// RfxInvite mappings
+			CreateMap<RfxInvite, RfxInviteCreateDto>().ReverseMap();
+			CreateMap<RfxInvite, RfxInviteReadDto>().ReverseMap();
+			CreateMap<RfxInvite, RfxInviteUpdateDto>().ReverseMap();
 		}
 	}
 }
