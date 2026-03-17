@@ -4,7 +4,6 @@ using SupplierHub.DTOs.OrganizationDTO;
 using SupplierHub.DTOs.SupplierContactDTO;
 using SupplierHub.DTOs.SupplierDTO;
 using SupplierHub.DTOs.SupplierRiskDTO;
-using SupplierHub.Models;
 using SupplierHub.Services.Interface;
 
 namespace SupplierHub.Controllers
@@ -20,30 +19,33 @@ namespace SupplierHub.Controllers
 			_service = service;
 		}
 
-		// Supplier
-		[HttpGet("suppliers")]
+		// Get all suppliers
+		[HttpGet]
 		public async Task<IActionResult> GetAllSuppliers() =>
 			Ok(await _service.GetAllSuppliersAsync());
 
-		[HttpGet("suppliers/{id:long}")]
+		// Get supplier by id
+		[HttpGet("{id:long}")]
 		public async Task<IActionResult> GetSupplier(long id)
 		{
 			var result = await _service.GetSupplierByIdAsync(id);
 			return result == null ? NotFound() : Ok(result);
 		}
 
-		[HttpPost("suppliers")]
+		// Create supplier
+		[HttpPost]
 		public async Task<IActionResult> CreateSupplier(SupplierCreateDto dto) =>
 			Ok(await _service.CreateSupplierAsync(dto));
 
-		[HttpPut("suppliers")]
+		// Update supplier
+		[HttpPut]
 		public async Task<IActionResult> UpdateSupplier(SupplierUpdateDto dto)
 		{
 			var result = await _service.UpdateSupplierAsync(dto);
 			return result == null ? NotFound() : Ok(result);
 		}
 
-		// SupplierContact
+		// Update supplier contact
 		[HttpPut("contacts")]
 		public async Task<IActionResult> UpdateContact(SupplierContactUpdateDto dto)
 		{
@@ -51,7 +53,7 @@ namespace SupplierHub.Controllers
 			return result == null ? NotFound() : Ok(result);
 		}
 
-		// ComplianceDoc
+		// Update compliance document
 		[HttpPut("compliance-docs")]
 		public async Task<IActionResult> UpdateComplianceDoc(ComplianceDocUpdateDto dto)
 		{
@@ -59,7 +61,7 @@ namespace SupplierHub.Controllers
 			return result == null ? NotFound() : Ok(result);
 		}
 
-		// SupplierRisk
+		// Update supplier risk
 		[HttpPut("risks")]
 		public async Task<IActionResult> UpdateRisk(SupplierRiskUpdateDto dto)
 		{
@@ -67,7 +69,7 @@ namespace SupplierHub.Controllers
 			return result == null ? NotFound() : Ok(result);
 		}
 
-		// Organization
+		// Update organization
 		[HttpPut("organizations")]
 		public async Task<IActionResult> UpdateOrganization(OrganizationUpdateDto dto)
 		{
