@@ -28,8 +28,10 @@ namespace SupplierHub.Models
 
 		public long? SupplierPreferredID { get; set; }
 
-        [MaxLength(500)]
+
+		[MaxLength(500)]
 		public string? Notes { get; set; }
+
 
 		[Required, MaxLength(30)]
 		public required string Status { get; set; }

@@ -14,7 +14,12 @@ using SupplierHub.DTOs.SupplierRiskDTO;
 
 
 using SupplierHub.DTOs.UserDTO;
-
+using SupplierHub.DTOs.RoleDTO;
+using SupplierHub.DTOs.PermissionDTO;
+using SupplierHub.DTOs.RolePermissionDTO;
+using SupplierHub.DTOs.UserRoleDTO;
+using SupplierHub.DTOs.AuditLogDTO;
+using SupplierHub.DTOs.NotificationDTO;
 
 using SupplierHub.DTOs.InspectionDTO;
 using SupplierHub.DTOs.GrnRefDTO;
@@ -26,14 +31,13 @@ using SupplierHub.Models;
 
 //Neeraj DTOs
 using SupplierHub.DTOs.PurchaseOrderDTO;
-using SupplierHub.DTOs.POLineDTO;
+using SupplierHub.DTOs.PoLineDTO;
 using SupplierHub.DTOs.PoAckDTO;
 using SupplierHub.DTOs.PoRevisionDTO;
 using SupplierHub.DTOs.ErpExportRefDTO;
 using SupplierHub.DTOs.InvoiceDTO;
 using SupplierHub.DTOs.InvoiceLineDTO;
 using SupplierHub.DTOs.MatchRefDTO;
-
 
 
 namespace SupplierHub.MapProfile
@@ -69,14 +73,50 @@ namespace SupplierHub.MapProfile
 			CreateMap<SupplierRisk, SupplierRiskUpdateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskResponseDto>().ReverseMap();
 
+			// Role mappings
+			CreateMap<Role, CreateRoleDto>().ReverseMap();
+			CreateMap<Role, UpdateRoleDto>().ReverseMap();
+			CreateMap<Role, RoleDto>().ReverseMap();
+			CreateMap<Role, RoleListItemDto>().ReverseMap();
+
+			// Permission mappings
+			CreateMap<Models.Permission, CreatePermissionDto>().ReverseMap();
+			CreateMap<Models.Permission, UpdatePermissionDto>().ReverseMap();
+			CreateMap<Models.Permission, PermissionDto>().ReverseMap();
+			CreateMap<Models.Permission, PermissionListItemDto>().ReverseMap();
+
+			// RolePermission mappings
+			CreateMap<Models.RolePermission, CreateRolePermissionDto>().ReverseMap();
+			CreateMap<Models.RolePermission, UpdateRolePermissionDto>().ReverseMap();
+			CreateMap<Models.RolePermission, RolePermissionDto>().ReverseMap();
+			CreateMap<Models.RolePermission, RolePermissionListItemDto>().ReverseMap();
+
+			// UserRole mappings
+			CreateMap<Models.UserRole, CreateUserRoleDto>().ReverseMap();
+			CreateMap<Models.UserRole, UpdateUserRoleDto>().ReverseMap();
+			CreateMap<Models.UserRole, UserRoleDto>().ReverseMap();
+			CreateMap<Models.UserRole, UserRoleListItemDto>().ReverseMap();
+
+			// AuditLog mappings
+			CreateMap<Models.AuditLog, CreateAuditLogDto>().ReverseMap();
+			CreateMap<Models.AuditLog, UpdateAuditLogDto>().ReverseMap();
+			CreateMap<Models.AuditLog, AuditLogDto>().ReverseMap();
+			CreateMap<Models.AuditLog, AuditLogListItemDto>().ReverseMap();
+
 			// User Mappings
 			CreateMap<User, CreateUserDto>().ReverseMap();
 			CreateMap<User, UpdateUserDto>().ReverseMap();
 			CreateMap<User, UserDto>().ReverseMap();
 
+			//Notification Mappings
+			CreateMap<Notification, NotificationCreateDto>().ReverseMap();
+			CreateMap<Notification, NotificationUpdateDto>().ReverseMap();
+			CreateMap<Notification, NotificationDto>().ReverseMap();
+			CreateMap<Notification, NotificationListItemDto>().ReverseMap();
 
-            //Inspection
-            CreateMap<Inspection, InspectionCreateDto>().ReverseMap();
+
+			//Inspection
+			CreateMap<Inspection, InspectionCreateDto>().ReverseMap();
             CreateMap<Inspection, InspectionReadDto>().ReverseMap();
             CreateMap<Inspection, InspectionUpdateDto>().ReverseMap();
 
@@ -149,10 +189,10 @@ namespace SupplierHub.MapProfile
 			CreateMap<PurchaseOrder, PurchaseOrderUpdateDto>().ReverseMap();
 			CreateMap<PurchaseOrder, PurchaseOrderResponseDto>().ReverseMap();
 
-			// POLine mappings
-			CreateMap<POLine, POLineCreateDto>().ReverseMap();
-			CreateMap<POLine, POLineUpdateDto>().ReverseMap();
-			CreateMap<POLine, POLineResponseDto>().ReverseMap();
+			// PoLine mappings
+			CreateMap<PoLine, PoLineCreateDto>().ReverseMap();
+			CreateMap<PoLine, PoLineUpdateDto>().ReverseMap();
+			CreateMap<PoLine, PoLineResponseDto>().ReverseMap();
 
 			//PoAck mappings
 			CreateMap<PoAck, PoAckCreateDto>().ReverseMap();

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SupplierHub.DTOs.POLineDTO
+namespace SupplierHub.DTOs.PoLineDTO
 {
-	public class POLineResponseDto
+	public class PoLineResponseDto
 	{
 		public long PoLineId { get; set; }
 		public long PoId { get; set; }

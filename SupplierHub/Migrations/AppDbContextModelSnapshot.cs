@@ -822,7 +822,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("QUEUED");
+                        .HasDefaultValue("Queued");
 
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAddOrUpdate()
@@ -1037,7 +1037,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("SUBMITTED");
+                        .HasDefaultValue("Submitted");
 
                     b.Property<long>("SupplierID")
                         .HasColumnType("bigint");
@@ -1214,6 +1214,7 @@ namespace SupplierHub.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<string>("Result")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
@@ -1222,7 +1223,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("ACTIVE");
+                        .HasDefaultValue("Active");
 
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAddOrUpdate()
@@ -1542,7 +1543,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("ACTIVE");
+                        .HasDefaultValue("Active");
 
                     b.Property<long>("SupplierID")
                         .HasColumnType("bigint");
@@ -1559,6 +1560,74 @@ namespace SupplierHub.Migrations
                     b.HasIndex("SupplierID");
 
                     b.ToTable("PoAcks");
+                });
+
+            modelBuilder.Entity("SupplierHub.Models.PoLine", b =>
+                {
+                    b.Property<long>("PoLineID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("PoLineID"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime?>("DeliveryDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<long?>("ItemID")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal?>("LineTotal")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<long>("PoID")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal?>("Qty")
+                        .HasPrecision(18, 3)
+                        .HasColumnType("decimal(18,3)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)")
+                        .HasDefaultValue("Active");
+
+                    b.Property<decimal?>("UnitPrice")
+                        .HasPrecision(18, 4)
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<string>("Uom")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.HasKey("PoLineID");
+
+                    b.HasIndex("ItemID");
+
+                    b.HasIndex("PoID");
+
+                    b.ToTable("PLines");
                 });
 
             modelBuilder.Entity("SupplierHub.Models.PoRevision", b =>
@@ -1599,7 +1668,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)")
-                        .HasDefaultValue("ACTIVE");
+                        .HasDefaultValue("Active");
 
                     b.Property<DateTime>("UpdatedOn")
                         .ValueGeneratedOnAddOrUpdate()
@@ -1730,7 +1799,7 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
-                        .HasDefaultValue("OPEN");
+                        .HasDefaultValue("Open");
 
                     b.Property<long>("SupplierID")
                         .HasColumnType("bigint");

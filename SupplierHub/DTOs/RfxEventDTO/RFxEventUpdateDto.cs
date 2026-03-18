@@ -5,6 +5,9 @@ namespace SupplierHub.DTOs.RfxEventDTO
 {
 	public class RFxEventUpdateDto
 	{
+		[Required]
+		public long RfxID { get; set; }
+
 		[Required, MaxLength(200)]
 		public string Title { get; set; } = string.Empty;
 

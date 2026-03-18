@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.Models
 {
-	public class POLine
+	public class PoLine
 	{
 		[Key]
 		public long PoLineID { get; set; }

@@ -1,9 +1,9 @@
-﻿namespace SupplierHub.Constants.Enum
-{
-	public enum PoRevisionStatus
+﻿	namespace SupplierHub.Constants.Enum
 	{
-		Active = 0,
-		Cancelled = 1,
-		Completed = 2
+		public enum PoRevisionStatus
+		{
+			Active = 0,
+			Cancelled = 1,
+			Completed = 2
+		}
 	}
-}

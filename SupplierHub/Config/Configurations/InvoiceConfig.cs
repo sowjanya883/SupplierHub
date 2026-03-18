@@ -19,7 +19,7 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.TotalAmount).HasPrecision(18, 2);
 
 			builder.Property(x => x.Status).HasMaxLength(30).IsRequired()
-				   .HasDefaultValue("SUBMITTED");
+				   .HasDefaultValue("Submitted");
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")
@@ -53,7 +53,7 @@ namespace SupplierHub.Config.Configurations
 
 			builder.HasOne<Invoice>().WithMany().HasForeignKey(x => x.InvoiceID)
 				   .OnDelete(DeleteBehavior.Restrict).IsRequired();
-			builder.HasOne<SupplierHub.Models.POLine>().WithMany().HasForeignKey(x => x.PoLineID)
+			builder.HasOne<PoLine>().WithMany().HasForeignKey(x => x.PoLineID)
 				   .OnDelete(DeleteBehavior.Restrict);
 		}
 	}
@@ -66,11 +66,15 @@ namespace SupplierHub.Config.Configurations
 			builder.HasKey(x => x.MatchID);
 			builder.Property(x => x.MatchID).ValueGeneratedOnAdd();
 
-			builder.Property(x => x.Result).HasMaxLength(20);
+            builder.Property(x => x.Result)
+				   .HasConversion<string>()
+				   .HasMaxLength(20);
 			builder.Property(x => x.Notes).HasMaxLength(500);
 
-			builder.Property(x => x.Status).HasMaxLength(30).IsRequired()
-				   .HasDefaultValue("ACTIVE");
+            builder.Property(x => x.Status)
+				   .HasConversion<string>()
+				   .HasMaxLength(30).IsRequired()
+				   .HasDefaultValue(MatchRefStatus.Active);
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")

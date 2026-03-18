@@ -28,7 +28,10 @@ namespace SupplierHub.Models
 		[Required, MaxLength(30)]
 		public required string Status { get; set; }
 
-      [Required]
+
+		[Required]
+
 		public DateTime UpdatedOn { get; set; }
+
 	}
 }

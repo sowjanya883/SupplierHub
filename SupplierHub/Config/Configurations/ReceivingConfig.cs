@@ -53,7 +53,7 @@ namespace SupplierHub.Config.Configurations
 
 			builder.HasOne<GrnRef>().WithMany().HasForeignKey(x => x.GrnID)
 				   .OnDelete(DeleteBehavior.Restrict).IsRequired();
-			builder.HasOne<SupplierHub.Models.POLine>().WithMany().HasForeignKey(x => x.PoLineID)
+			builder.HasOne<PoLine>().WithMany().HasForeignKey(x => x.PoLineID)
 				   .OnDelete(DeleteBehavior.Restrict).IsRequired();
 		}
 	}

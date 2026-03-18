@@ -35,9 +35,15 @@ namespace SupplierHub.Config.Configurations
 	}
 
 	// POLine
-	public class POLineConfiguration : IEntityTypeConfiguration<SupplierHub.Models.POLine>
+	public class POLineConfiguration : IEntityTypeConfiguration<PoLine>
 	{
-		public void Configure(EntityTypeBuilder<SupplierHub.Models.POLine> builder)
+		public void Configure(EntityTypeBuilder<PoLine> builder) { }
+	}
+	// PoLine
+	public class PoLineConfiguration : IEntityTypeConfiguration<PoLine>
+	{
+		public void Configure(EntityTypeBuilder<PoLine> builder)
+
 		{
 			builder.HasKey(x => x.PoLineID);
 			builder.Property(x => x.PoLineID).ValueGeneratedOnAdd();
@@ -49,12 +55,18 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.LineTotal).HasPrecision(18, 2);
 			builder.Property(x => x.DeliveryDate).HasColumnType("date");
 
-			builder.Property(x => x.Status).HasMaxLength(30).IsRequired()
-				   .HasDefaultValue("ACTIVE");
+			builder.Property(x => x.Status)
+			.HasMaxLength(30)
+			.IsRequired()
+			.HasDefaultValue(PoLineStatus.Active);
 
-			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
-			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")
-				   .ValueGeneratedOnAddOrUpdate().IsRequired();
+			builder.Property(x => x.CreatedOn)
+			.HasDefaultValueSql("CURRENT_TIMESTAMP")
+			.IsRequired();
+			builder.Property(x => x.UpdatedOn)
+			.HasDefaultValueSql("CURRENT_TIMESTAMP")
+			.ValueGeneratedOnAddOrUpdate()
+			.IsRequired();
 			builder.Property(x => x.IsDeleted).HasDefaultValue(false).IsRequired();
 
 			builder.HasOne<PurchaseOrder>().WithMany().HasForeignKey(x => x.PoID)

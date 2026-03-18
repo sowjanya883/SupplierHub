@@ -19,8 +19,12 @@ namespace SupplierHub.Models
 
 		public DateTime? DecisionDate { get; set; }
 
+
+
 		[MaxLength(500)]
 		public string? Remarks { get; set; }
+
+
 		[Required, MaxLength(30)]
 		public required string Status { get; set; }
 

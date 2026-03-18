@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace SupplierHub.DTOs.POLineDTO
+namespace SupplierHub.DTOs.PoLineDTO
 {
-	public class POLineCreateDto
+	public class PoLineCreateDto
 	{
 		[Required]
 		public long PoId { get; set; }
