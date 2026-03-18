@@ -46,10 +46,14 @@ builder.Services.AddAutoMapper(typeof(ApplicationMapperProfile).Assembly);
 builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
 builder.Services.AddScoped<ISuppliersService, SuppliersService>();
 
+<<<<<<< HEAD
+//Notification repository & service
+=======
 builder.Services.AddScoped<IRfxRepository, RfxRepository>();
 builder.Services.AddScoped<IRfxService, RfxService>();
 
 
+>>>>>>> b9dd07f7bdb5c0617467d30ceb0a2756c7ee9a83
 
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
@@ -57,6 +61,26 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 // User repository & service
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+// Role repository & service
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+
+// Permission repository & service
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+
+// RolePermission repository & service
+builder.Services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
+builder.Services.AddScoped<IRolePermissionService, RolePermissionService>();
+
+// UserRole repository & service
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+
+// AuditLog repository & service
+builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
 
 

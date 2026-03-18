@@ -14,6 +14,11 @@ using SupplierHub.DTOs.SupplierRiskDTO;
 
 
 using SupplierHub.DTOs.UserDTO;
+using SupplierHub.DTOs.RoleDTO;
+using SupplierHub.DTOs.PermissionDTO;
+using SupplierHub.DTOs.RolePermissionDTO;
+using SupplierHub.DTOs.UserRoleDTO;
+using SupplierHub.DTOs.AuditLogDTO;
 using SupplierHub.DTOs.NotificationDTO;
 
 using SupplierHub.DTOs.InspectionDTO;
@@ -62,6 +67,36 @@ namespace SupplierHub.MapProfile
 			CreateMap<SupplierRisk, SupplierRiskCreateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskUpdateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskResponseDto>().ReverseMap();
+
+			// Role mappings
+			CreateMap<Role, CreateRoleDto>().ReverseMap();
+			CreateMap<Role, UpdateRoleDto>().ReverseMap();
+			CreateMap<Role, RoleDto>().ReverseMap();
+			CreateMap<Role, RoleListItemDto>().ReverseMap();
+
+			// Permission mappings
+			CreateMap<Models.Permission, CreatePermissionDto>().ReverseMap();
+			CreateMap<Models.Permission, UpdatePermissionDto>().ReverseMap();
+			CreateMap<Models.Permission, PermissionDto>().ReverseMap();
+			CreateMap<Models.Permission, PermissionListItemDto>().ReverseMap();
+
+			// RolePermission mappings
+			CreateMap<Models.RolePermission, CreateRolePermissionDto>().ReverseMap();
+			CreateMap<Models.RolePermission, UpdateRolePermissionDto>().ReverseMap();
+			CreateMap<Models.RolePermission, RolePermissionDto>().ReverseMap();
+			CreateMap<Models.RolePermission, RolePermissionListItemDto>().ReverseMap();
+
+			// UserRole mappings
+			CreateMap<Models.UserRole, CreateUserRoleDto>().ReverseMap();
+			CreateMap<Models.UserRole, UpdateUserRoleDto>().ReverseMap();
+			CreateMap<Models.UserRole, UserRoleDto>().ReverseMap();
+			CreateMap<Models.UserRole, UserRoleListItemDto>().ReverseMap();
+
+			// AuditLog mappings
+			CreateMap<Models.AuditLog, CreateAuditLogDto>().ReverseMap();
+			CreateMap<Models.AuditLog, UpdateAuditLogDto>().ReverseMap();
+			CreateMap<Models.AuditLog, AuditLogDto>().ReverseMap();
+			CreateMap<Models.AuditLog, AuditLogListItemDto>().ReverseMap();
 
 			// User Mappings
 			CreateMap<User, CreateUserDto>().ReverseMap();
