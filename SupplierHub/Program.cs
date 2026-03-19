@@ -1,12 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SupplierHub;
 using SupplierHub.MapProfile;
-<<<<<<< Updated upstream
 using AutoMapper;
-=======
-
->>>>>>> Stashed changes
-
 using SupplierHub.Repositories;
 using SupplierHub.Repositories.Interface;
 using SupplierHub.Services;
