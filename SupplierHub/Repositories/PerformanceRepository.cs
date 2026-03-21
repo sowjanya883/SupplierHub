@@ -13,31 +13,25 @@ namespace SupplierHub.Repositories
             _db = db;
         }
 
-        // KPI Methods
+        // =======================
+        // --- KPI Methods ---
+        // =======================
+        public async Task<SupplierKpi> AddKpiAsync(SupplierKpi kpi)
+        {
+            _db.SupplierKpis.Add(kpi);
+            await _db.SaveChangesAsync();
+            return kpi;
+        }
+
+        public Task<List<SupplierKpi>> GetAllKpisAsync() =>
+            _db.SupplierKpis.Where(x => !x.IsDeleted).ToListAsync();
+
         public Task<SupplierKpi?> GetKpiByIdAsync(long id) =>
             _db.SupplierKpis.FirstOrDefaultAsync(x => x.KpiID == id && !x.IsDeleted);
 
         public Task<List<SupplierKpi>> GetKpisBySupplierIdAsync(long supplierId) =>
             _db.SupplierKpis.Where(x => x.SupplierID == supplierId && !x.IsDeleted).ToListAsync();
 
-        public async Task<SupplierKpi> AddKpiAsync(SupplierKpi kpi)
-        {
-            try
-            {
-                _db.SupplierKpis.Add(kpi);
-                await _db.SaveChangesAsync();
-                return kpi;
-            }
-            catch (DbUpdateException ex)
-            {
-                // Put a breakpoint on the line below to inspect 'innerMessage'
-                // Or log it to your console/logger
-                var innerMessage = ex.InnerException?.Message ?? ex.Message;
-
-                // For now, let's throw it so you can see it clearly in your output
-                throw new Exception($"Database save failed: {innerMessage}", ex);
-            }
-        }
         public async Task<SupplierKpi?> UpdateKpiAsync(SupplierKpi kpi)
         {
             _db.SupplierKpis.Update(kpi);
@@ -45,13 +39,20 @@ namespace SupplierHub.Repositories
             return kpi;
         }
 
-        // Scorecard Methods
-        public Task<Scorecard?> GetScorecardByIdAsync(long id) =>
-            _db.Scorecards.FirstOrDefaultAsync(x => x.ScorecardID == id && !x.IsDeleted);
+        public async Task<bool> DeleteKpiAsync(long id)
+        {
+            var kpi = await GetKpiByIdAsync(id);
+            if (kpi == null) return false;
 
-        public Task<List<Scorecard>> GetScorecardsBySupplierIdAsync(long supplierId) =>
-            _db.Scorecards.Where(x => x.SupplierID == supplierId && !x.IsDeleted).ToListAsync();
+            kpi.IsDeleted = true; // Soft Delete
+            _db.SupplierKpis.Update(kpi);
+            await _db.SaveChangesAsync();
+            return true;
+        }
 
+        // =======================
+        // --- Scorecard Methods ---
+        // =======================
         public async Task<Scorecard> AddScorecardAsync(Scorecard scorecard)
         {
             _db.Scorecards.Add(scorecard);
@@ -59,11 +60,31 @@ namespace SupplierHub.Repositories
             return scorecard;
         }
 
+        public Task<List<Scorecard>> GetAllScorecardsAsync() =>
+            _db.Scorecards.Where(x => !x.IsDeleted).ToListAsync();
+
+        public Task<Scorecard?> GetScorecardByIdAsync(long id) =>
+            _db.Scorecards.FirstOrDefaultAsync(x => x.ScorecardID == id && !x.IsDeleted);
+
+        public Task<List<Scorecard>> GetScorecardsBySupplierIdAsync(long supplierId) =>
+            _db.Scorecards.Where(x => x.SupplierID == supplierId && !x.IsDeleted).ToListAsync();
+
         public async Task<Scorecard?> UpdateScorecardAsync(Scorecard scorecard)
         {
             _db.Scorecards.Update(scorecard);
             await _db.SaveChangesAsync();
             return scorecard;
+        }
+
+        public async Task<bool> DeleteScorecardAsync(long id)
+        {
+            var scorecard = await GetScorecardByIdAsync(id);
+            if (scorecard == null) return false;
+
+            scorecard.IsDeleted = true; // Soft Delete
+            _db.Scorecards.Update(scorecard);
+            await _db.SaveChangesAsync();
+            return true;
         }
     }
 }
