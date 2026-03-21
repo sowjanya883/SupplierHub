@@ -4,17 +4,17 @@ namespace SupplierHub.DTOs.SupplierDTO
 {
 	public class SupplierCreateDto
 	{
-		[Required, MaxLength(200)]
-		public required string LegalName { get; init; }
 
-		[MaxLength(50)]
-		public string? DunsOrRegNo { get; init; }
+		public required string LegalName { get; set; }
 
-		[MaxLength(50)]
-		public string? TaxID { get; init; }
+		public string? DunsOrRegNo { get; set; }
 
-		public string? BankInfoJson { get; init; }
+		public string? TaxID { get; set; }
 
-		public long? PrimaryContactID { get; init; }
+		public string? BankInfoJson { get; set; }
+
+		public long? PrimaryContactID { get; set; }
+
+		public required string Status { get; set; }
 	}
 }

@@ -1,20 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SupplierHub.DTOs.SupplierRiskDTO
 {
 	public class SupplierRiskCreateDto
 	{
-		[Required]
-		public long SupplierID { get; init; }
-
-		[Required, MaxLength(50)]
-		public required string RiskType { get; init; }
-
-		public decimal? Score { get; init; }
-		public DateTime? AssessedDate { get; init; }
-
-		[MaxLength(500)]
-		public string? Notes { get; init; }
+		public long SupplierID { get; set; }
+		public required string RiskType { get; set; }
+		public decimal? Score { get; set; }
+		public DateTime? AssessedDate { get; set; }
+		public string? Notes { get; set; }
+		public required string Status { get; set; }
 	}
 }
