@@ -1,20 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-
-namespace SupplierHub.DTOs.ComplianceDocDTO
+﻿namespace SupplierHub.DTOs.ComplianceDocDTO
 {
 	public class ComplianceDocCreateDto
 	{
-		[Required]
-		public long SupplierID { get; init; }
-
-		[Required, MaxLength(50)]
-		public required string DocType { get; init; }
-
-		[MaxLength(500)]
-		public string? FileUri { get; init; }
-
-		public DateTime? IssueDate { get; init; }
-		public DateTime? ExpiryDate { get; init; }
+		public long SupplierID { get; set; }
+		public required string DocType { get; set; }
+		public string? FileUri { get; set; }
+		public DateTime? IssueDate { get; set; }
+		public DateTime? ExpiryDate { get; set; }
+		public required string Status { get; set; }
 	}
 }

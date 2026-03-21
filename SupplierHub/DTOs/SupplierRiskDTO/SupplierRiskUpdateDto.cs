@@ -4,7 +4,6 @@ namespace SupplierHub.DTOs.SupplierRiskDTO
 {
 	public class SupplierRiskUpdateDto : SupplierRiskCreateDto
 	{
-		[Required]
-		public long RiskID { get; init; }
+		public long RiskID { get; set; }
 	}
 }

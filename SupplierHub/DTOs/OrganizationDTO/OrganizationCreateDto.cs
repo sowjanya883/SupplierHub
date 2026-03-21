@@ -4,12 +4,9 @@ namespace SupplierHub.DTOs.OrganizationDTO
 {
 	public class OrganizationCreateDto
 	{
-		[Required, MaxLength(200)]
-		public required string OrganizationName { get; init; }
-
-		[MaxLength(50)]
-		public string? TaxID { get; init; }
-
-		public string? AddressJson { get; init; }
+		public required string OrganizationName { get; set; }
+		public string? AddressJson { get; set; }
+		public string? TaxID { get; set; }
+		public required string Status { get; set; }
 	}
 }

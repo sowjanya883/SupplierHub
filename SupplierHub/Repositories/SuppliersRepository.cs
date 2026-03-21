@@ -1,6 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SupplierHub.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using SupplierHub.Repositories.Interface;
+using SupplierHub.DTOs.SupplierDTO;
+using SupplierHub.Models;
 
 namespace SupplierHub.Repositories
 {
@@ -13,97 +18,52 @@ namespace SupplierHub.Repositories
 			_db = db;
 		}
 
-		// Supplier
-		public Task<Supplier?> GetSupplierByIdAsync(long id) =>
-			_db.Suppliers.FirstOrDefaultAsync(x => x.SupplierID == id);
-
-		public Task<List<Supplier>> GetAllSuppliersAsync() =>
-			_db.Suppliers.ToListAsync();
-
-		public async Task<Supplier> AddSupplierAsync(Supplier supplier)
+		public async Task<Supplier> CreateAsync(Supplier entity, CancellationToken ct)
 		{
-			_db.Suppliers.Add(supplier);
-			await _db.SaveChangesAsync();
-			return supplier;
+			await _db.Set<Supplier>().AddAsync(entity, ct);
+			await _db.SaveChangesAsync(ct);
+			return entity;
 		}
 
-		public async Task<Supplier?> UpdateSupplierAsync(Supplier supplier)
+		public async Task<Supplier?> GetByIdAsync(long supplierId, CancellationToken ct)
 		{
-			_db.Suppliers.Update(supplier);
-			await _db.SaveChangesAsync();
-			return supplier;
+			return await _db.Set<Supplier>()
+				.FirstOrDefaultAsync(s => s.SupplierID == supplierId && !s.IsDeleted, ct);
 		}
 
-		// SupplierContact
-		public Task<List<SupplierContact>> GetContactsBySupplierAsync(long supplierId) =>
-			_db.SupplierContacts.Where(x => x.SupplierID == supplierId).ToListAsync();
-
-		public async Task<SupplierContact> AddContactAsync(SupplierContact contact)
+		public async Task<IEnumerable<Supplier>> GetAllAsync(CancellationToken ct)
 		{
-			_db.SupplierContacts.Add(contact);
-			await _db.SaveChangesAsync();
-			return contact;
+			return await _db.Set<Supplier>()
+				.Where(s => !s.IsDeleted)
+				.ToListAsync(ct);
 		}
 
-		public async Task<SupplierContact?> UpdateContactAsync(SupplierContact contact)
+		public async Task<Supplier> UpdateAsync(Supplier entity, CancellationToken ct)
 		{
-			_db.SupplierContacts.Update(contact);
-			await _db.SaveChangesAsync();
-			return contact;
+			_db.Set<Supplier>().Update(entity);
+			await _db.SaveChangesAsync(ct);
+			return entity;
 		}
 
-		// ComplianceDoc
-		public Task<List<ComplianceDoc>> GetComplianceDocsBySupplierAsync(long supplierId) =>
-			_db.ComplianceDocs.Where(x => x.SupplierID == supplierId).ToListAsync();
-
-		public async Task<ComplianceDoc> AddComplianceDocAsync(ComplianceDoc doc)
+		public async Task<bool> DeleteAsync(SupplierDeleteDto dto, CancellationToken ct)
 		{
-			_db.ComplianceDocs.Add(doc);
-			await _db.SaveChangesAsync();
-			return doc;
-		}
+			var supplier = await _db.Set<Supplier>()
+				.FirstOrDefaultAsync(s =>
+					!s.IsDeleted &&
+					(dto.SupplierID == null || s.SupplierID == dto.SupplierID) &&
+					(dto.LegalName == null || s.LegalName == dto.LegalName) &&
+					(dto.TaxID == null || s.TaxID == dto.TaxID) &&
+					(dto.DunsOrRegNo == null || s.DunsOrRegNo == dto.DunsOrRegNo),
+					ct);
 
-		public async Task<ComplianceDoc?> UpdateComplianceDocAsync(ComplianceDoc doc)
-		{
-			_db.ComplianceDocs.Update(doc);
-			await _db.SaveChangesAsync();
-			return doc;
-		}
+			if (supplier == null)
+				return false;
 
-		// SupplierRisk
-		public Task<List<SupplierRisk>> GetRisksBySupplierAsync(long supplierId) =>
-			_db.SupplierRisks.Where(x => x.SupplierID == supplierId).ToListAsync();
+			supplier.IsDeleted = true;
+			supplier.UpdatedOn = DateTime.UtcNow;
 
-		public async Task<SupplierRisk> AddRiskAsync(SupplierRisk risk)
-		{
-			_db.SupplierRisks.Add(risk);
-			await _db.SaveChangesAsync();
-			return risk;
-		}
-
-		public async Task<SupplierRisk?> UpdateRiskAsync(SupplierRisk risk)
-		{
-			_db.SupplierRisks.Update(risk);
-			await _db.SaveChangesAsync();
-			return risk;
-		}
-
-		// Organization
-		public Task<List<Organization>> GetAllOrganizationsAsync() =>
-			_db.Organizations.ToListAsync();
-
-		public async Task<Organization> AddOrganizationAsync(Organization org)
-		{
-			_db.Organizations.Add(org);
-			await _db.SaveChangesAsync();
-			return org;
-		}
-
-		public async Task<Organization?> UpdateOrganizationAsync(Organization org)
-		{
-			_db.Organizations.Update(org);
-			await _db.SaveChangesAsync();
-			return org;
+			await _db.SaveChangesAsync(ct);
+			return true;
 		}
 	}
 }

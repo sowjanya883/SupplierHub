@@ -1,46 +1,47 @@
 ﻿using AutoMapper;
-using SupplierHub.DTOs.ComplianceDocDTO;
-using SupplierHub.DTOs.OrganizationDTO;
-using SupplierHub.DTOs.RfxEventDTO;
-using SupplierHub.DTOs.RFxLineDTO;
+using SupplierHub.DTOs.ApprovalDto;
+using SupplierHub.DTOs.AuditLogDTO;
+using SupplierHub.DTOs.AwardDTO;
 using SupplierHub.DTOs.BidDTO;
 using SupplierHub.DTOs.BidLineDTO;
-using SupplierHub.DTOs.AwardDTO;
+using SupplierHub.DTOs.CatalogDTO;
+using SupplierHub.DTOs.CatalogItemDTO;
+using SupplierHub.DTOs.CategoryDTO;
+using SupplierHub.DTOs.ComplianceDocDTO;
+using SupplierHub.DTOs.ContractDTO;
+using SupplierHub.DTOs.ErpExportRefDTO;
+using SupplierHub.DTOs.GrnItemRefDTO;
+using SupplierHub.DTOs.GrnRefDTO;
+using SupplierHub.DTOs.InspectionDTO;
+using SupplierHub.DTOs.InvoiceDTO;
+using SupplierHub.DTOs.InvoiceLineDTO;
+using SupplierHub.DTOs.ItemDTO;
+using SupplierHub.DTOs.MatchRefDTO;
+using SupplierHub.DTOs.NcrDTO;
+using SupplierHub.DTOs.NotificationDTO;
+using SupplierHub.DTOs.OrganizationDTO;
+using SupplierHub.DTOs.PermissionDTO;
+using SupplierHub.DTOs.PoAckDTO;
+using SupplierHub.DTOs.PoLineDTO;
+using SupplierHub.DTOs.PoRevisionDTO;
+//Neeraj DTOs
+using SupplierHub.DTOs.PurchaseOrderDTO;
+using SupplierHub.DTOs.RequisitionDto;
+using SupplierHub.DTOs.RfxEventDTO;
 using SupplierHub.DTOs.RfxInviteDTO;
+using SupplierHub.DTOs.RFxLineDTO;
+using SupplierHub.DTOs.RoleDTO;
+using SupplierHub.DTOs.RolePermissionDTO;
+using SupplierHub.DTOs.ScorecardDTO;
+using SupplierHub.DTOs.ShippingDto;
 using SupplierHub.DTOs.SupplierContactDTO;
 // DTOs
 using SupplierHub.DTOs.SupplierDTO;
-using SupplierHub.DTOs.SupplierRiskDTO;
-
-
-using SupplierHub.DTOs.UserDTO;
-using SupplierHub.DTOs.RoleDTO;
-using SupplierHub.DTOs.PermissionDTO;
-using SupplierHub.DTOs.RolePermissionDTO;
-using SupplierHub.DTOs.UserRoleDTO;
-using SupplierHub.DTOs.AuditLogDTO;
-using SupplierHub.DTOs.NotificationDTO;
-
-using SupplierHub.DTOs.InspectionDTO;
-using SupplierHub.DTOs.GrnRefDTO;
-using SupplierHub.DTOs.GrnItemRefDTO;
-using SupplierHub.DTOs.NcrDTO;
 using SupplierHub.DTOs.SupplierKpiDTO;
-using SupplierHub.DTOs.ScorecardDTO;
+using SupplierHub.DTOs.SupplierRiskDTO;
+using SupplierHub.DTOs.UserDTO;
+using SupplierHub.DTOs.UserRoleDTO;
 using SupplierHub.Models;
-
-//Neeraj DTOs
-using SupplierHub.DTOs.PurchaseOrderDTO;
-using SupplierHub.DTOs.PoLineDTO;
-using SupplierHub.DTOs.PoAckDTO;
-using SupplierHub.DTOs.PoRevisionDTO;
-using SupplierHub.DTOs.ErpExportRefDTO;
-using SupplierHub.DTOs.InvoiceDTO;
-using SupplierHub.DTOs.InvoiceLineDTO;
-using SupplierHub.DTOs.MatchRefDTO;
-using SupplierHub.DTOs.RequisitionDto;
-using SupplierHub.DTOs.ApprovalDto;
-using SupplierHub.DTOs.ShippingDto;
 
 
 namespace SupplierHub.MapProfile
@@ -50,31 +51,83 @@ namespace SupplierHub.MapProfile
 	{
 		public ApplicationMapperProfile()
 		{
-			// Supplier mappings
+			// SUPPLIER
 			CreateMap<Supplier, SupplierCreateDto>().ReverseMap();
-			CreateMap<Supplier, SupplierUpdateDto>().ReverseMap();
-			CreateMap<Supplier, SupplierResponseDto>().ReverseMap();
-			CreateMap<Supplier, SupplierListDto>().ReverseMap();
+			CreateMap<Supplier, UpdateSupplierDto>().ReverseMap();
+			CreateMap<Supplier, GetSupplierByIdDto>().ReverseMap();
+			CreateMap<Supplier, GetAllSupplierDto>().ReverseMap();
+			CreateMap<Supplier, SupplierDeleteDto>().ReverseMap();
 
-			// Organization mappings
+
+			// ORGANIZATION			
 			CreateMap<Organization, OrganizationCreateDto>().ReverseMap();
 			CreateMap<Organization, OrganizationUpdateDto>().ReverseMap();
-			CreateMap<Organization, OrganizationResponseDto>().ReverseMap();
+			CreateMap<Organization, OrganizationGetByIdDto>().ReverseMap();
+			CreateMap<Organization, OrganizationGetAllDto>().ReverseMap();
+			CreateMap<Organization, OrganizationDeleteDto>().ReverseMap();
 
-			// SupplierContact mappings
+
+			// SUPPLIER CONTACT			
 			CreateMap<SupplierContact, SupplierContactCreateDto>().ReverseMap();
 			CreateMap<SupplierContact, SupplierContactUpdateDto>().ReverseMap();
-			CreateMap<SupplierContact, SupplierContactResponseDto>().ReverseMap();
+			CreateMap<SupplierContact, SupplierContactGetByIdDto>().ReverseMap();
+			CreateMap<SupplierContact, SupplierContactGetAllDto>().ReverseMap();
+			CreateMap<SupplierContact, SupplierContactDeleteDto>().ReverseMap();
 
-			// ComplianceDoc mappings
+
+			// COMPLIANCE DOCUMENT			
 			CreateMap<ComplianceDoc, ComplianceDocCreateDto>().ReverseMap();
 			CreateMap<ComplianceDoc, ComplianceDocUpdateDto>().ReverseMap();
-			CreateMap<ComplianceDoc, ComplianceDocResponseDto>().ReverseMap();
+			CreateMap<ComplianceDoc, ComplianceDocGetByIdDto>().ReverseMap();
+			CreateMap<ComplianceDoc, ComplianceDocGetAllDto>().ReverseMap();
+			CreateMap<ComplianceDoc, ComplianceDocDeleteDto>().ReverseMap();
 
-			// SupplierRisk mappings
+
+			// SUPPLIER RISK			
 			CreateMap<SupplierRisk, SupplierRiskCreateDto>().ReverseMap();
 			CreateMap<SupplierRisk, SupplierRiskUpdateDto>().ReverseMap();
-			CreateMap<SupplierRisk, SupplierRiskResponseDto>().ReverseMap();
+			CreateMap<SupplierRisk, SupplierRiskGetByIdDto>().ReverseMap();
+			CreateMap<SupplierRisk, SupplierRiskGetAllDto>().ReverseMap();
+			CreateMap<SupplierRisk, SupplierRiskDeleteDto>().ReverseMap();
+
+
+			// CATEGORY			
+			CreateMap<Category, CategoryCreateDto>().ReverseMap();
+			CreateMap<Category, CategoryUpdateDto>().ReverseMap();
+			CreateMap<Category, CategoryGetByIdDto>().ReverseMap();
+			CreateMap<Category, CategoryGetAllDto>().ReverseMap();
+			CreateMap<Category, CategoryDeleteDto>().ReverseMap();
+
+
+			// ITEM			
+			CreateMap<Item, ItemCreateDto>().ReverseMap();
+			CreateMap<Item, ItemUpdateDto>().ReverseMap();
+			CreateMap<Item, ItemGetByIdDto>().ReverseMap();
+			CreateMap<Item, ItemGetAllDto>().ReverseMap();
+			CreateMap<Item, ItemDeleteDto>().ReverseMap();
+
+			// CATALOG
+			CreateMap<Catalog, CatalogCreateDto>().ReverseMap();
+			CreateMap<Catalog, CatalogUpdateDto>().ReverseMap();
+			CreateMap<Catalog, CatalogGetByIdDto>().ReverseMap();
+			CreateMap<Catalog, CatalogGetAllDto>().ReverseMap();
+			CreateMap<Catalog, CatalogDeleteDto>().ReverseMap();
+
+
+			// CATALOG ITEM			
+			CreateMap<CatalogItem, CatalogItemCreateDto>().ReverseMap();
+			CreateMap<CatalogItem, CatalogItemUpdateDto>().ReverseMap();
+			CreateMap<CatalogItem, CatalogItemGetByIdDto>().ReverseMap();
+			CreateMap<CatalogItem, CatalogItemGetAllDto>().ReverseMap();
+			CreateMap<CatalogItem, CatalogItemDeleteDto>().ReverseMap();
+
+
+			// CONTRACT			
+			CreateMap<Contract, ContractCreateDto>().ReverseMap();
+			CreateMap<Contract, ContractUpdateDto>().ReverseMap();
+			CreateMap<Contract, ContractGetByIdDto>().ReverseMap();
+			CreateMap<Contract, ContractGetAllDto>().ReverseMap();
+			CreateMap<Contract, ContractDeleteDto>().ReverseMap();
 
 			// Role mappings
 			CreateMap<Role, CreateRoleDto>().ReverseMap();

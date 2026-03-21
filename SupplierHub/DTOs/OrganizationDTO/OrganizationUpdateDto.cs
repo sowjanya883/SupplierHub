@@ -4,7 +4,6 @@ namespace SupplierHub.DTOs.OrganizationDTO
 {
 	public class OrganizationUpdateDto : OrganizationCreateDto
 	{
-		[Required]
-		public long OrgID { get; init; }
+		public long OrgID { get; set; }
 	}
 }
