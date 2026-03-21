@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SupplierHub.Models
 {
@@ -10,6 +11,9 @@ namespace SupplierHub.Models
 
 		[Required]
 		public long RequesterID { get; set; }
+
+		[Required]
+		public long RequesterUserID { get; set; } 
 
 		[Required]
 		public long OrgID { get; set; }
@@ -36,7 +40,8 @@ namespace SupplierHub.Models
 		[Required]
 		public bool IsDeleted { get; set; }
 
-		// Navigation Properties
+		// Navigation Property - ONLY ONE DEFINITION ALLOWED
+		[ForeignKey("RequesterUserID")]
 		public virtual User Requester { get; set; } = null!;
 	}
 }

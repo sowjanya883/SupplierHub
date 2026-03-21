@@ -1,7 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using SupplierHub;
 using SupplierHub.MapProfile;
+<<<<<<< Updated upstream
 using AutoMapper;
+=======
+
+>>>>>>> Stashed changes
 
 using SupplierHub.Repositories;
 using SupplierHub.Repositories.Interface;
@@ -35,27 +39,24 @@ builder.Services.AddOpenApi();
 builder.Services.AddAutoMapper(typeof(ApplicationMapperProfile).Assembly);
 
 
-
-
-
-
 // register services before Build
 builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
 builder.Services.AddScoped<ISuppliersService, SuppliersService>();
 
 
+// Module 1: Requisition (Procurement)
+builder.Services.AddScoped<IRequisitionRepository, RequisitionRepository>();
+builder.Services.AddScoped<IRequisitionService, RequisitionService>();
+
 builder.Services.AddScoped<IRfxRepository, RfxRepository>();
 builder.Services.AddScoped<IRfxService, RfxService>();
 
-// --- Receiving & Quality Registrations ---
-builder.Services.AddScoped<IReceivingQualityRepository, ReceivingQualityRepository>();
-builder.Services.AddScoped<IReceivingQualityService, ReceivingQualityService>();
 
-// --- Performance & Scorecard Registrations ---
-builder.Services.AddScoped<IPerformanceRepository, PerformanceRepository>();
-builder.Services.AddScoped<IPerformanceService, PerformanceService>();
+// Module 2: Shipping (Logistics)
+builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
+builder.Services.AddScoped<IShippingService, ShippingService>();
 
-//Notification repository & service
+
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
@@ -83,10 +84,6 @@ builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 builder.Services.AddScoped<IAuditLogRepository, AuditLogRepository>();
 builder.Services.AddScoped<IAuditLogService, AuditLogService>();
 
-
-
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -94,8 +91,6 @@ if (app.Environment.IsDevelopment())
 {
 	app.MapOpenApi();
 }
-
-
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

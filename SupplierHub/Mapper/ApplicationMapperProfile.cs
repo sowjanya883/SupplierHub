@@ -38,6 +38,9 @@ using SupplierHub.DTOs.ErpExportRefDTO;
 using SupplierHub.DTOs.InvoiceDTO;
 using SupplierHub.DTOs.InvoiceLineDTO;
 using SupplierHub.DTOs.MatchRefDTO;
+using SupplierHub.DTOs.RequisitionDto;
+using SupplierHub.DTOs.ApprovalDto;
+using SupplierHub.DTOs.ShippingDto;
 
 
 namespace SupplierHub.MapProfile
@@ -223,7 +226,36 @@ namespace SupplierHub.MapProfile
 			CreateMap<MatchRef, MatchRefCreateDto>().ReverseMap();
 			CreateMap<MatchRef, MatchRefUpdateDto>().ReverseMap();
 			CreateMap<MatchRef, MatchRefResponseDto>().ReverseMap();
+			//Requistion mappings
+			CreateMap<Requisition, RequisitionCreateDto>().ReverseMap();
+			CreateMap<Requisition, RequisitionReadDto>().ReverseMap();
+			CreateMap<Requisition, RequisitionUpdateDto>().ReverseMap();
+			//PRLine mappings
+			CreateMap<PrLine, PrLineCreateDto>().ReverseMap();
+			CreateMap<PrLine, PrLineReadDto>().ReverseMap();
+			CreateMap<PrLine, PrLineUpdateDto>().ReverseMap();
+			//ApprovalStep mappings
+			CreateMap<ApprovalStep, ApprovalStepCreateDto>().ReverseMap();
+			CreateMap<ApprovalStep, ApprovalStepReadDto>().ReverseMap();
+			CreateMap<ApprovalStep, ApprovalStepUpdateDto>().ReverseMap();
 
+			//Shipment mappings
+			CreateMap<Shipment, ShipmentCreateDto>().ReverseMap();
+			CreateMap<Shipment, ShipmentReadDto>().ReverseMap();
+			CreateMap<Shipment, ShipmentUpdateDto>().ReverseMap();
+			//ASN mappings
+			CreateMap<Asn, AsnCreateDto>().ReverseMap();
+			CreateMap<Asn, AsnReadDto>().ReverseMap();
+			CreateMap<Asn, AsnUpdateDto>().ReverseMap();
+			//ASNItem mappings
+			CreateMap<AsnItem, AsnItemCreateDto>().ReverseMap();
+			CreateMap<AsnItem, AsnItemReadDto>().ReverseMap();
+			CreateMap<AsnItem, AsnItemUpdateDto>().ReverseMap();
+
+			//DeliverySlot mappings
+			CreateMap<DeliverySlot, DeliverySlotCreateDto>().ReverseMap();
+			CreateMap<DeliverySlot, DeliverySlotReadDto>().ReverseMap();
+			CreateMap<DeliverySlot, DeliverySlotUpdateDto>().ReverseMap();
 		}
 	}
 }

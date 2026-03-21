@@ -19,6 +19,8 @@ namespace SupplierHub.DTOs.RequisitionDto
 		public DateTime? RequestedDate { get; set; }
 
 		public DateTime? NeededByDate { get; set; }
+		[Required]
+		public long RequesterUserID { get; set; }
 
 		// Status is often omitted here if it defaults to 'DRAFT' in the DB
 	}

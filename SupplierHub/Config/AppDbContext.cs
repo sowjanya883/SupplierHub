@@ -55,7 +55,7 @@ namespace SupplierHub
 
 		// Requisitions & Approvals
 		public DbSet<Requisition> Requisitions { get; set; }
-		public DbSet<PrLine> PRLines { get; set; }
+		public DbSet<PrLine> PRLines { get; set; } // Note the name here
 		public DbSet<ApprovalStep> ApprovalSteps { get; set; }
 
 		
