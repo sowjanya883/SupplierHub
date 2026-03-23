@@ -41,6 +41,8 @@ using SupplierHub.DTOs.SupplierKpiDTO;
 using SupplierHub.DTOs.SupplierRiskDTO;
 using SupplierHub.DTOs.UserDTO;
 using SupplierHub.DTOs.UserRoleDTO;
+using SupplierHub.DTOs.ApprovalRuleDTO;
+using SupplierHub.DTOs.SystemConfigDTO;
 using SupplierHub.Models;
 
 
@@ -238,6 +240,16 @@ namespace SupplierHub.MapProfile
 			CreateMap<RfxInvite, RfxInviteCreateDto>().ReverseMap();
 			CreateMap<RfxInvite, RfxInviteReadDto>().ReverseMap();
 			CreateMap<RfxInvite, RfxInviteUpdateDto>().ReverseMap();
+
+			// SystemConfig mappings
+			CreateMap<SystemConfig, SystemConfigCreateDto>().ReverseMap();
+			CreateMap<SystemConfig, SystemConfigReadDto>().ReverseMap();
+			CreateMap<SystemConfig, SystemConfigUpdateDto>().ReverseMap();
+
+			// ApprovalRule mappings
+			CreateMap<ApprovalRule, ApprovalRuleCreateDto>().ReverseMap();
+			CreateMap<ApprovalRule, ApprovalRuleReadDto>().ReverseMap();
+			CreateMap<ApprovalRule, ApprovalRuleUpdateDto>().ReverseMap();
 
 
 			// PurchaseOrder mappings

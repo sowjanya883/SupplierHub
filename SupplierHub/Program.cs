@@ -101,6 +101,9 @@ builder.Services.AddScoped<IRequisitionService, RequisitionService>();
 builder.Services.AddScoped<IRfxRepository, RfxRepository>();
 builder.Services.AddScoped<IRfxService, RfxService>();
 
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+
 
 // Module 2: Shipping (Logistics)
 builder.Services.AddScoped<IShippingRepository, ShippingRepository>();
