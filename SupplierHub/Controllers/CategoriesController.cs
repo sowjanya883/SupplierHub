@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using SupplierHub.Services.Interface;
 using SupplierHub.DTOs.CategoryDTO;
-using SupplierHub.DTOs.ItemDTO;
 
 namespace SupplierHub.Controllers
 {
@@ -25,12 +24,12 @@ namespace SupplierHub.Controllers
 		/// Create category
 		/// </summary>
 		[HttpPost]
-		[ProducesResponseType(typeof(ItemGetByIdDto), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(CategoryGetByIdDto), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Create(
-			[FromBody] ItemCreateDto dto,
+			[FromBody] CategoryCreateDto dto,
 			CancellationToken ct)
 		{
 			try
@@ -56,7 +55,7 @@ namespace SupplierHub.Controllers
 		/// Get category by ID
 		/// </summary>
 		[HttpGet("{categoryId:long}")]
-		[ProducesResponseType(typeof(ItemGetByIdDto), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(CategoryGetByIdDto), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> GetById(long categoryId, CancellationToken ct)
 		{
@@ -82,7 +81,7 @@ namespace SupplierHub.Controllers
 		/// Get all categories
 		/// </summary>
 		[HttpGet]
-		[ProducesResponseType(typeof(IEnumerable<ItemGetAllDto>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(IEnumerable<CategoryGetAllDto>), StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetAll(CancellationToken ct)
 		{
 			try
@@ -104,11 +103,11 @@ namespace SupplierHub.Controllers
 		/// Update category
 		/// </summary>
 		[HttpPut("{categoryId:long}")]
-		[ProducesResponseType(typeof(ItemGetByIdDto), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(CategoryGetByIdDto), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Update(
 			long categoryId,
-			[FromBody] ItemUpdateDto dto,
+			[FromBody] CategoryUpdateDto dto,
 			CancellationToken ct)
 		{
 			try
@@ -138,7 +137,7 @@ namespace SupplierHub.Controllers
 		[HttpDelete]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		public async Task<IActionResult> Delete(
-			[FromBody] ItemDeleteDto dto,
+			[FromBody] CategoryDeleteDto dto,
 			CancellationToken ct)
 		{
 			try

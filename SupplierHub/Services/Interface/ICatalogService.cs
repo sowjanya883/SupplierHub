@@ -7,10 +7,23 @@ namespace SupplierHub.Services.Interface
 {
 	public interface ICatalogService
 	{
-		Task<CatalogGetByIdDto> CreateAsync(CatalogCreateDto dto, CancellationToken ct);
-		Task<CatalogGetByIdDto?> GetByIdAsync(long itemId, CancellationToken ct);
-		Task<IEnumerable<CatalogGetAllDto>> GetAllAsync(CancellationToken ct);
-		Task<CatalogGetByIdDto?> UpdateAsync(CatalogUpdateDto dto, CancellationToken ct);
-		Task<bool> DeleteAsync(CatalogDeleteDto dto, CancellationToken ct);
+		Task<CatalogCreateDto> CreateAsync(
+			CatalogCreateDto dto,
+			CancellationToken ct = default);
+
+		Task<IEnumerable<object>> GetAllAsync(
+			CancellationToken ct = default);
+
+		Task<object?> GetByIdAsync(
+			long catalogId,
+			CancellationToken ct = default);
+
+		Task<object?> UpdateAsync(
+			CatalogUpdateDto dto,
+			CancellationToken ct = default);
+
+		Task<bool> DeleteAsync(
+			CatalogDeleteDto dto,
+			CancellationToken ct = default);
 	}
 }

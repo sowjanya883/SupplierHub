@@ -20,12 +20,18 @@ namespace SupplierHub.Controllers
             _logger = logger;
         }
 
+
+
+
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] bool includeDeleted = false, CancellationToken ct = default)
         {
             var items = await _service.GetAllAsync(includeDeleted, ct);
             return Ok(items);
         }
+
+
+
 
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetById(long id, CancellationToken ct = default)
@@ -35,6 +41,9 @@ namespace SupplierHub.Controllers
                 return NotFound();
             return Ok(item);
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserDto dto, CancellationToken ct = default)
@@ -53,6 +62,11 @@ namespace SupplierHub.Controllers
                 return Problem(ex.Message);
             }
         }
+
+
+
+
+
 
         [HttpPut("{id:long}")]
         public async Task<IActionResult> Update(long id, [FromBody] UpdateUserDto dto, CancellationToken ct = default)
@@ -73,6 +87,10 @@ namespace SupplierHub.Controllers
                 return Problem(ex.Message);
             }
         }
+
+
+
+
 
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete(long id, CancellationToken ct = default)

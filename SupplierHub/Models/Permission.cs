@@ -9,7 +9,7 @@ namespace SupplierHub.Models
 		public long PermissionID { get; set; }
 
 		[Required, MaxLength(120)]
-		public string Code { get; set; }
+		public required string Code { get; set; }
 
 		[Required, MaxLength(150)]
 		public required string PermissionName { get; set; }
