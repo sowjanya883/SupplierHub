@@ -149,6 +149,16 @@ namespace SupplierHub.MapProfile
 			CreateMap<RolePermission, RolePermissionDto>().ReverseMap();
 			CreateMap<RolePermission, RolePermissionListItemDto>().ReverseMap();
 
+			// SystemConfig mappings
+			CreateMap<SystemConfig, SystemConfigCreateDto>().ReverseMap();
+			CreateMap<SystemConfig, SystemConfigReadDto>().ReverseMap();
+			CreateMap<SystemConfig, SystemConfigUpdateDto>().ReverseMap();
+
+			// ApprovalRule mappings
+			CreateMap<ApprovalRule, ApprovalRuleCreateDto>().ReverseMap();
+			CreateMap<ApprovalRule, ApprovalRuleReadDto>().ReverseMap();
+			CreateMap<ApprovalRule, ApprovalRuleUpdateDto>().ReverseMap();
+
 			// UserRole mappings
 			CreateMap<UserRole, CreateUserRoleDto>().ReverseMap();
 			CreateMap<UserRole, UpdateUserRoleDto>().ReverseMap();

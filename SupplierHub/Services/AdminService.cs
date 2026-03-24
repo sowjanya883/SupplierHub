@@ -21,8 +21,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Retrieves a system configuration by its ID.
 		/// </summary>
-		/// <param name="id">The configuration ID</param>
-		/// <returns>SystemConfigReadDto if found; null otherwise</returns>
 		public async Task<SystemConfigReadDto?> GetSystemConfigByIdAsync(long id)
 		{
 			var entity = await _repo.GetSystemConfigByIdAsync(id);
@@ -32,8 +30,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Retrieves a system configuration by its config key.
 		/// </summary>
-		/// <param name="configKey">The configuration key</param>
-		/// <returns>SystemConfigReadDto if found; null otherwise</returns>
 		public async Task<SystemConfigReadDto?> GetSystemConfigByKeyAsync(string configKey)
 		{
 			var entity = await _repo.GetSystemConfigByKeyAsync(configKey);
@@ -43,7 +39,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Retrieves all system configurations.
 		/// </summary>
-		/// <returns>List of SystemConfigReadDto</returns>
 		public async Task<List<SystemConfigReadDto>> GetAllSystemConfigsAsync()
 		{
 			var entities = await _repo.GetAllSystemConfigsAsync();
@@ -53,8 +48,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Creates a new system configuration.
 		/// </summary>
-		/// <param name="dto">System configuration creation DTO</param>
-		/// <returns>Created SystemConfigReadDto</returns>
 		public async Task<SystemConfigReadDto> CreateSystemConfigAsync(SystemConfigCreateDto dto)
 		{
 			var entity = _mapper.Map<SystemConfig>(dto);
@@ -69,8 +62,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Updates an existing system configuration.
 		/// </summary>
-		/// <param name="dto">System configuration update DTO</param>
-		/// <returns>Updated SystemConfigReadDto if found; null otherwise</returns>
 		public async Task<SystemConfigReadDto?> UpdateSystemConfigAsync(SystemConfigUpdateDto dto)
 		{
 			var existing = await _repo.GetSystemConfigByIdAsync(dto.ConfigID);
@@ -86,8 +77,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Retrieves an approval rule by its ID.
 		/// </summary>
-		/// <param name="id">The approval rule ID</param>
-		/// <returns>ApprovalRuleReadDto if found; null otherwise</returns>
 		public async Task<ApprovalRuleReadDto?> GetApprovalRuleByIdAsync(long id)
 		{
 			var entity = await _repo.GetApprovalRuleByIdAsync(id);
@@ -97,7 +86,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Retrieves all approval rules.
 		/// </summary>
-		/// <returns>List of ApprovalRuleReadDto</returns>
 		public async Task<List<ApprovalRuleReadDto>> GetAllApprovalRulesAsync()
 		{
 			var entities = await _repo.GetAllApprovalRulesAsync();
@@ -107,8 +95,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Retrieves all approval rules for a specific scope.
 		/// </summary>
-		/// <param name="scope">The scope to filter by</param>
-		/// <returns>List of ApprovalRuleReadDto for the given scope</returns>
 		public async Task<List<ApprovalRuleReadDto>> GetApprovalRulesByScopeAsync(string scope)
 		{
 			var entities = await _repo.GetApprovalRulesByScopeAsync(scope);
@@ -118,8 +104,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Creates a new approval rule.
 		/// </summary>
-		/// <param name="dto">Approval rule creation DTO</param>
-		/// <returns>Created ApprovalRuleReadDto</returns>
 		public async Task<ApprovalRuleReadDto> CreateApprovalRuleAsync(ApprovalRuleCreateDto dto)
 		{
 			var entity = _mapper.Map<ApprovalRule>(dto);
@@ -134,8 +118,6 @@ namespace SupplierHub.Services
 		/// <summary>
 		/// Updates an existing approval rule.
 		/// </summary>
-		/// <param name="dto">Approval rule update DTO</param>
-		/// <returns>Updated ApprovalRuleReadDto if found; null otherwise</returns>
 		public async Task<ApprovalRuleReadDto?> UpdateApprovalRuleAsync(ApprovalRuleUpdateDto dto)
 		{
 			var existing = await _repo.GetApprovalRuleByIdAsync(dto.RuleID);

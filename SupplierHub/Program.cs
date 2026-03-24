@@ -44,6 +44,10 @@ builder.Services.AddScoped<ISupplierRiskService, SupplierRiskService>();
 builder.Services.AddScoped<ISupplierContactRepository, SupplierContactRepository>();
 builder.Services.AddScoped<ISupplierContactService, SupplierContactService>();
 
+// ADMIN (SystemConfig & ApprovalRule)
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+
 
 // ORGANIZATION
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
