@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SupplierHub.DTOs.CatalogDTO
+﻿namespace SupplierHub.DTOs.CatalogDTO
 {
 	public class CatalogDeleteDto
 	{
-		public long? ItemID { get; set; }
-
-		public long? CategoryID { get; set; }
-
-		public string? Sku { get; set; }
+		public long? CatalogID { get; set; }
+		public long? SupplierID { get; set; }
+		public string? CatalogName { get; set; }
 	}
 }

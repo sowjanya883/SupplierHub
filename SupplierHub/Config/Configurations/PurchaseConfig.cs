@@ -19,8 +19,9 @@ namespace SupplierHub.Config.Configurations
 			builder.Property(x => x.Incoterms).HasMaxLength(50);
 			builder.Property(x => x.PaymentTerms).HasMaxLength(100);
 
-			builder.Property(x => x.Status).HasMaxLength(50).IsRequired()
-				   .HasDefaultValue("OPEN");
+			builder.Property(x => x.Status).HasMaxLength(50)
+				   .HasDefaultValue("OPEN")
+				   .IsRequired();
 
 			builder.Property(x => x.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
 			builder.Property(x => x.UpdatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP")

@@ -7,7 +7,7 @@ namespace SupplierHub.DTOs.PoAckDTO
     public class PoAckUpdateDto
     {
         [Required]
-        public long PoCfmId { get; set; }
+        public long PocfmID { get; set; }
 
         [Required]
         public long PoId { get; set; }

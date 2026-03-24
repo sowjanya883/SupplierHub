@@ -5,7 +5,7 @@ namespace SupplierHub.DTOs.PoAckDTO
 {
     public class PoAckResponseDto
     {
-        public long PoCfmId { get; set; }
+        public long PocfmID { get; set; }
         public long PoId { get; set; }
         public long SupplierId { get; set; }
         public DateTime? AcknowledgeDate { get; set; }

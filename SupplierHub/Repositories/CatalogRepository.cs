@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SupplierHub.Models;
@@ -18,56 +17,45 @@ namespace SupplierHub.Repositories
 			_db = db;
 		}
 
-		// ✅ CREATE
-		public async Task<Catalog> CreateAsync(Catalog entity, CancellationToken ct)
+		public async Task<Catalog> CreateAsync(Catalog entity)
 		{
-			await _db.Set<Catalog>().AddAsync(entity, ct);
-			await _db.SaveChangesAsync(ct);
+			await _db.Set<Catalog>().AddAsync(entity);
+			await _db.SaveChangesAsync();
 			return entity;
 		}
 
-		// ✅ GET BY ID
-		public async Task<Catalog?> GetByIdAsync(long catalogId, CancellationToken ct)
+		public async Task<Catalog?> GetByIdAsync(long catalogId)
 		{
 			return await _db.Set<Catalog>()
 				.FirstOrDefaultAsync(c =>
-					c.CatalogID == catalogId &&
-					!c.IsDeleted,
-					ct);
+					c.CatalogID == catalogId && !c.IsDeleted);
 		}
 
-		// ✅ GET ALL
-		public async Task<IEnumerable<Catalog>> GetAllAsync(CancellationToken ct)
+		public async Task<IEnumerable<Catalog>> GetAllAsync()
 		{
 			return await _db.Set<Catalog>()
 				.Where(c => !c.IsDeleted)
-				.ToListAsync(ct);
+				.OrderByDescending(c => c.CreatedOn)
+				.ToListAsync();
 		}
 
-		// ✅ UPDATE
-		public async Task<Catalog> UpdateAsync(Catalog entity, CancellationToken ct)
+		public async Task<Catalog> UpdateAsync(Catalog entity)
 		{
 			_db.Set<Catalog>().Update(entity);
-			await _db.SaveChangesAsync(ct);
+			await _db.SaveChangesAsync();
 			return entity;
 		}
 
-		// ✅ SOFT DELETE
-		public async Task<bool> DeleteAsync(long catalogId, CancellationToken ct)
+		public async Task<bool> DeleteAsync(long catalogId)
 		{
-			var catalog = await _db.Set<Catalog>()
-				.FirstOrDefaultAsync(c =>
-					c.CatalogID == catalogId &&
-					!c.IsDeleted,
-					ct);
-
-			if (catalog == null)
+			var existing = await GetByIdAsync(catalogId);
+			if (existing == null)
 				return false;
 
-			catalog.IsDeleted = true;
-			catalog.UpdatedOn = DateTime.UtcNow;
+			existing.IsDeleted = true;
+			existing.UpdatedOn = DateTime.UtcNow;
 
-			await _db.SaveChangesAsync(ct);
+			await _db.SaveChangesAsync();
 			return true;
 		}
 	}

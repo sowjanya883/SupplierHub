@@ -1,161 +1,96 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using SupplierHub.Services.Interface;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using SupplierHub.DTOs.CatalogDTO;
+using SupplierHub.Services.Interface;
 
 namespace SupplierHub.Controllers
 {
-	[Route("api/[controller]")]
 	[ApiController]
-	public class CatalogsController : ControllerBase
+	[Route("api/[controller]")]
+	public class CatalogController : ControllerBase
 	{
 		private readonly ICatalogService _service;
 
-		public CatalogsController(ICatalogService service)
+		public CatalogController(ICatalogService service)
 		{
 			_service = service;
 		}
 
-		/// <summary>
-		/// Create catalog item
-		/// </summary>
+		// CREATE
 		[HttpPost]
-		[ProducesResponseType(typeof(CatalogGetByIdDto), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(CatalogCreateDto), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(StatusCodes.Status409Conflict)]
-		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> Create(
 			[FromBody] CatalogCreateDto dto,
 			CancellationToken ct)
 		{
-			try
-			{
-				var created = await _service.CreateAsync(dto, ct);
-				return Ok(new { message = "Catalog item created successfully.", data = created });
-			}
-			catch (InvalidOperationException ex)
-			{
-				return Conflict(new { message = ex.Message });
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, new
-				{
-					message = "An error occurred while creating catalog item.",
-					error = ex.Message
-				});
-			}
+			if (dto == null)
+				return BadRequest("Request body is required.");
+
+			var result = await _service.CreateAsync(dto, ct);
+			return Ok(result);
 		}
 
-		/// <summary>
-		/// Get catalog item by ID
-		/// </summary>
-		[HttpGet("{itemId:long}")]
-		[ProducesResponseType(typeof(CatalogGetByIdDto), StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<IActionResult> GetById(long itemId, CancellationToken ct)
-		{
-			try
-			{
-				var item = await _service.GetByIdAsync(itemId, ct);
-				if (item == null)
-					return NotFound(new { message = $"Catalog item with ID {itemId} not found." });
-
-				return Ok(new { message = "Catalog item retrieved successfully.", data = item });
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, new
-				{
-					message = "An error occurred while retrieving catalog item.",
-					error = ex.Message
-				});
-			}
-		}
-
-		/// <summary>
-		/// Get all catalog items
-		/// </summary>
+		// GET ALL
 		[HttpGet]
-		[ProducesResponseType(typeof(IEnumerable<CatalogGetAllDto>), StatusCodes.Status200OK)]
+		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetAll(CancellationToken ct)
 		{
-			try
-			{
-				var items = await _service.GetAllAsync(ct);
-				return Ok(new { message = "Catalog items retrieved successfully.", data = items });
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, new
-				{
-					message = "An error occurred while retrieving catalog items.",
-					error = ex.Message
-				});
-			}
+			var result = await _service.GetAllAsync(ct);
+			return Ok(result);
 		}
 
-		/// <summary>
-		/// Update catalog item
-		/// </summary>
-		[HttpPut("{itemId:long}")]
-		[ProducesResponseType(typeof(CatalogGetByIdDto), StatusCodes.Status200OK)]
+		// GET BY ID
+		[HttpGet("{id:long}")]
+		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> GetById(long id, CancellationToken ct)
+		{
+			var result = await _service.GetByIdAsync(id, ct);
+			if (result == null)
+				return NotFound("Catalog not found.");
+
+			return Ok(result);
+		}
+
+		// UPDATE
+		[HttpPut("{id:long}")]
+		[ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> Update(
-			long itemId,
+			long id,
 			[FromBody] CatalogUpdateDto dto,
 			CancellationToken ct)
 		{
-			try
-			{
-				if (dto.ItemID != itemId)
-					return BadRequest(new { message = "Catalog item ID mismatch." });
+			if (dto == null || id != dto.CatalogID)
+				return BadRequest("Invalid request data.");
 
-				var updated = await _service.UpdateAsync(dto, ct);
-				if (updated == null)
-					return NotFound(new { message = $"Catalog item with ID {itemId} not found." });
+			var result = await _service.UpdateAsync(dto, ct);
+			if (result == null)
+				return NotFound("Catalog not found.");
 
-				return Ok(new { message = "Catalog item updated successfully.", data = updated });
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, new
-				{
-					message = "An error occurred while updating catalog item.",
-					error = ex.Message
-				});
-			}
+			return Ok(result);
 		}
 
-		/// <summary>
-		/// Soft delete catalog item
-		/// </summary>
+		// DELETE
 		[HttpDelete]
 		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> Delete(
 			[FromBody] CatalogDeleteDto dto,
 			CancellationToken ct)
 		{
-			try
-			{
-				var deleted = await _service.DeleteAsync(dto, ct);
-				if (!deleted)
-					return NotFound(new { message = "No matching catalog item found to delete." });
+			if (dto == null)
+				return BadRequest("Request body is required.");
 
-				return Ok(new { message = "Catalog item deleted successfully." });
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, new
-				{
-					message = "An error occurred while deleting catalog item.",
-					error = ex.Message
-				});
-			}
+			var success = await _service.DeleteAsync(dto, ct);
+			if (!success)
+				return BadRequest("Unable to delete catalog.");
+
+			return Ok("Catalog deleted successfully.");
 		}
 	}
 }

@@ -7,12 +7,4 @@
 		Archive = 2
 
 	}
-	public enum MatchResult
-	{
-		Matched = 0,
-		Mismatch= 1,
-		Partial = 2,
-		Pending = 3
-
-	}
 }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using SupplierHub.Services.Interface;
-using SupplierHub.Repositories.Interface;
 using SupplierHub.DTOs.CatalogDTO;
 using SupplierHub.Models;
+using SupplierHub.Repositories.Interface;
+using SupplierHub.Services.Interface;
 
 namespace SupplierHub.Services
 {
@@ -21,52 +21,55 @@ namespace SupplierHub.Services
 			_mapper = mapper;
 		}
 
-		public async Task<CatalogGetByIdDto> CreateAsync(
+		public async Task<CatalogCreateDto> CreateAsync(
 			CatalogCreateDto dto,
-			CancellationToken ct)
+			CancellationToken ct = default)
 		{
 			var entity = _mapper.Map<Catalog>(dto);
 
-			entity.IsDeleted = false;
 			entity.CreatedOn = DateTime.UtcNow;
-			entity.UpdatedOn = DateTime.UtcNow;
+			entity.UpdatedOn = entity.CreatedOn;
+			entity.IsDeleted = false;
 
-			var created = await _repo.CreateAsync(entity, ct);
-			return _mapper.Map<CatalogGetByIdDto>(created);
+			await _repo.CreateAsync(entity);
+
+			return _mapper.Map<CatalogCreateDto>(entity);
 		}
 
-		public async Task<CatalogGetByIdDto?> GetByIdAsync(long itemId, CancellationToken ct)
+		public async Task<IEnumerable<object>> GetAllAsync(CancellationToken ct = default)
 		{
-			var item = await _repo.GetByIdAsync(itemId, ct);
-			return _mapper.Map<CatalogGetByIdDto>(item);
+			return await _repo.GetAllAsync();
 		}
 
-		public async Task<IEnumerable<CatalogGetAllDto>> GetAllAsync(CancellationToken ct)
+		public async Task<object?> GetByIdAsync(long catalogId, CancellationToken ct = default)
 		{
-			var items = await _repo.GetAllAsync(ct);
-			return _mapper.Map<List<CatalogGetAllDto>>(items);
+			return await _repo.GetByIdAsync(catalogId);
 		}
 
-		public async Task<CatalogGetByIdDto?> UpdateAsync(
+		public async Task<object?> UpdateAsync(
 			CatalogUpdateDto dto,
-			CancellationToken ct)
+			CancellationToken ct = default)
 		{
-			var item = await _repo.GetByIdAsync(dto.ItemID, ct);
-			if (item == null)
+			var existing = await _repo.GetByIdAsync(dto.CatalogID);
+			if (existing == null)
 				return null;
 
-			_mapper.Map(dto, item);
-			item.UpdatedOn = DateTime.UtcNow;
+			_mapper.Map(dto, existing);
+			existing.UpdatedOn = DateTime.UtcNow;
 
-			var updated = await _repo.UpdateAsync(item, ct);
-			return _mapper.Map<CatalogGetByIdDto>(updated);
+			await _repo.UpdateAsync(existing);
+
+			return existing;
 		}
 
 		public async Task<bool> DeleteAsync(
 			CatalogDeleteDto dto,
-			CancellationToken ct)
+			CancellationToken ct = default)
 		{
-			return await _repo.DeleteAsync(dto, ct);
+			if (!dto.CatalogID.HasValue)
+				return false;
+
+			return await _repo.DeleteAsync(dto.CatalogID.Value);
 		}
 	}
 }

@@ -138,16 +138,16 @@ namespace SupplierHub.MapProfile
 			CreateMap<Role, RoleListItemDto>().ReverseMap();
 
 			// Permission mappings
-			CreateMap<Models.Permission, CreatePermissionDto>().ReverseMap();
-			CreateMap<Models.Permission, UpdatePermissionDto>().ReverseMap();
-			CreateMap<Models.Permission, PermissionDto>().ReverseMap();
-			CreateMap<Models.Permission, PermissionListItemDto>().ReverseMap();
+			CreateMap<Permission, CreatePermissionDto>().ReverseMap();
+			CreateMap<Permission, UpdatePermissionDto>().ReverseMap();
+			CreateMap<Permission, PermissionDto>().ReverseMap();
+			CreateMap<Permission, PermissionListItemDto>().ReverseMap();
 
 			// RolePermission mappings
-			CreateMap<Models.RolePermission, CreateRolePermissionDto>().ReverseMap();
-			CreateMap<Models.RolePermission, UpdateRolePermissionDto>().ReverseMap();
-			CreateMap<Models.RolePermission, RolePermissionDto>().ReverseMap();
-			CreateMap<Models.RolePermission, RolePermissionListItemDto>().ReverseMap();
+			CreateMap<RolePermission, CreateRolePermissionDto>().ReverseMap();
+			CreateMap<RolePermission, UpdateRolePermissionDto>().ReverseMap();
+			CreateMap<RolePermission, RolePermissionDto>().ReverseMap();
+			CreateMap<RolePermission, RolePermissionListItemDto>().ReverseMap();
 
 			// SystemConfig mappings
 			CreateMap<SystemConfig, SystemConfigCreateDto>().ReverseMap();
@@ -160,16 +160,16 @@ namespace SupplierHub.MapProfile
 			CreateMap<ApprovalRule, ApprovalRuleUpdateDto>().ReverseMap();
 
 			// UserRole mappings
-			CreateMap<Models.UserRole, CreateUserRoleDto>().ReverseMap();
-			CreateMap<Models.UserRole, UpdateUserRoleDto>().ReverseMap();
-			CreateMap<Models.UserRole, UserRoleDto>().ReverseMap();
-			CreateMap<Models.UserRole, UserRoleListItemDto>().ReverseMap();
+			CreateMap<UserRole, CreateUserRoleDto>().ReverseMap();
+			CreateMap<UserRole, UpdateUserRoleDto>().ReverseMap();
+			CreateMap<UserRole, UserRoleDto>().ReverseMap();
+			CreateMap<UserRole, UserRoleListItemDto>().ReverseMap();
 
 			// AuditLog mappings
-			CreateMap<Models.AuditLog, CreateAuditLogDto>().ReverseMap();
-			CreateMap<Models.AuditLog, UpdateAuditLogDto>().ReverseMap();
-			CreateMap<Models.AuditLog, AuditLogDto>().ReverseMap();
-			CreateMap<Models.AuditLog, AuditLogListItemDto>().ReverseMap();
+			CreateMap<AuditLog, CreateAuditLogDto>().ReverseMap();
+			CreateMap<AuditLog, UpdateAuditLogDto>().ReverseMap();
+			CreateMap<AuditLog, AuditLogDto>().ReverseMap();
+			CreateMap<AuditLog, AuditLogListItemDto>().ReverseMap();
 
 			// User Mappings
 			CreateMap<User, CreateUserDto>().ReverseMap();
@@ -250,6 +250,16 @@ namespace SupplierHub.MapProfile
 			CreateMap<RfxInvite, RfxInviteCreateDto>().ReverseMap();
 			CreateMap<RfxInvite, RfxInviteReadDto>().ReverseMap();
 			CreateMap<RfxInvite, RfxInviteUpdateDto>().ReverseMap();
+
+			// SystemConfig mappings
+			CreateMap<SystemConfig, SystemConfigCreateDto>().ReverseMap();
+			CreateMap<SystemConfig, SystemConfigReadDto>().ReverseMap();
+			CreateMap<SystemConfig, SystemConfigUpdateDto>().ReverseMap();
+
+			// ApprovalRule mappings
+			CreateMap<ApprovalRule, ApprovalRuleCreateDto>().ReverseMap();
+			CreateMap<ApprovalRule, ApprovalRuleReadDto>().ReverseMap();
+			CreateMap<ApprovalRule, ApprovalRuleUpdateDto>().ReverseMap();
 
 
 			// PurchaseOrder mappings

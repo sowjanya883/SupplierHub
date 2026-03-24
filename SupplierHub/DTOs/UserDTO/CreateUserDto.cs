@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace SupplierHub.DTOs.UserDTO
 {
@@ -29,5 +30,6 @@ namespace SupplierHub.DTOs.UserDTO
 		/// </summary>
 		[Required, MaxLength(30)]
 		public string Status { get; set; } = "Active";
+
 	}
 }
