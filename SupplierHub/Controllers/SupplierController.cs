@@ -8,7 +8,6 @@ using SupplierHub.DTOs.ComplianceDocDTO;
 using SupplierHub.DTOs.OrganizationDTO;
 using SupplierHub.DTOs.SupplierContactDTO;
 using SupplierHub.DTOs.SupplierDTO;
-using SupplierHub.DTOs.SupplierDTO;
 using SupplierHub.DTOs.SupplierRiskDTO;
 using SupplierHub.Services;
 using SupplierHub.Services.Interface;

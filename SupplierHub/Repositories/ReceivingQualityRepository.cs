@@ -13,7 +13,9 @@ namespace SupplierHub.Repositories
             _db = db;
         }
 
-        // GRN Header
+        // =======================
+        // --- GRN Header ---
+        // =======================
         public Task<GrnRef?> GetGrnByIdAsync(long id) =>
             _db.GrnRefs.FirstOrDefaultAsync(x => x.GrnID == id && !x.IsDeleted);
 
@@ -22,11 +24,8 @@ namespace SupplierHub.Repositories
 
         public async Task<GrnRef> AddGrnAsync(GrnRef grn)
         {
-            // Treat 0 as no ASN
             if (grn.AsnID.HasValue && grn.AsnID.Value == 0)
-            {
                 grn.AsnID = null;
-            }
 
             if (grn.AsnID.HasValue)
             {
@@ -35,15 +34,12 @@ namespace SupplierHub.Repositories
                     throw new InvalidOperationException($"Asn with ID {grn.AsnID.Value} does not exist.");
             }
 
-            // --- ADD THIS CODE TO FIX SYSTEM FIELDS ---
             grn.CreatedOn = DateTime.UtcNow;
             grn.UpdatedOn = DateTime.UtcNow;
             grn.IsDeleted = false;
-            // ------------------------------------------
 
             _db.GrnRefs.Add(grn);
-            await _db.SaveChangesAsync(); // It should now save successfully
-
+            await _db.SaveChangesAsync();
             return grn;
         }
 
@@ -54,9 +50,24 @@ namespace SupplierHub.Repositories
             return grn;
         }
 
-        // GRN Items
+        public async Task<bool> DeleteGrnAsync(long id)
+        {
+            var entity = await GetGrnByIdAsync(id);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            _db.GrnRefs.Update(entity);
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
+        // =======================
+        // --- GRN Items ---
+        // =======================
         public Task<GrnItemRef?> GetGrnItemByIdAsync(long id) =>
             _db.GrnItemRefs.FirstOrDefaultAsync(x => x.GrnItemID == id && !x.IsDeleted);
+
+        public Task<List<GrnItemRef>> GetAllGrnItemsAsync() =>
+            _db.GrnItemRefs.Where(x => !x.IsDeleted).ToListAsync();
 
         public Task<List<GrnItemRef>> GetItemsByGrnIdAsync(long grnId) =>
             _db.GrnItemRefs.Where(x => x.GrnID == grnId && !x.IsDeleted).ToListAsync();
@@ -75,9 +86,24 @@ namespace SupplierHub.Repositories
             return item;
         }
 
-        // Inspection
+        public async Task<bool> DeleteGrnItemAsync(long id)
+        {
+            var entity = await GetGrnItemByIdAsync(id);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            _db.GrnItemRefs.Update(entity);
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
+        // =======================
+        // --- Inspection ---
+        // =======================
         public Task<Inspection?> GetInspectionByIdAsync(long id) =>
             _db.Inspections.FirstOrDefaultAsync(x => x.InspID == id && !x.IsDeleted);
+
+        public Task<List<Inspection>> GetAllInspectionsAsync() =>
+            _db.Inspections.Where(x => !x.IsDeleted).ToListAsync();
 
         public Task<List<Inspection>> GetInspectionsByItemIdAsync(long grnItemId) =>
             _db.Inspections.Where(x => x.GrnItemID == grnItemId && !x.IsDeleted).ToListAsync();
@@ -96,9 +122,24 @@ namespace SupplierHub.Repositories
             return inspection;
         }
 
-        // NCR
+        public async Task<bool> DeleteInspectionAsync(long id)
+        {
+            var entity = await GetInspectionByIdAsync(id);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            _db.Inspections.Update(entity);
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
+        // =======================
+        // --- NCR ---
+        // =======================
         public Task<Ncr?> GetNcrByIdAsync(long id) =>
             _db.Ncrs.FirstOrDefaultAsync(x => x.NcrID == id && !x.IsDeleted);
+
+        public Task<List<Ncr>> GetAllNcrsAsync() =>
+            _db.Ncrs.Where(x => !x.IsDeleted).ToListAsync();
 
         public Task<List<Ncr>> GetNcrsByItemIdAsync(long grnItemId) =>
             _db.Ncrs.Where(x => x.GrnItemID == grnItemId && !x.IsDeleted).ToListAsync();
@@ -115,6 +156,16 @@ namespace SupplierHub.Repositories
             _db.Ncrs.Update(ncr);
             await _db.SaveChangesAsync();
             return ncr;
+        }
+
+        public async Task<bool> DeleteNcrAsync(long id)
+        {
+            var entity = await GetNcrByIdAsync(id);
+            if (entity == null) return false;
+            entity.IsDeleted = true;
+            _db.Ncrs.Update(entity);
+            await _db.SaveChangesAsync();
+            return true;
         }
     }
 }

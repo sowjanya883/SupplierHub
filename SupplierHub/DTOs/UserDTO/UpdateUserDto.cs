@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace SupplierHub.DTOs.UserDTO
 {
@@ -32,5 +33,11 @@ namespace SupplierHub.DTOs.UserDTO
 		/// Soft delete toggle (optional).
 		/// </summary>
 		public bool? IsDeleted { get; set; }
+        
+        /// <summary>
+        /// Optional list of role names assigned to the user.
+        /// When provided, service will replace the current user-role list.
+        /// </summary>
+       
 	}
 }

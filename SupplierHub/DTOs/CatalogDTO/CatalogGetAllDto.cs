@@ -1,13 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SupplierHub.DTOs.CatalogDTO
+﻿namespace SupplierHub.DTOs.CatalogDTO
 {
 	public class CatalogGetAllDto
 	{
-		public long ItemID { get; set; }
-
-		public required string Sku { get; set; }
-
+		public long CatalogID { get; set; }
+		public required string CatalogName { get; set; }
 		public required string Status { get; set; }
 	}
 }

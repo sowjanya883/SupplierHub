@@ -26,7 +26,7 @@ namespace SupplierHub.Models
 		public string? PaymentTerms { get; set; }
 
 		[Required, MaxLength(50)]
-		public required string Status { get; set; }
+		public required string? Status { get; set; }
 
 		[Required]
 		public DateTime CreatedOn { get; set; }

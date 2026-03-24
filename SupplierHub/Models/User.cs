@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
+using System.Collections.Generic;
+
 namespace SupplierHub.Models
 {
 	public class User
@@ -33,5 +35,7 @@ namespace SupplierHub.Models
 
 		[Required]
 		public bool IsDeleted { get; set; }
+
+		public ICollection<string> UserRoles { get; set; } = new List<string>();
 	}
 }
