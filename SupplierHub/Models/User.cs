@@ -36,6 +36,6 @@ namespace SupplierHub.Models
 		[Required]
 		public bool IsDeleted { get; set; }
 
-		public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+		//public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 	}
 }

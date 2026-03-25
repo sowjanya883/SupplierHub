@@ -283,7 +283,7 @@ namespace SupplierHub.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("SupplierHub.Models.Award", b =>
@@ -1435,7 +1435,7 @@ namespace SupplierHub.Migrations
 
                     b.HasKey("PermissionID");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("SupplierHub.Models.PoAck", b =>
@@ -2022,7 +2022,7 @@ namespace SupplierHub.Migrations
 
                     b.HasKey("RoleID");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("SupplierHub.Models.RolePermission", b =>
@@ -2059,7 +2059,7 @@ namespace SupplierHub.Migrations
 
                     b.HasIndex("PermissionID");
 
-                    b.ToTable("Rolepermissions");
+                    b.ToTable("Rolepermissions", (string)null);
                 });
 
             modelBuilder.Entity("SupplierHub.Models.Scorecard", b =>
@@ -2522,15 +2522,11 @@ namespace SupplierHub.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.PrimitiveCollection<string>("UserRoles")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("UserID");
 
                     b.HasIndex("OrgID");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("SupplierHub.Models.UserRole", b =>
@@ -2549,6 +2545,9 @@ namespace SupplierHub.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<long>("RoleID1")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -2564,12 +2563,19 @@ namespace SupplierHub.Migrations
                     b.Property<long>("UserID")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("UserID1")
+                        .HasColumnType("bigint");
+
                     b.HasKey("RoleID");
+
+                    b.HasIndex("RoleID1");
+
+                    b.HasIndex("UserID1");
 
                     b.HasIndex("UserID", "RoleID")
                         .IsUnique();
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("SupplierHub.Models.ApprovalStep", b =>
@@ -3073,11 +3079,27 @@ namespace SupplierHub.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SupplierHub.Models.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleID1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SupplierHub.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("SupplierHub.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
