@@ -17,21 +17,65 @@ namespace SupplierHub.Repositories
 			_db = db;
 		}
 
-		public async Task<List<User>> GetAllAsync(bool includeDeleted = false, CancellationToken ct = default)
+		public async Task<List<User>> GetAllAsync(
+			bool includeDeleted = false,
+			CancellationToken ct = default)
 		{
 			var query = _db.Users.AsQueryable();
+
 			if (!includeDeleted)
 				query = query.Where(u => !u.IsDeleted);
 
-			return await query.OrderByDescending(u => u.CreatedOn).ToListAsync(ct);
+			return await query
+				.OrderByDescending(u => u.CreatedOn)
+				.ToListAsync(ct);
 		}
 
-		public async Task<User?> GetByIdAsync(long id, bool includeDeleted = false, CancellationToken ct = default)
+		public async Task<User?> GetByIdAsync(
+			long id,
+			bool includeDeleted = false,
+			CancellationToken ct = default)
 		{
-			var entity = await _db.Users.FirstOrDefaultAsync(u => u.UserID == id, ct);
-			if (entity == null) return null;
-			if (!includeDeleted && entity.IsDeleted) return null;
-			return entity;
+			var user = await _db.Users
+				.SingleOrDefaultAsync(u => u.UserID == id, ct);
+
+			if (user == null) return null;
+			if (!includeDeleted && user.IsDeleted) return null;
+
+			return user;
+		}
+
+		public async Task<User?> GetByEmailAsync(
+			string email,
+			bool includeDeleted = false,
+			CancellationToken ct = default)
+		{
+			if (string.IsNullOrWhiteSpace(email))
+				return null;
+
+			var lower = email.Trim().ToLowerInvariant();
+
+			var user = await _db.Users
+				.FirstOrDefaultAsync(u => u.Email.ToLower() == lower, ct);
+
+			if (user == null) return null;
+			if (!includeDeleted && user.IsDeleted) return null;
+
+			return user;
+		}
+
+		public async Task<List<string>> GetRoleNamesByUserIdAsync(
+			long userId,
+			CancellationToken ct = default)
+		{
+			return await _db.UserRoles
+				.Where(ur =>
+					ur.UserID == userId &&
+					!ur.IsDeleted &&
+					!ur.Role.IsDeleted)
+				.Select(ur => ur.Role.RoleName)
+				.Distinct()
+				.ToListAsync(ct);
 		}
 
 		public async Task AddAsync(User entity, CancellationToken ct = default)
@@ -47,10 +91,14 @@ namespace SupplierHub.Repositories
 
 		public async Task<bool> SoftDeleteAsync(long id, CancellationToken ct = default)
 		{
-			var entity = await _db.Users.FirstOrDefaultAsync(u => u.UserID == id, ct);
-			if (entity == null || entity.IsDeleted) return false;
-			entity.IsDeleted = true;
-			entity.UpdatedOn = System.DateTime.UtcNow;
+			var user = await _db.Users
+				.FirstOrDefaultAsync(u => u.UserID == id, ct);
+
+			if (user == null || user.IsDeleted)
+				return false;
+
+			user.IsDeleted = true;
+			user.UpdatedOn = System.DateTime.UtcNow;
 			return true;
 		}
 
@@ -59,30 +107,19 @@ namespace SupplierHub.Repositories
 			return _db.SaveChangesAsync(ct);
 		}
 
-		public async Task<bool> ExistsAsync(long id, bool includeDeleted = false, CancellationToken ct = default)
+		public async Task<bool> ExistsAsync(
+			long id,
+			bool includeDeleted = false,
+			CancellationToken ct = default)
 		{
-			var entity = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserID == id, ct);
-			if (entity == null) return false;
-			if (!includeDeleted && entity.IsDeleted) return false;
+			var user = await _db.Users
+				.AsNoTracking()
+				.FirstOrDefaultAsync(u => u.UserID == id, ct);
+
+			if (user == null) return false;
+			if (!includeDeleted && user.IsDeleted) return false;
+
 			return true;
-		}
-
-		// Added: include user roles and role navigation when fetching by email.
-		public async Task<User?> GetByEmailWithRolesAsync(string email, bool includeDeleted = false, CancellationToken ct = default)
-		{
-			if (string.IsNullOrWhiteSpace(email)) return null;
-
-			var lower = email.Trim().ToLowerInvariant();
-
-			var query = _db.Users
-				.Include(u => u.UserRoles!)
-					.ThenInclude(ur => ur.Role)
-				.AsQueryable();
-
-			var entity = await query.FirstOrDefaultAsync(u => u.Email.ToLower() == lower, ct);
-			if (entity == null) return null;
-			if (!includeDeleted && entity.IsDeleted) return null;
-			return entity;
 		}
 	}
 }

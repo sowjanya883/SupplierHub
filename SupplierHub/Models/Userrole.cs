@@ -7,6 +7,7 @@ namespace SupplierHub.Models
 		// ✅ Composite key columns
 		public long UserID { get; set; }
 		public long RoleID { get; set; }
+		public Role Role { get; set; } = null!;
 
 		public string Status { get; set; } = null!;
 		public DateTime CreatedOn { get; set; }

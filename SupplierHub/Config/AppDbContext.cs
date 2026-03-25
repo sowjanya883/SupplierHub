@@ -63,7 +63,7 @@ namespace SupplierHub
 		// Purchase Orders, Acknowledgement, Revision, ERP Export
 		public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
 
-		public DbSet<PoLine> PLines { get; set; }
+		
 
 		public DbSet<PoLine> PoLines { get; set; }
 

@@ -199,6 +199,28 @@ builder.Services
 	});
 
 
+// cors
+
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowFrontend", policy =>
+	{
+		policy
+			.WithOrigins(
+				"http://localhost:4200",
+				"http://localhost:3000",
+				"https://your-frontend-domain.com"
+			)
+			.AllowAnyHeader()
+			.AllowAnyMethod()
+			.AllowCredentials(); // only if using cookies / auth headers
+	});
+});
+
+
+
+
+
 builder.Services.AddAuthentication(options =>
 {
 	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -243,6 +265,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

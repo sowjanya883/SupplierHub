@@ -30,7 +30,8 @@ namespace SupplierHub.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<PoAckResponseDto>> Create([FromBody] PoAckCreateDto createDto)
+		public async Task<ActionResult<PoAckResponseDto>> Create([FromBody] PoAckCreateDto
+		createDto)
 		{
 			try
 			{

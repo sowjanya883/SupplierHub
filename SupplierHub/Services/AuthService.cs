@@ -46,27 +46,16 @@ namespace SupplierHub.Services
 
 			var email = dto.Email.Trim().ToLowerInvariant();
 
-			var user = await _userRepository.GetByEmailWithRolesAsync(email)
+			var user = await _userRepository.GetByEmailAsync(email)
 				?? throw new UnauthorizedAccessException("Invalid credentials.");
 
 			if (user.Status is "Inactive" or "Suspended" or "Pending")
 				throw new UnauthorizedAccessException("User is not active.");
 
-			// SAFE PASSWORD VERIFICATION
-			PasswordVerificationResult verifyResult;
-			try
-			{
-				verifyResult = _passwordHasher.VerifyHashedPassword(
-					user,
-					user.PasswordHash ?? string.Empty,
-					dto.Password
-				);
-			}
-			catch (FormatException)
-			{
-				// Old/bad password stored in DB
-				throw new UnauthorizedAccessException("Invalid credentials.");
-			}
+			var verifyResult = _passwordHasher.VerifyHashedPassword(
+				user,
+				user.PasswordHash ?? string.Empty,
+				dto.Password);
 
 			if (verifyResult == PasswordVerificationResult.Failed)
 				throw new UnauthorizedAccessException("Invalid credentials.");
@@ -85,18 +74,15 @@ namespace SupplierHub.Services
 			await _notificationService.CreateAsync(new Notification
 			{
 				UserID = user.UserID,
-				Message = "User LoggedIn",
+				Message = "User Logged In",
 				Category = "System",
 				Status = "Active",
 				CreatedDate = DateTime.UtcNow
 			});
 
 			// Roles
-			var roles = user.UserRoles?
-				.Where(ur => !ur.IsDeleted && ur.Role != null && !ur.Role.IsDeleted)
-				.Select(ur => ur.Role!.RoleName)
-				.Distinct()
-				.ToList() ?? new List<string>();
+			var roles = await _userRepository
+				.GetRoleNamesByUserIdAsync(user.UserID);
 
 			// JWT
 			var key = new SymmetricSecurityKey(
@@ -107,8 +93,7 @@ namespace SupplierHub.Services
 
 			var expiryMinutes = int.TryParse(
 				_config["Jwt:ExpiryMinutes"],
-				out var m
-			) ? m : 60;
+				out var m) ? m : 60;
 
 			var claims = new List<Claim>
 			{
