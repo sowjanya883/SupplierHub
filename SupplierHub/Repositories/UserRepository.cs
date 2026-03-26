@@ -56,7 +56,7 @@ namespace SupplierHub.Repositories
 			var lower = email.Trim().ToLowerInvariant();
 
 			var user = await _db.Users
-				.FirstOrDefaultAsync(u => u.Email.ToLower() == lower, ct);
+				.FirstOrDefaultAsync(u => u.Email != null && u.Email.ToLower() == lower, ct);
 
 			if (user == null) return null;
 			if (!includeDeleted && user.IsDeleted) return null;
