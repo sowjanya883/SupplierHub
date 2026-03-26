@@ -1559,7 +1559,7 @@ namespace SupplierHub.Migrations
 
                     b.HasIndex("PoID");
 
-                    b.ToTable("PoLine");
+                    b.ToTable("PoLines");
                 });
 
             modelBuilder.Entity("SupplierHub.Models.PoRevision", b =>
@@ -2522,10 +2522,6 @@ namespace SupplierHub.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.PrimitiveCollection<string>("UserRoles")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("UserID");
 
                     b.HasIndex("OrgID");
@@ -2535,8 +2531,10 @@ namespace SupplierHub.Migrations
 
             modelBuilder.Entity("SupplierHub.Models.UserRole", b =>
                 {
+                    b.Property<long>("UserID")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("RoleID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedOn")
@@ -2548,9 +2546,6 @@ namespace SupplierHub.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
-
-                    b.Property<long>("RoleID1")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -2564,20 +2559,9 @@ namespace SupplierHub.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<long>("UserID")
-                        .HasColumnType("bigint");
+                    b.HasKey("UserID", "RoleID");
 
-                    b.Property<long>("UserID1")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("RoleID");
-
-                    b.HasIndex("RoleID1");
-
-                    b.HasIndex("UserID1");
-
-                    b.HasIndex("UserID", "RoleID")
-                        .IsUnique();
+                    b.HasIndex("RoleID");
 
                     b.ToTable("UserRoles", (string)null);
                 });
@@ -3077,28 +3061,16 @@ namespace SupplierHub.Migrations
 
             modelBuilder.Entity("SupplierHub.Models.UserRole", b =>
                 {
-                    b.HasOne("SupplierHub.Models.Role", null)
+                    b.HasOne("SupplierHub.Models.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SupplierHub.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleID1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SupplierHub.Models.User", null)
+                    b.HasOne("SupplierHub.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SupplierHub.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Role");

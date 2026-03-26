@@ -642,10 +642,8 @@ namespace SupplierHub.Migrations
                 name: "UserRoles",
                 columns: table => new
                 {
-                    RoleID = table.Column<long>(type: "bigint", nullable: false),
                     UserID = table.Column<long>(type: "bigint", nullable: false),
-                    UserID1 = table.Column<long>(type: "bigint", nullable: false),
-                    RoleID1 = table.Column<long>(type: "bigint", nullable: false),
+                    RoleID = table.Column<long>(type: "bigint", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false, defaultValue: "ACTIVE"),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
@@ -653,7 +651,7 @@ namespace SupplierHub.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => x.RoleID);
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserID, x.RoleID });
                     table.ForeignKey(
                         name: "FK_UserRoles_Roles_RoleID",
                         column: x => x.RoleID,
@@ -661,23 +659,11 @@ namespace SupplierHub.Migrations
                         principalColumn: "RoleID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleID1",
-                        column: x => x.RoleID1,
-                        principalTable: "Roles",
-                        principalColumn: "RoleID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_UserRoles_Users_UserID",
                         column: x => x.UserID,
                         principalTable: "Users",
                         principalColumn: "UserID",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserID1",
-                        column: x => x.UserID1,
-                        principalTable: "Users",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -783,7 +769,7 @@ namespace SupplierHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PoLine",
+                name: "PoLines",
                 columns: table => new
                 {
                     PoLineID = table.Column<long>(type: "bigint", nullable: false)
@@ -803,15 +789,15 @@ namespace SupplierHub.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PoLine", x => x.PoLineID);
+                    table.PrimaryKey("PK_PoLines", x => x.PoLineID);
                     table.ForeignKey(
-                        name: "FK_PoLine_Items_ItemID",
+                        name: "FK_PoLines_Items_ItemID",
                         column: x => x.ItemID,
                         principalTable: "Items",
                         principalColumn: "ItemID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PoLine_PurchaseOrders_PoID",
+                        name: "FK_PoLines_PurchaseOrders_PoID",
                         column: x => x.PoID,
                         principalTable: "PurchaseOrders",
                         principalColumn: "PoID",
@@ -1119,9 +1105,9 @@ namespace SupplierHub.Migrations
                         principalColumn: "InvoiceID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_InvoiceLines_PoLine_PoLineID",
+                        name: "FK_InvoiceLines_PoLines_PoLineID",
                         column: x => x.PoLineID,
-                        principalTable: "PoLine",
+                        principalTable: "PoLines",
                         principalColumn: "PoLineID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1212,9 +1198,9 @@ namespace SupplierHub.Migrations
                         principalColumn: "AsnID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AsnItems_PoLine_PoLineID",
+                        name: "FK_AsnItems_PoLines_PoLineID",
                         column: x => x.PoLineID,
-                        principalTable: "PoLine",
+                        principalTable: "PoLines",
                         principalColumn: "PoLineID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1284,9 +1270,9 @@ namespace SupplierHub.Migrations
                         principalColumn: "GrnID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GrnItemRefs_PoLine_PoLineID",
+                        name: "FK_GrnItemRefs_PoLines_PoLineID",
                         column: x => x.PoLineID,
-                        principalTable: "PoLine",
+                        principalTable: "PoLines",
                         principalColumn: "PoLineID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1586,13 +1572,13 @@ namespace SupplierHub.Migrations
                 column: "SupplierID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PoLine_ItemID",
-                table: "PoLine",
+                name: "IX_PoLines_ItemID",
+                table: "PoLines",
                 column: "ItemID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PoLine_PoID",
-                table: "PoLine",
+                name: "IX_PoLines_PoID",
+                table: "PoLines",
                 column: "PoID");
 
             migrationBuilder.CreateIndex(
@@ -1731,20 +1717,9 @@ namespace SupplierHub.Migrations
                 column: "UpdatedBy");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleID1",
+                name: "IX_UserRoles_RoleID",
                 table: "UserRoles",
-                column: "RoleID1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_UserID_RoleID",
-                table: "UserRoles",
-                columns: new[] { "UserID", "RoleID" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_UserID1",
-                table: "UserRoles",
-                column: "UserID1");
+                column: "RoleID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_OrgID",
@@ -1867,7 +1842,7 @@ namespace SupplierHub.Migrations
                 name: "GrnRefs");
 
             migrationBuilder.DropTable(
-                name: "PoLine");
+                name: "PoLines");
 
             migrationBuilder.DropTable(
                 name: "Asns");
