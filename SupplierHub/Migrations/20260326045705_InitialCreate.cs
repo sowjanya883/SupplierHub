@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace SupplierHub.Migrations
 {
     /// <inheritdoc />
@@ -1371,6 +1373,21 @@ namespace SupplierHub.Migrations
                         principalTable: "GrnItemRefs",
                         principalColumn: "GrnItemID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "RoleID", "RoleName", "Status" },
+                values: new object[,]
+                {
+                    { 1L, "Admin", "ACTIVE" },
+                    { 2L, "Buyer", "ACTIVE" },
+                    { 3L, "CategoryManager", "ACTIVE" },
+                    { 4L, "SupplierUser", "ACTIVE" },
+                    { 5L, "ReceivingUser", "ACTIVE" },
+                    { 6L, "AccountsPayable", "ACTIVE" },
+                    { 7L, "WarehouseManager", "ACTIVE" },
+                    { 8L, "ComplianceOfficer", "ACTIVE" }
                 });
 
             migrationBuilder.CreateIndex(
