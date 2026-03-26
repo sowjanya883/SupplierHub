@@ -55,6 +55,7 @@ namespace SupplierHub.Config.Configurations
 	}
 
 	// UserRole
+<<<<<<< Updated upstream
 	//public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 	//{
 	//	public void Configure(EntityTypeBuilder<UserRole> builder)
@@ -86,4 +87,6 @@ namespace SupplierHub.Config.Configurations
 	//		builder.HasIndex(x => new { x.UserID, x.RoleID }).IsUnique();
 	//	}
 	//}
+=======
+>>>>>>> Stashed changes
 }
