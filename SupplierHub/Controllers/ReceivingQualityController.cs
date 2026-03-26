@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using SupplierHub.DTOs.GrnRefDTO;
 using SupplierHub.Services.Interface;
 using SupplierHub.DTOs.InspectionDTO;
@@ -7,6 +8,7 @@ using SupplierHub.DTOs.GrnItemRefDTO;
 
 namespace SupplierHub.Controllers
 {
+    [Authorize(Roles = "Supplier,Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class ReceivingQualityController : ControllerBase

@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using SupplierHub.DTOs.SupplierKpiDTO;
 using SupplierHub.Services.Interface;
 using SupplierHub.DTOs.ScorecardDTO;
 
 namespace SupplierHub.Controllers
 {
+    [Authorize(Roles = "Supplier,Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class PerformanceController : ControllerBase
