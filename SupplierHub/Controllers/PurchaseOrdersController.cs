@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SupplierHub.DTOs.PurchaseOrderDTO;
 using SupplierHub.Services;
 using SupplierHub.Services.Interface;
@@ -7,6 +8,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
+	[Authorize(Roles = "Admin, SupplierUser, CategoryManager, Buyer")]
 	public class PurchaseOrdersController : ControllerBase
 	{
 		private readonly IPurchaseOrderService _service;

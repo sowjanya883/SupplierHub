@@ -1722,12 +1722,6 @@ namespace SupplierHub.Migrations
                 column: "RoleID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Email",
-                table: "Users",
-                column: "Email",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Users_OrgID",
                 table: "Users",
                 column: "OrgID");
@@ -1873,7 +1867,6 @@ namespace SupplierHub.Migrations
 
             migrationBuilder.DropTable(
                 name: "Suppliers");
-
         }
     }
 }

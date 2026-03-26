@@ -177,6 +177,10 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IInvoiceLineRepository, InvoiceLineRepository>();
 builder.Services.AddScoped<IInvoiceLineService, InvoiceLineService>();
 
+// MatchRef Repository and Service
+builder.Services.AddScoped<IMatchRefRepository, MatchRefRepository>();
+builder.Services.AddScoped<IMatchRefService, MatchRefService>();
+
 // ==================
 // SECURITY & AUTH
 // ==================
@@ -190,7 +194,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // --------------------
 // CONTROLLERS & API
 // --------------------
-
 
 
 // cors

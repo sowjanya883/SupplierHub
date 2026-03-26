@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SupplierHub.DTOs.PoLineDTO;
 using SupplierHub.Services.Interface;
 
@@ -6,6 +7,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
+	[Authorize(Roles = "Admin, Buyer, CategoryManager, SupplierUser")]
 	public class PoLinesController : ControllerBase
 	{
 		private readonly IPoLineService _service;

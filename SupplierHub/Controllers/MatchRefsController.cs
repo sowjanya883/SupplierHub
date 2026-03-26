@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SupplierHub.DTOs.MatchRefDTO;
 using SupplierHub.Services.Interface;
 
@@ -6,6 +7,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
+	[Authorize(Roles = "Admin, AccountsPayable, Buyer, ReceivingUser")]
 	public class MatchRefsController : ControllerBase
 	{
 		private readonly IMatchRefService _service;

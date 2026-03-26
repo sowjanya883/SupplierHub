@@ -12,7 +12,7 @@ using SupplierHub;
 namespace SupplierHub.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260326070636_InitialCreate")]
+    [Migration("20260326033937_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -2526,9 +2526,6 @@ namespace SupplierHub.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.HasKey("UserID");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
 
                     b.HasIndex("OrgID");
 

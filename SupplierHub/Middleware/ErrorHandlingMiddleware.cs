@@ -51,7 +51,7 @@ namespace SupplierHub.Middleware
 				ArgumentException => HttpStatusCode.BadRequest,           // 400
 				InvalidOperationException => HttpStatusCode.Conflict,     // 409
 				UnauthorizedAccessException => HttpStatusCode.Unauthorized, // 401
-				DbUpdateException => HttpStatusCode.Conflict,
+				DbUpdateException => HttpStatusCode.Conflict,               // 409
 				_ => HttpStatusCode.InternalServerError                   // 500 default
 			};
 		}

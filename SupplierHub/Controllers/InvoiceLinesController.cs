@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SupplierHub.DTOs.InvoiceLineDTO;
 using SupplierHub.Services.Interface;
 
@@ -6,6 +7,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
+	[Authorize(Roles = "Admin, SupplierUser, AccountsPayable")]
 	public class InvoiceLinesController : ControllerBase
 	{
 		private readonly IInvoiceLineService _service;
