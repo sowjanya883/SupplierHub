@@ -23,7 +23,7 @@ namespace SupplierHub.Models
 		public string? Notes { get; set; }
 
 		[Required, MaxLength(30)]
-		public MatchRefStatus Status { get; set; }
+		public MatchRefStatus? Status { get; set; }
 
 		[Required]
 		public bool IsDeleted { get; set; }
