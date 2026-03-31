@@ -77,43 +77,8 @@ namespace SupplierHub.Controllers
 			}
 		}
 
-		[HttpPut("{id:long}")]
-		public async Task<IActionResult> Update(long id, [FromBody] UpdateAuditLogDto dto, CancellationToken ct = default)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(new { message = "Validation failed for audit log update.", errors = ModelState });
+		
 
-			try
-			{
-				var updated = await _service.UpdateAsync(id, dto, ct);
-				if (updated == null)
-					return NotFound(new { message = $"Update failed: Audit log entry {id} does not exist." });
-
-				return Ok(new { message = "Audit log entry updated successfully.", data = updated });
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error updating audit log {AuditId}", id);
-				return StatusCode(500, new { message = "An error occurred while updating the audit log record." });
-			}
-		}
-
-		[HttpDelete("{id:long}")]
-		public async Task<IActionResult> Delete(long id, CancellationToken ct = default)
-		{
-			try
-			{
-				var ok = await _service.SoftDeleteAsync(id, ct);
-				if (!ok)
-					return NotFound(new { message = $"Delete failed: Audit log entry {id} not found or already deleted." });
-
-				return Ok(new { message = $"Audit log entry {id} has been successfully deleted." });
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error deleting audit log {AuditId}", id);
-				return StatusCode(500, new { message = "An error occurred during the deletion of the audit log." });
-			}
-		}
+		
 	}
 }

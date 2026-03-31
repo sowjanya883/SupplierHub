@@ -106,59 +106,9 @@ namespace SupplierHub.Controllers
 			}
 		}
 
-		// PUT: api/notifications/{id}
-		[HttpPut("{id:long}")]
-		public async Task<IActionResult> Update(long id, [FromBody] Notification model, CancellationToken ct = default)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(new { message = "Validation failed for update request.", errors = ModelState });
+		
 
-			try
-			{
-				var entity = await _db.Notifications.FirstOrDefaultAsync(n => n.NotificationID == id, ct);
-
-				if (entity == null || entity.IsDeleted)
-					return NotFound(new { message = $"Update failed: Notification with ID {id} not found." });
-
-				entity.Message = model.Message;
-				entity.Category = model.Category;
-				entity.RefEntityID = model.RefEntityID;
-				entity.Status = model.Status;
-				entity.UpdatedOn = DateTime.UtcNow;
-
-				await _db.SaveChangesAsync(ct);
-				return Ok(new { message = "Notification updated successfully.", data = entity });
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error updating notification {Id}", id);
-				return StatusCode(500, new { message = "An error occurred while updating the notification." });
-			}
-		}
-
-		// DELETE: api/notifications/{id}
-		[HttpDelete("{id:long}")]
-		public async Task<IActionResult> Delete(long id, CancellationToken ct = default)
-		{
-			try
-			{
-				var entity = await _db.Notifications.FirstOrDefaultAsync(n => n.NotificationID == id, ct);
-
-				if (entity == null || entity.IsDeleted)
-					return NotFound(new { message = $"Delete failed: Notification with ID {id} not found or already removed." });
-
-				entity.IsDeleted = true;
-				entity.UpdatedOn = DateTime.UtcNow;
-
-				await _db.SaveChangesAsync(ct);
-				return Ok(new { message = "Notification deleted successfully." });
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error deleting notification {Id}", id);
-				return StatusCode(500, new { message = "An error occurred while deleting the notification." });
-			}
-		}
+		
 
 		// POST: api/notifications/{id}/restore
 		[HttpPost("{id:long}/restore")]
@@ -184,6 +134,41 @@ namespace SupplierHub.Controllers
 			{
 				_logger.LogError(ex, "Error restoring notification {Id}", id);
 				return StatusCode(500, new { message = "An internal error occurred during restoration." });
+			}
+		}
+		// Patch: api/notifications/{id}
+		[HttpPatch("{id:long}")]
+		public async Task<IActionResult> UpdateStatus(long id, [FromBody] Notification model, CancellationToken ct = default)
+		{
+			// 1. Validation check
+			if (model == null)
+				return BadRequest(new { message = "Request body cannot be empty." });
+
+			try
+			{
+				// 2. Retrieve the existing entity
+				var entity = await _db.Notifications.FirstOrDefaultAsync(n => n.NotificationID == id, ct);
+
+				if (entity == null)
+					return NotFound(new { message = $"Notification with ID {id} not found." });
+
+				// 3. PARTIAL UPDATE LOGIC (The "Patch" way)
+				// We only update the Status. We do NOT allow the user to change 
+				// the Message, Category, or UserID to maintain audit integrity.
+				entity.Status = model.Status; // Statuses: Unread, Read, Dismissed 
+
+				// Update the timestamp for internal tracking
+				entity.UpdatedOn = DateTime.UtcNow;
+
+				// 4. Save only the changed fields
+				await _db.SaveChangesAsync(ct);
+
+				return Ok(new { message = "Notification status updated successfully.", data = entity });
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error patching notification {Id}", id);
+				return StatusCode(500, new { message = "An error occurred during the update." });
 			}
 		}
 	}

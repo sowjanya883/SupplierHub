@@ -167,7 +167,6 @@ namespace SupplierHub.MapProfile
 
 			// AuditLog mappings
 			CreateMap<AuditLog, CreateAuditLogDto>().ReverseMap();
-			CreateMap<AuditLog, UpdateAuditLogDto>().ReverseMap();
 			CreateMap<AuditLog, AuditLogDto>().ReverseMap();
 			CreateMap<AuditLog, AuditLogListItemDto>().ReverseMap();
 
