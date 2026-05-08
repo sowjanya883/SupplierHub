@@ -248,6 +248,10 @@ namespace SupplierHub.Controllers
 				var result = await _service.AssignRoleAsync(dto);
 				return Ok(new { message = "Role assigned successfully.", data = result });
 			}
+			catch (InvalidOperationException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
 			catch (Exception ex)
 			{
 				return StatusCode(500, new
@@ -268,7 +272,7 @@ namespace SupplierHub.Controllers
 			{
 				var result = await _service.DeleteRoleAsync(dto);
 				if (!result)
-					return NotFound(new { message = "User role not found." });
+					return NotFound(new { message = $"No active role assignment found for User {dto.UserID} / Role {dto.RoleID}." });
 
 				return Ok(new { message = "Role removed successfully." });
 			}

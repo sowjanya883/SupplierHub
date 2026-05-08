@@ -8,7 +8,7 @@ using SupplierHub.Services.Interface;
 
 namespace SupplierHub.Controllers
 {
-    [Authorize(Roles = "Supplier,Admin")]
+    [Authorize(Roles = "Admin,SupplierUser,ReceivingUser,WarehouseManager,ComplianceOfficer")]
     [ApiController]
     [Route("api/[controller]")]
     public class InspectionController : ControllerBase

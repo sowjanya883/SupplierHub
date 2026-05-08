@@ -8,6 +8,7 @@ namespace SupplierHub.Services.Interface
 		// Requisition
 		Task<RequisitionReadDto> CreateRequisitionAsync(RequisitionCreateDto dto);
 		Task<RequisitionReadDto?> GetRequisitionByIdAsync(long id);
+		Task<List<RequisitionReadDto>> GetAllRequisitionsAsync();
 
 		// PR Lines
 		Task<PrLineReadDto> AddPrLineAsync(PrLineCreateDto dto);
@@ -16,5 +17,6 @@ namespace SupplierHub.Services.Interface
 		// Approval Steps
 		Task<ApprovalStepReadDto> CreateApprovalStepAsync(ApprovalStepCreateDto dto);
 		Task<ApprovalStepReadDto?> UpdateApprovalDecisionAsync(long stepId, ApprovalStepUpdateDto dto);
+		Task<List<ApprovalStepReadDto>> GetApprovalsByPrIdAsync(long prId);
 	}
 }

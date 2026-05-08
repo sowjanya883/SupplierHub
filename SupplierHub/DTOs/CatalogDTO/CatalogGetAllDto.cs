@@ -1,9 +1,9 @@
-﻿namespace SupplierHub.DTOs.CatalogDTO
-{
-	public class CatalogGetAllDto
-	{
-		public long CatalogID { get; set; }
-		public required string CatalogName { get; set; }
-		public required string Status { get; set; }
-	}
+﻿public class CatalogGetAllDto{
+	public long CatalogID { get; set; }
+	public long SupplierID { get; set; }  
+	public string CatalogName { get; set; }
+	public DateTime? ValidFrom { get; set; } 
+	public DateTime? ValidTo { get; set; } 
+	public string Status { get; set; }
 }
+ 

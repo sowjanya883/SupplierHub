@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SupplierHub.DTOs.InvoiceLineDTO;
 using SupplierHub.Services.Interface;
 
@@ -58,19 +59,21 @@ namespace SupplierHub.Controllers
 			try
 			{
 				if (!ModelState.IsValid)
-					return BadRequest(ModelState);
+					return BadRequest(new { message = "Invalid invoice line payload — check required fields.", errors = ModelState });
 
 				if (createDto == null)
-					return BadRequest("Invoice Line data is null.");
+					return BadRequest(new { message = "Invoice line data is null." });
 
 				var result = await _service.CreateAsync(createDto);
-
-				// Meticulously maintained your 'InvLineID' casing
 				return CreatedAtAction(nameof(GetById), new { id = result.InvLineID }, result);
+			}
+			catch (DbUpdateException ex)
+			{
+				return BadRequest(new { message = "Could not create invoice line — check that Invoice ID and PO Line ID exist.", detail = ex.InnerException?.Message ?? ex.Message });
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"Internal server error: {ex.Message}");
+				return BadRequest(new { message = "Could not create invoice line.", detail = ex.Message });
 			}
 		}
 

@@ -23,17 +23,38 @@ namespace SupplierHub.Controllers
 			return CreatedAtAction(nameof(GetById), new { id = result.PrID }, result);
 		}
 
-		[HttpGet("{id}")]
+		[HttpGet]
+		public async Task<IActionResult> GetAll()
+		{
+			var result = await _service.GetAllRequisitionsAsync();
+			return Ok(result);
+		}
+
+		[HttpGet("{id:long}")]
 		public async Task<IActionResult> GetById(long id)
 		{
 			var result = await _service.GetRequisitionByIdAsync(id);
 			return result == null ? NotFound() : Ok(result);
 		}
 
+		[HttpGet("{prId:long}/lines")]
+		public async Task<IActionResult> GetLines(long prId)
+		{
+			var result = await _service.GetLinesByPrIdAsync(prId);
+			return Ok(result);
+		}
+
 		[HttpPost("lines")]
 		public async Task<IActionResult> AddLineItem([FromBody] PrLineCreateDto dto)
 		{
 			var result = await _service.AddPrLineAsync(dto);
+			return Ok(result);
+		}
+
+		[HttpGet("{prId:long}/approvals")]
+		public async Task<IActionResult> GetApprovals(long prId)
+		{
+			var result = await _service.GetApprovalsByPrIdAsync(prId);
 			return Ok(result);
 		}
 

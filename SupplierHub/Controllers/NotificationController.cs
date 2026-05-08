@@ -23,20 +23,24 @@ namespace SupplierHub.Controllers
 			_logger = logger;
 		}
 
-		// GET: api/notifications
+		// GET: api/notifications?userId=123
+		// When userId is provided, only that user's notifications are returned.
+		// When omitted, returns all (Admin-only use cases).
 		[HttpGet]
-		public async Task<IActionResult> GetAll(CancellationToken ct = default)
+		public async Task<IActionResult> GetAll([FromQuery] long? userId, CancellationToken ct = default)
 		{
 			try
 			{
-				var items = await _db.Notifications
+				var query = _db.Notifications
 					.AsNoTracking()
-					.Where(n => !n.IsDeleted)
+					.Where(n => !n.IsDeleted);
+
+				if (userId.HasValue)
+					query = query.Where(n => n.UserID == userId.Value);
+
+				var items = await query
 					.OrderByDescending(n => n.CreatedOn)
 					.ToListAsync(ct);
-
-				if (!items.Any())
-					return Ok(new { message = "No active notifications found.", data = items });
 
 				return Ok(items);
 			}
@@ -136,33 +140,29 @@ namespace SupplierHub.Controllers
 				return StatusCode(500, new { message = "An internal error occurred during restoration." });
 			}
 		}
-		// Patch: api/notifications/{id}
-		[HttpPatch("{id:long}")]
-		public async Task<IActionResult> UpdateStatus(long id, [FromBody] Notification model, CancellationToken ct = default)
+		// Tiny DTO for PATCH so the model's required fields don't block partial updates.
+		public class NotificationStatusPatchDto
 		{
-			// 1. Validation check
-			if (model == null)
-				return BadRequest(new { message = "Request body cannot be empty." });
+			public string? Status { get; set; }
+		}
+
+		// Patch: api/notification/{id}  body: { "status": "Read" }
+		[HttpPatch("{id:long}")]
+		public async Task<IActionResult> UpdateStatus(long id, [FromBody] NotificationStatusPatchDto patch, CancellationToken ct = default)
+		{
+			if (patch == null || string.IsNullOrWhiteSpace(patch.Status))
+				return BadRequest(new { message = "Status is required." });
 
 			try
 			{
-				// 2. Retrieve the existing entity
 				var entity = await _db.Notifications.FirstOrDefaultAsync(n => n.NotificationID == id, ct);
-
 				if (entity == null)
 					return NotFound(new { message = $"Notification with ID {id} not found." });
 
-				// 3. PARTIAL UPDATE LOGIC (The "Patch" way)
-				// We only update the Status. We do NOT allow the user to change 
-				// the Message, Category, or UserID to maintain audit integrity.
-				entity.Status = model.Status; // Statuses: Unread, Read, Dismissed 
-
-				// Update the timestamp for internal tracking
+				entity.Status = patch.Status;
 				entity.UpdatedOn = DateTime.UtcNow;
 
-				// 4. Save only the changed fields
 				await _db.SaveChangesAsync(ct);
-
 				return Ok(new { message = "Notification status updated successfully.", data = entity });
 			}
 			catch (Exception ex)
