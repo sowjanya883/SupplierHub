@@ -61,6 +61,18 @@ public class RequisitionService : IRequisitionService
 		return _mapper.Map<List<PrLineReadDto>>(lines);
 	}
 
+	public async Task<List<RequisitionReadDto>> GetAllRequisitionsAsync()
+	{
+		var entities = await _repo.GetAllRequisitionsAsync();
+		return _mapper.Map<List<RequisitionReadDto>>(entities);
+	}
+
+	public async Task<List<ApprovalStepReadDto>> GetApprovalsByPrIdAsync(long prId)
+	{
+		var steps = await _repo.GetApprovalHistoryByPrIdAsync(prId);
+		return _mapper.Map<List<ApprovalStepReadDto>>(steps);
+	}
+
 	public async Task<ApprovalStepReadDto?> UpdateApprovalDecisionAsync(long stepId, ApprovalStepUpdateDto dto)
 	{
 		var existing = await _repo.GetApprovalStepByIdAsync(stepId);

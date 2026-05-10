@@ -8,7 +8,7 @@ using SupplierHub.Services.Interface;
 
 namespace SupplierHub.Controllers
 {
-    [Authorize(Roles = "Supplier,Admin")]
+    [Authorize(Roles = "Admin,SupplierUser,ReceivingUser,WarehouseManager")]
     [ApiController]
     [Route("api/[controller]")]
     public class GrnItemController : ControllerBase

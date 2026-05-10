@@ -39,7 +39,7 @@ namespace SupplierHub.Controllers
 		/// <response code="409">Supplier already exists</response>
 		/// <response code="500">Server error</response>
 		[HttpPost]
-		[Authorize(Roles = nameof(RoleType.Admin))]
+		[Authorize(Roles = nameof(RoleType.Admin) + "," + nameof(RoleType.CategoryManager))]
 		[ProducesResponseType(typeof(GetSupplierByIdDto), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status409Conflict)]

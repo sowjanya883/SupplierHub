@@ -13,9 +13,6 @@ namespace SupplierHub.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(Roles =
-		nameof(RoleType.Admin) + "," +
-		nameof(RoleType.CategoryManager))]
 	public class CategoriesController : ControllerBase
 	{
 		private readonly ICategoryService _service;

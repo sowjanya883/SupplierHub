@@ -100,28 +100,40 @@ namespace SupplierHub.Repositories
 		}
 
 		/// <summary>
-		/// Assigns a role to a user.
+		/// Assigns a role to a user. Reactivates a previously soft-deleted assignment if one exists,
+		/// since (UserID, RoleID) is the composite primary key and a second insert would violate it.
 		/// </summary>
 		public async Task<UserRole> AssignRoleAsync(long userID, long roleID)
 		{
 			try
 			{
-				// Verify User exists
 				var user = await _db.Users.FirstOrDefaultAsync(u => u.UserID == userID);
 				if (user == null)
 					throw new InvalidOperationException($"User with ID {userID} does not exist.");
+				if (user.IsDeleted)
+					throw new InvalidOperationException($"User with ID {userID} is deactivated. Reactivate the user first.");
 
-				// Verify Role exists
 				var role = await _db.Roles.FirstOrDefaultAsync(r => r.RoleID == roleID);
 				if (role == null)
 					throw new InvalidOperationException($"Role with ID {roleID} does not exist.");
+				if (role.IsDeleted)
+					throw new InvalidOperationException($"Role with ID {roleID} is deactivated.");
 
-				// Check if assignment already exists
 				var existingAssignment = await _db.UserRoles.FirstOrDefaultAsync(
 					x => x.UserID == userID && x.RoleID == roleID);
 
-				if (existingAssignment != null && !existingAssignment.IsDeleted)
-					throw new InvalidOperationException($"User {userID} already has Role {roleID} assigned.");
+				if (existingAssignment != null)
+				{
+					if (!existingAssignment.IsDeleted)
+						throw new InvalidOperationException($"User {userID} already has Role {roleID} assigned.");
+
+					existingAssignment.IsDeleted = false;
+					existingAssignment.Status = "ACTIVE";
+					existingAssignment.UpdatedOn = DateTime.UtcNow;
+					_db.UserRoles.Update(existingAssignment);
+					await _db.SaveChangesAsync();
+					return existingAssignment;
+				}
 
 				var userRole = new UserRole
 				{
@@ -142,6 +154,10 @@ namespace SupplierHub.Repositories
 				throw new InvalidOperationException(
 					$"Database error while assigning role: {dbEx.InnerException?.Message}", dbEx);
 			}
+			catch (InvalidOperationException)
+			{
+				throw;
+			}
 			catch (Exception ex)
 			{
 				throw new InvalidOperationException($"Error assigning role: {ex.Message}", ex);
@@ -149,11 +165,13 @@ namespace SupplierHub.Repositories
 		}
 
 		/// <summary>
-		/// Deletes/removes a role from a user (soft delete).
+		/// Soft-deletes a role assignment. Returns false if no active assignment exists,
+		/// so the caller can return 404 on repeat removals.
 		/// </summary>
 		public async Task<bool> DeleteRoleAsync(long userID, long roleID)
 		{
-			var userRole = await _db.UserRoles.FirstOrDefaultAsync(x => x.UserID == userID && x.RoleID == roleID);
+			var userRole = await _db.UserRoles.FirstOrDefaultAsync(
+				x => x.UserID == userID && x.RoleID == roleID && !x.IsDeleted);
 			if (userRole == null) return false;
 
 			userRole.IsDeleted = true;

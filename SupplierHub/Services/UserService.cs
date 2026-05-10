@@ -86,7 +86,13 @@ namespace SupplierHub.Services
 				user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
 			}
 
-			if (!string.IsNullOrWhiteSpace(dto.Status)) user.Status = dto.Status;
+			if (!string.IsNullOrWhiteSpace(dto.Status))
+			{
+				user.Status = dto.Status;
+				// Reactivating: setting Status=Active on a soft-deleted user clears the IsDeleted flag.
+				if (string.Equals(dto.Status, "Active", System.StringComparison.OrdinalIgnoreCase))
+					user.IsDeleted = false;
+			}
 			if (dto.IsDeleted.HasValue) user.IsDeleted = dto.IsDeleted.Value;
 
 			user.UpdatedOn = System.DateTime.UtcNow;

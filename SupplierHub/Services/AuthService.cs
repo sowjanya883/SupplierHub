@@ -49,6 +49,9 @@ namespace SupplierHub.Services
 			var user = await _userRepository.GetByEmailAsync(email)
 				?? throw new UnauthorizedAccessException("Invalid credentials.");
 
+			if (user.IsDeleted)
+				throw new UnauthorizedAccessException("This account has been deactivated.");
+
 			if (user.Status is "Inactive" or "Suspended" or "Pending")
 				throw new UnauthorizedAccessException("User is not active.");
 

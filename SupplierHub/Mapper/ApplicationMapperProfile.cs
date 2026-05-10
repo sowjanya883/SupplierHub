@@ -44,6 +44,7 @@ using SupplierHub.DTOs.UserRoleDTO;
 using SupplierHub.DTOs.ApprovalRuleDTO;
 using SupplierHub.DTOs.SystemConfigDTO;
 using SupplierHub.Models;
+using SupplierHub.Constants.Enum;
 
 
 namespace SupplierHub.MapProfile
@@ -301,10 +302,27 @@ namespace SupplierHub.MapProfile
 			CreateMap<InvoiceLine, InvoiceLineUpdateDto>().ReverseMap();
 			CreateMap<InvoiceLine, InvoiceLineResponseDto>().ReverseMap();
 
-			//MatchRef mappings
-			CreateMap<MatchRef, MatchRefCreateDto>().ReverseMap();
-			CreateMap<MatchRef, MatchRefUpdateDto>().ReverseMap();
-			CreateMap<MatchRef, MatchRefResponseDto>().ReverseMap();
+			//MatchRef mappings — Result/Status are enums on the model but strings on the DTOs.
+			CreateMap<MatchRef, MatchRefCreateDto>()
+				.ForMember(d => d.Result, o => o.MapFrom(s => s.Result.ToString()))
+				.ForMember(d => d.Status, o => o.MapFrom(s => s.Status.HasValue ? s.Status.Value.ToString() : null))
+				.ReverseMap()
+				.ForMember(d => d.Result, o => o.MapFrom(s => ParseMatchResult(s.Result)))
+				.ForMember(d => d.Status, o => o.MapFrom(s => ParseMatchStatus(s.Status)));
+
+			CreateMap<MatchRef, MatchRefUpdateDto>()
+				.ForMember(d => d.Result, o => o.MapFrom(s => s.Result.ToString()))
+				.ForMember(d => d.Status, o => o.MapFrom(s => s.Status.HasValue ? s.Status.Value.ToString() : null))
+				.ReverseMap()
+				.ForMember(d => d.Result, o => o.MapFrom(s => ParseMatchResult(s.Result)))
+				.ForMember(d => d.Status, o => o.MapFrom(s => ParseMatchStatus(s.Status)));
+
+			CreateMap<MatchRef, MatchRefResponseDto>()
+				.ForMember(d => d.Result, o => o.MapFrom(s => s.Result.ToString()))
+				.ForMember(d => d.Status, o => o.MapFrom(s => s.Status.HasValue ? s.Status.Value.ToString() : null))
+				.ReverseMap()
+				.ForMember(d => d.Result, o => o.MapFrom(s => ParseMatchResult(s.Result)))
+				.ForMember(d => d.Status, o => o.MapFrom(s => ParseMatchStatus(s.Status)));
 			//Requistion mappings
 			CreateMap<Requisition, RequisitionCreateDto>().ReverseMap();
 			CreateMap<Requisition, RequisitionReadDto>().ReverseMap();
@@ -336,5 +354,13 @@ namespace SupplierHub.MapProfile
 			CreateMap<DeliverySlot, DeliverySlotReadDto>().ReverseMap();
 			CreateMap<DeliverySlot, DeliverySlotUpdateDto>().ReverseMap();
 		}
+
+		private static MatchResult ParseMatchResult(string? s) =>
+			Enum.TryParse<MatchResult>(s, ignoreCase: true, out var r) ? r : MatchResult.Pending;
+
+		private static MatchRefStatus? ParseMatchStatus(string? s) =>
+			string.IsNullOrWhiteSpace(s) ? null
+			: Enum.TryParse<MatchRefStatus>(s, ignoreCase: true, out var r) ? r
+			: (MatchRefStatus?)null;
 	}
 }

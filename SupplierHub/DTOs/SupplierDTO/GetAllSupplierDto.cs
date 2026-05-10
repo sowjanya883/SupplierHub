@@ -7,6 +7,7 @@ namespace SupplierHub.DTOs.SupplierDTO
 		public long SupplierID { get; set; }
 
 		public required string LegalName { get; set; }
+		public string? TaxID { get; set; }
 		public required string Status { get; set; }
 	}
 }
