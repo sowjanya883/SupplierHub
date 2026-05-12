@@ -138,11 +138,30 @@ namespace SupplierHub.Services
 
 		public async Task<RfxInviteReadDto?> UpdateInviteAsync(RfxInviteUpdateDto dto)
 		{
-			var entity = _mapper.Map<RfxInvite>(dto);
-			entity.UpdatedOn = DateTime.UtcNow;
+			// Load the existing invite so required fields (RfxID, SupplierID, CreatedOn) aren't wiped.
+			var existing = await _repo.GetInviteByIdAsync(dto.InviteID);
+			if (existing == null) return null;
 
-			var updated = await _repo.UpdateInviteAsync(entity);
-			return updated == null ? null : _mapper.Map<RfxInviteReadDto>(updated);
+			if (!string.IsNullOrWhiteSpace(dto.Status)) existing.Status = dto.Status;
+			if (dto.InvitedDate.HasValue) existing.InvitedDate = dto.InvitedDate;
+			if (dto.IsDeleted.HasValue) existing.IsDeleted = dto.IsDeleted.Value;
+			existing.UpdatedOn = DateTime.UtcNow;
+
+			var updated = await _repo.UpdateInviteAsync(existing);
+			if (updated == null) return null;
+
+			// Notify Buyer / CategoryManager / Admin when supplier responds.
+			if (!string.IsNullOrWhiteSpace(updated.Status) &&
+				(updated.Status.Equals("Accepted", StringComparison.OrdinalIgnoreCase) ||
+				 updated.Status.Equals("Declined", StringComparison.OrdinalIgnoreCase)))
+			{
+				var msg = $"Supplier #{updated.SupplierID} has {updated.Status.ToLower()} the invitation to RFx-{updated.RfxID}.";
+				await _notif.SendToRoleAsync("Buyer", msg, "RFx", updated.RfxID);
+				await _notif.SendToRoleAsync("CategoryManager", msg, "RFx", updated.RfxID);
+				await _notif.SendToRoleAsync("Admin", msg, "RFx", updated.RfxID);
+			}
+
+			return _mapper.Map<RfxInviteReadDto>(updated);
 		}
 
 		public async Task<List<BidReadDto>> GetBidsByRfxAsync(long rfxId)
@@ -253,11 +272,31 @@ namespace SupplierHub.Services
 
 		public async Task<AwardReadDto?> UpdateAwardAsync(AwardUpdateDto dto)
 		{
-			var entity = _mapper.Map<Award>(dto);
-			entity.UpdatedOn = DateTime.UtcNow;
+			// Load existing so RfxID, SupplierID, CreatedOn aren't wiped to defaults.
+			var existing = await _repo.GetAwardByIdAsync(dto.AwardID);
+			if (existing == null) return null;
 
-			var updated = await _repo.UpdateAwardAsync(entity);
-			return updated == null ? null : _mapper.Map<AwardReadDto>(updated);
+			if (dto.AwardDate.HasValue) existing.AwardDate = dto.AwardDate;
+			if (dto.AwardValue.HasValue) existing.AwardValue = dto.AwardValue;
+			if (!string.IsNullOrWhiteSpace(dto.Currency)) existing.Currency = dto.Currency;
+			if (dto.Notes != null) existing.Notes = dto.Notes;
+			if (!string.IsNullOrWhiteSpace(dto.Status)) existing.Status = dto.Status;
+			if (dto.IsDeleted.HasValue) existing.IsDeleted = dto.IsDeleted.Value;
+			existing.UpdatedOn = DateTime.UtcNow;
+
+			var updated = await _repo.UpdateAwardAsync(existing);
+			if (updated == null) return null;
+
+			// Notify roles when award status changes (e.g. Awarded → Cancelled)
+			if (!string.IsNullOrWhiteSpace(dto.Status))
+			{
+				var msg = $"Award #{updated.AwardID} for RFx-{updated.RfxID} updated to '{updated.Status}'.";
+				await _notif.SendToRoleAsync("SupplierUser", msg, "RFx", updated.RfxID);
+				await _notif.SendToRoleAsync("Buyer", msg, "RFx", updated.RfxID);
+				await _notif.SendToRoleAsync("Admin", msg, "RFx", updated.RfxID);
+			}
+
+			return _mapper.Map<AwardReadDto>(updated);
 		}
 	}
 }

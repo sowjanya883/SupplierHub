@@ -18,6 +18,7 @@ namespace SupplierHub.Repositories.Interface
 
 		// RfxInvite
 		Task<List<RfxInvite>> GetInvitesByRfxAsync(long rfxId);
+		Task<RfxInvite?> GetInviteByIdAsync(long inviteId);
 		Task<RfxInvite> AddInviteAsync(RfxInvite invite);
 		Task<RfxInvite?> UpdateInviteAsync(RfxInvite invite);
 
@@ -34,6 +35,7 @@ namespace SupplierHub.Repositories.Interface
 
 		// Award
 		Task<List<Award>> GetAwardsByRfxAsync(long rfxId);
+		Task<Award?> GetAwardByIdAsync(long awardId);
 		Task<Award> AddAwardAsync(Award award);
 		Task<Award?> UpdateAwardAsync(Award award);
 	}

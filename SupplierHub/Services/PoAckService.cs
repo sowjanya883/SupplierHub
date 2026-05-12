@@ -10,17 +10,31 @@ namespace SupplierHub.Services
 	public class PoAckService : IPoAckService
 	{
 		private readonly IPoAckRepository _repository;
+		private readonly IPurchaseOrderRepository _poRepository;
 		private readonly IMapper _mapper;
 		private readonly INotificationService _notif;
 
 		public PoAckService(
 			IPoAckRepository repository,
+			IPurchaseOrderRepository poRepository,
 			IMapper mapper,
 			INotificationService notif)
 		{
 			_repository = repository;
+			_poRepository = poRepository;
 			_mapper = mapper;
 			_notif = notif;
+		}
+
+		// Maps the supplier's decision string (mapped from PoAckDecision enum) to the
+		// PO header status the buyer should see.
+		private static string? PoStatusFromDecision(string? decision)
+		{
+			if (string.IsNullOrWhiteSpace(decision)) return null;
+			if (decision.Equals("Accept",  StringComparison.OrdinalIgnoreCase)) return "Acknowledged";
+			if (decision.Equals("Counter", StringComparison.OrdinalIgnoreCase)) return "Counter";
+			if (decision.Equals("Decline", StringComparison.OrdinalIgnoreCase)) return "Declined";
+			return null;
 		}
 
 		public async Task<IEnumerable<PoAckResponseDto>> GetAllAsync()
@@ -56,6 +70,20 @@ namespace SupplierHub.Services
 
 			await _repository.AddAsync(ack);
 			await _repository.SaveChangesAsync();
+
+			// ── Auto-flip PO status to reflect the supplier's decision ──
+			var newStatus = PoStatusFromDecision(ack.Decision);
+			if (!string.IsNullOrEmpty(newStatus))
+			{
+				var po = await _poRepository.GetByIdAsync(ack.PoID);
+				if (po != null && !string.Equals(po.Status, newStatus, StringComparison.OrdinalIgnoreCase))
+				{
+					po.Status = newStatus;
+					po.UpdatedOn = DateTime.UtcNow;
+					_poRepository.Update(po);
+					await _poRepository.SaveChangesAsync();
+				}
+			}
 
 			// ── Notifications ──────────────────────────
 			var decision = ack.Decision?.ToString() ?? "responded";

@@ -42,7 +42,10 @@ export default function CategoriesPage() {
       setModal(null)
       toast.success('Category created successfully')
     },
-    onError: e => toast.error(e.response?.data?.message ?? 'Failed to create category'),
+    onError: e => {
+      console.error('Category create failed:', e?.response?.status, e?.response?.data)
+      toast.error(extractApiError(e) ?? `Failed to create category (HTTP ${e?.response?.status ?? '?'})`)
+    },
   })
 
   const updateMut = useMutation({
@@ -52,7 +55,7 @@ export default function CategoriesPage() {
       setModal(null)
       toast.success('Category updated successfully')
     },
-    onError: e => toast.error(e.response?.data?.message ?? 'Failed to update category'),
+    onError: e => toast.error(extractApiError(e) ?? 'Failed to update category'),
   })
 
   const deleteMut = useMutation({
@@ -62,7 +65,7 @@ export default function CategoriesPage() {
       setModal(null)
       toast.success('Category deleted successfully')
     },
-    onError: e => toast.error(e.response?.data?.message ?? 'Failed to delete category'),
+    onError: e => toast.error(extractApiError(e) ?? 'Failed to delete category'),
   })
 
   // ── Handlers ───────────────────────────────────────────
@@ -264,4 +267,13 @@ export default function CategoriesPage() {
       )}
     </div>
   )
+}
+
+function extractApiError(err) {
+  if (!err) return null
+  if (err.response?.status === 403) return 'You do not have permission to do this. Try logging out and back in to refresh your role.'
+  const data = err.response?.data
+  if (!data) return null
+  const firstModelError = data.errors ? Object.values(data.errors).flat().find(Boolean) : null
+  return firstModelError ?? data.message ?? data.detail ?? (typeof data === 'string' ? data : null)
 }

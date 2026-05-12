@@ -10,7 +10,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	[Authorize(Roles = "Admin, Buyer, CategoryManager, SupplierUser")]
+	[Authorize(Roles = "Admin,Buyer,CategoryManager,SupplierUser,AccountsPayable,ReceivingUser")]
 	public class PoLinesController : ControllerBase
 	{
 		private readonly IPoLineService _service;

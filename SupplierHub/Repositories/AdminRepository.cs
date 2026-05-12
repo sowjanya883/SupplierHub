@@ -116,8 +116,15 @@ namespace SupplierHub.Repositories
 				var role = await _db.Roles.FirstOrDefaultAsync(r => r.RoleID == roleID);
 				if (role == null)
 					throw new InvalidOperationException($"Role with ID {roleID} does not exist.");
+				// If admin is assigning a soft-deleted role, they clearly want it usable —
+				// reactivate it implicitly instead of rejecting the assignment.
 				if (role.IsDeleted)
-					throw new InvalidOperationException($"Role with ID {roleID} is deactivated.");
+				{
+					role.IsDeleted = false;
+					role.Status = "ACTIVE";
+					role.UpdatedOn = DateTime.UtcNow;
+					_db.Roles.Update(role);
+				}
 
 				var existingAssignment = await _db.UserRoles.FirstOrDefaultAsync(
 					x => x.UserID == userID && x.RoleID == roleID);

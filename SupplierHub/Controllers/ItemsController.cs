@@ -35,6 +35,9 @@ namespace SupplierHub.Controllers
 			[FromBody] ItemCreateDto dto,
 			CancellationToken ct)
 		{
+			if (!ModelState.IsValid)
+				return BadRequest(new { message = "Invalid item payload — check required fields.", errors = ModelState });
+
 			try
 			{
 				var created = await _service.CreateAsync(dto, ct);
@@ -44,13 +47,18 @@ namespace SupplierHub.Controllers
 			{
 				return Conflict(new { message = ex.Message });
 			}
+			catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
+			{
+				var inner = ex.InnerException?.Message ?? ex.Message;
+				if (inner.Contains("FOREIGN KEY", StringComparison.OrdinalIgnoreCase))
+					return BadRequest(new { message = $"CategoryID {dto.CategoryID} does not exist. Pick an existing category." });
+				if (inner.Contains("UNIQUE", StringComparison.OrdinalIgnoreCase) || inner.Contains("duplicate", StringComparison.OrdinalIgnoreCase))
+					return Conflict(new { message = $"SKU '{dto.Sku}' is already used by another item." });
+				return BadRequest(new { message = "Could not save item.", detail = inner });
+			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, new
-				{
-					message = "An error occurred while creating item.",
-					error = ex.Message
-				});
+				return BadRequest(new { message = "Could not create item.", detail = ex.Message });
 			}
 		}
 

@@ -109,28 +109,30 @@ export default function NotificationsPage() {
     const [statusFilter, setStatusFilter] = useState('All')
 
     // ── Fetch ──────────────────────────────────────────────
+    // Same key shape as Topbar so both stay in sync.
     const { data: raw, isLoading } = useQuery({
-        queryKey: ['notifications'],
+        queryKey: ['notifications', user?.userId],
         queryFn: notificationsApi.getAll,
+        enabled: !!user?.userId,
         refetchInterval: 30_000,
     })
 
     const allNotifs = raw?.data ?? raw ?? []
 
-    // Filter: only show categories relevant to this role
+    // The backend already scopes notifications to the current user via JWT, so every
+    // row in `allNotifs` is for this user. We only apply the user's own UI filters here
+    // (category dropdown + status toggle) — no role-based filtering, which would
+    // otherwise hide rows that the bell still counts and cause a list/bell mismatch.
     const filtered = allNotifs
-        .filter(n => allowedCats.includes(n.category) || !n.category)
         .filter(n => categoryFilter === 'All' || n.category === categoryFilter)
         .filter(n => statusFilter === 'All' || n.status === statusFilter)
 
-    const unreadCount = allNotifs
-        .filter(n => allowedCats.includes(n.category) || !n.category)
-        .filter(n => n.status === 'Unread').length
+    const unreadCount = allNotifs.filter(n => n.status === 'Unread').length
 
     // ── Mutations ──────────────────────────────────────────
     const markReadMut = useMutation({
         mutationFn: (id) => notificationsApi.updateStatus(id, { Status: 'Read' }),
-        onSuccess: () => qc.invalidateQueries(['notifications']),
+        onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
         onError: (e) => {
             console.error('Mark read failed:', e)
             toast.error('Failed to mark as read')
@@ -140,7 +142,7 @@ export default function NotificationsPage() {
     const markAllMut = useMutation({
         mutationFn: notificationsApi.markAllRead,
         onSuccess: () => {
-            qc.invalidateQueries(['notifications'])
+            qc.invalidateQueries({ queryKey: ['notifications'] })
             toast.success('All notifications marked as read')
         },
         onError: () => toast.error('Failed to mark all as read'),
@@ -149,8 +151,12 @@ export default function NotificationsPage() {
     const deleteMut = useMutation({
         mutationFn: (id) => notificationsApi.delete(id),
         onSuccess: () => {
-            qc.invalidateQueries(['notifications'])
+            qc.invalidateQueries({ queryKey: ['notifications'] })
             toast.success('Notification dismissed')
+        },
+        onError: (e) => {
+            console.error('Notification delete failed:', e?.response?.status, e?.response?.data)
+            toast.error(e?.response?.data?.message ?? `Failed to dismiss (HTTP ${e?.response?.status ?? '?'})`)
         },
     })
 
@@ -300,25 +306,8 @@ export default function NotificationsPage() {
                     alignItems: 'center',
                     gap: 8,
                 }}>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                        {allowedCats.map(cat => {
-                            const cfg = getCat(cat)
-                            const Icon = cfg.icon
-                            return (
-                                <div key={cat} title={cfg.label} style={{
-                                    width: 24, height: 24, borderRadius: 6,
-                                    background: cfg.bg,
-                                    display: 'flex', alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                    <Icon size={12} color={cfg.color} strokeWidth={2} />
-                                </div>
-                            )
-                        })}
-                    </div>
                     <p style={{ fontSize: 11.5, color: '#64748B' }}>
-                        As <strong>{primaryRole}</strong> you receive notifications for:{' '}
-                        {allowedCats.join(', ')}.
+                        Showing all notifications addressed to <strong>{primaryRole}</strong> ({user?.name}).
                     </p>
                 </div>
             )}

@@ -10,7 +10,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	[Authorize(Roles = "Admin, AccountsPayable, Buyer, ReceivingUser")]
+	[Authorize(Roles = "Admin,AccountsPayable,Buyer,ReceivingUser")]
 	public class MatchRefsController : ControllerBase
 	{
 		private readonly IMatchRefService _service;

@@ -34,6 +34,13 @@ namespace SupplierHub.Repositories
 				.ToListAsync();
 		}
 
+		public async Task<Requisition?> UpdateRequisitionAsync(Requisition requisition)
+		{
+			_context.Requisitions.Update(requisition);
+			await _context.SaveChangesAsync();
+			return requisition;
+		}
+
 		// --- PR Lines Methods ---
 		// In RequisitionRepository.cs
 		public async Task<PrLine> AddPrLineAsync(PrLine line)

@@ -11,7 +11,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	[Authorize(Roles = "Admin, SupplierUser, AccountsPayable")]
+	[Authorize(Roles = "Admin,SupplierUser,AccountsPayable")]
 	public class InvoiceLinesController : ControllerBase
 	{
 		private readonly IInvoiceLineService _service;

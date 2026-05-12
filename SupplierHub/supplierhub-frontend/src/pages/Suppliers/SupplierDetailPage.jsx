@@ -28,15 +28,39 @@ export default function SupplierDetailPage() {
   const navigate = useNavigate()
   const [tab, setTab] = useState('Overview')
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, isError } = useQuery({
     queryKey: ['supplier', id],
     queryFn: () => suppliersApi.getById(id),
+    retry: false,
   })
 
   if (isLoading) return <div className="flex justify-center py-16"><Spinner /></div>
 
+  if (isError) {
+    const status = error?.response?.status
+    const msg = error?.response?.data?.message
+    return (
+      <div className="sh-card max-w-md">
+        <button onClick={() => navigate(-1)} className="text-sm text-blue-600 hover:underline mb-3 block">← Back</button>
+        <h2 className="font-semibold text-gray-800 mb-1">Cannot load supplier #{id}</h2>
+        <p className="text-sm text-gray-600">
+          {status === 403 ? 'You do not have permission to view this supplier.'
+            : status === 404 ? (msg ?? `Supplier ${id} not found.`)
+            : (msg ?? `Request failed (HTTP ${status ?? '?'}).`)}
+        </p>
+      </div>
+    )
+  }
+
   const s = data?.data ?? data
-  if (!s) return <p className="text-gray-500">Supplier not found.</p>
+  if (!s) {
+    return (
+      <div className="sh-card max-w-md">
+        <button onClick={() => navigate(-1)} className="text-sm text-blue-600 hover:underline mb-3 block">← Back</button>
+        <p className="text-gray-500 text-sm">Supplier not found.</p>
+      </div>
+    )
+  }
 
   const supplierId = Number(id)
 

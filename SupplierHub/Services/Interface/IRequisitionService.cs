@@ -9,6 +9,7 @@ namespace SupplierHub.Services.Interface
 		Task<RequisitionReadDto> CreateRequisitionAsync(RequisitionCreateDto dto);
 		Task<RequisitionReadDto?> GetRequisitionByIdAsync(long id);
 		Task<List<RequisitionReadDto>> GetAllRequisitionsAsync();
+		Task<RequisitionReadDto?> UpdateRequisitionStatusAsync(long prId, string newStatus);
 
 		// PR Lines
 		Task<PrLineReadDto> AddPrLineAsync(PrLineCreateDto dto);

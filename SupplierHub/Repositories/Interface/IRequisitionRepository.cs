@@ -8,6 +8,7 @@ namespace SupplierHub.Repositories.Interface
 		Task<Requisition> AddRequisitionAsync(Requisition requisition);
 		Task<Requisition?> GetRequisitionByIdAsync(long id);
 		Task<List<Requisition>> GetAllRequisitionsAsync();
+		Task<Requisition?> UpdateRequisitionAsync(Requisition requisition);
 
 		// PR Lines
 		Task<PrLine> AddPrLineAsync(PrLine line);

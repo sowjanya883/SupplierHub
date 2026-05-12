@@ -19,7 +19,6 @@ namespace SupplierHub.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(Roles = nameof(RoleType.Admin) + "," + nameof(RoleType.CategoryManager))]
 	public class SupplierController : ControllerBase
 	{
 		private readonly ISupplierService _service;
@@ -78,7 +77,14 @@ namespace SupplierHub.Controllers
 		/// <response code="404">Supplier not found</response>
 		/// <response code="500">Server error</response>
 		[HttpGet("{supplierId:long}")]
-		[Authorize(Roles = nameof(RoleType.Admin) + "," + nameof(RoleType.CategoryManager) + "," + nameof(RoleType.SupplierUser))]
+		[Authorize(Roles =
+			nameof(RoleType.Admin) + "," +
+			nameof(RoleType.CategoryManager) + "," +
+			nameof(RoleType.SupplierUser) + "," +
+			nameof(RoleType.ComplianceOfficer) + "," +
+			nameof(RoleType.Buyer) + "," +
+			nameof(RoleType.AccountsPayable) + "," +
+			nameof(RoleType.ReceivingUser))]
 		[ProducesResponseType(typeof(GetSupplierByIdDto), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -109,7 +115,14 @@ namespace SupplierHub.Controllers
 		/// <response code="200">Suppliers retrieved successfully</response>
 		/// <response code="500">Server error</response>
 		[HttpGet]
-		[Authorize(Roles = nameof(RoleType.Admin) + "," + nameof(RoleType.CategoryManager))]
+		[Authorize(Roles =
+			nameof(RoleType.Admin) + "," +
+			nameof(RoleType.CategoryManager) + "," +
+			nameof(RoleType.ComplianceOfficer) + "," +
+			nameof(RoleType.Buyer) + "," +
+			nameof(RoleType.SupplierUser) + "," +
+			nameof(RoleType.AccountsPayable) + "," +
+			nameof(RoleType.ReceivingUser))]
 		[ProducesResponseType(typeof(IEnumerable<GetAllSupplierDto>), StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> GetAll(CancellationToken ct)

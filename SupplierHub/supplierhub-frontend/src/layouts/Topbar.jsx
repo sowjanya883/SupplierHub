@@ -85,9 +85,12 @@ export default function Topbar() {
     const roleStyle = ROLE_COLORS[primaryRole] ?? { bg: '#F1F5F9', color: '#475569' }
 
     // ── Notifications ──────────────────────────────────
+    // Backend scopes by JWT user. Include user.userId in the key so caches
+    // don't bleed across logins (e.g. admin → buyer in the same tab).
     const { data: raw } = useQuery({
-        queryKey: ['notifications'],
+        queryKey: ['notifications', user?.userId],
         queryFn: notificationsApi.getAll,
+        enabled: !!user?.userId,
         refetchInterval: 15_000,
     })
 
@@ -101,11 +104,13 @@ export default function Topbar() {
     // ── Mark read mutations ────────────────────────────
     const markMut = useMutation({
         mutationFn: (id) => notificationsApi.updateStatus(id, { Status: 'Read' }),
-        onSuccess: () => qc.invalidateQueries(['notifications']),
+        onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
+        onError: (e) => console.error('Topbar mark-read failed:', e?.response?.status, e?.response?.data),
     })
     const markAllMut = useMutation({
         mutationFn: notificationsApi.markAllRead,
-        onSuccess: () => { qc.invalidateQueries(['notifications']); setBellOpen(false) },
+        onSuccess: () => { qc.invalidateQueries({ queryKey: ['notifications'] }); setBellOpen(false) },
+        onError: (e) => console.error('Topbar mark-all-read failed:', e?.response?.status, e?.response?.data),
     })
 
     // ── Close bell on outside click ────────────────────
