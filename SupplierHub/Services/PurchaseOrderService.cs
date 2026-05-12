@@ -11,11 +11,13 @@ namespace SupplierHub.Services
 	{
 		private readonly IPurchaseOrderRepository _repository;
 		private readonly IMapper _mapper;
+		private readonly INotificationService _notif;
 
-		public PurchaseOrderService(IPurchaseOrderRepository repository, IMapper mapper)
+		public PurchaseOrderService(IPurchaseOrderRepository repository, IMapper mapper, INotificationService notif)
 		{
 			_repository = repository;
 			_mapper = mapper;
+			_notif = notif;
 		}
 
 		public async Task<IEnumerable<PurchaseOrderResponseDto>> GetAllAsync()
@@ -50,6 +52,8 @@ namespace SupplierHub.Services
 
 			await _repository.AddAsync(order);
 			await _repository.SaveChangesAsync();
+			await _notif.SendToRoleAsync("SupplierUser",$"A new Purchase Order PO-{order.PoID} has been issued to you. Please review and acknowledge.","PurchaseOrder",order.PoID);
+			await _notif.SendToRoleAsync("Buyer",$"Purchase Order PO-{order.PoID} has been created successfully.","PurchaseOrder",order.PoID);
 
 			return _mapper.Map<PurchaseOrderResponseDto>(order);
 		}

@@ -12,18 +12,28 @@ namespace SupplierHub.Services
     {
         private readonly INcrRepository _repo;
         private readonly IMapper _mapper;
+		private readonly INotificationService _notif;
 
-        public NcrService(INcrRepository repo, IMapper mapper)
+		public NcrService(INcrRepository repo, IMapper mapper, INotificationService notif)
         {
             _repo = repo;
             _mapper = mapper;
+            _notif = notif;
         }
 
         public async Task<NcrReadDto> CreateNcrAsync(NcrCreateDto dto)
         {
             var entity = _mapper.Map<Ncr>(dto);
             var saved = await _repo.AddNcrAsync(entity);
-            return _mapper.Map<NcrReadDto>(saved);
+			var severity = saved.Severity ?? "Unknown";
+			var msg = $"NCR-{saved.NcrID} raised: {severity} severity defect" +(string.IsNullOrEmpty(saved.DefectType)? ".": $" — {saved.DefectType}.");
+
+			await _notif.SendToRoleAsync("Admin", msg, "NCR", saved.NcrID);
+			await _notif.SendToRoleAsync("Buyer", msg, "NCR", saved.NcrID);
+
+			if (severity == "Critical")
+				await _notif.SendToRoleAsync("ReceivingUser",$"CRITICAL NCR-{saved.NcrID} raised. Immediate disposition required.","NCR", saved.NcrID);
+			return _mapper.Map<NcrReadDto>(saved);
         }
 
         public async Task<List<NcrReadDto>> GetAllNcrsAsync() =>
