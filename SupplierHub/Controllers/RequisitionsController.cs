@@ -71,5 +71,20 @@ namespace SupplierHub.Controllers
 			var result = await _service.UpdateApprovalDecisionAsync(stepId, dto);
 			return result == null ? NotFound() : Ok(result);
 		}
+
+		// Supplier-facing accept/decline of a PR.
+		// Body: { "status": "Accepted" | "Declined" }
+		public class PrStatusDto { public string Status { get; set; } = ""; }
+
+		[HttpPut("{prId:long}/status")]
+		public async Task<IActionResult> UpdateStatus(long prId, [FromBody] PrStatusDto dto)
+		{
+			if (string.IsNullOrWhiteSpace(dto?.Status))
+				return BadRequest(new { message = "Status is required." });
+
+			var result = await _service.UpdateRequisitionStatusAsync(prId, dto.Status);
+			if (result == null) return NotFound(new { message = $"PR {prId} not found." });
+			return Ok(new { message = "PR status updated.", data = result });
+		}
 	}
 }

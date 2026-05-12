@@ -98,6 +98,27 @@ public class RequisitionService : IRequisitionService
 		return _mapper.Map<List<ApprovalStepReadDto>>(steps);
 	}
 
+	// Lightweight status-only update — used by SupplierUser to Accept / Decline
+	// a PR (separate from internal approval which sets Approved / Rejected).
+	public async Task<RequisitionReadDto?> UpdateRequisitionStatusAsync(long prId, string newStatus)
+	{
+		var pr = await _repo.GetRequisitionByIdAsync(prId);
+		if (pr == null) return null;
+
+		pr.Status = newStatus;
+		pr.UpdatedOn = DateTime.UtcNow;
+		await _repo.UpdateRequisitionAsync(pr);
+
+		// Notify the requester + Admin / CategoryManager that the supplier responded.
+		var msg = $"Supplier has marked PR-{pr.PrID} as '{newStatus}'.";
+		await _notif.SendAsync(pr.RequesterUserID, msg, "Requisition", pr.PrID);
+		await _notif.SendToRoleAsync("Admin", msg, "Requisition", pr.PrID);
+		await _notif.SendToRoleAsync("CategoryManager", msg, "Requisition", pr.PrID);
+		await _notif.SendToRoleAsync("Buyer", msg, "Requisition", pr.PrID);
+
+		return _mapper.Map<RequisitionReadDto>(pr);
+	}
+
 	public async Task<ApprovalStepReadDto?> UpdateApprovalDecisionAsync(
 		long stepId, ApprovalStepUpdateDto dto)
 	{
@@ -130,6 +151,31 @@ public class RequisitionService : IRequisitionService
 					$"❌ PR-{existing.PrID} has been rejected by approver #{existing.ApproverID}.",
 					"Requisition",
 					existing.PrID);
+
+			// ── Auto-flip the PR's overall status based on its approval chain ──
+			// - Any single Rejected → PR is Rejected
+			// - All decided steps are Approved (and there's at least one decision) → PR is Approved
+			// - Otherwise leave as-is (still DRAFT / Pending)
+			var allSteps = await _repo.GetApprovalHistoryByPrIdAsync(existing.PrID);
+			var nonDeleted = allSteps.Where(s => !s.IsDeleted).ToList();
+			var anyRejected   = nonDeleted.Any(s => string.Equals(s.Decision, "Rejected", StringComparison.OrdinalIgnoreCase));
+			var anyPending    = nonDeleted.Any(s => string.IsNullOrEmpty(s.Decision)
+														|| string.Equals(s.Decision, "Pending", StringComparison.OrdinalIgnoreCase)
+														|| string.Equals(s.Decision, "PENDING", StringComparison.OrdinalIgnoreCase));
+			var hasAnyDecision = nonDeleted.Any(s => !string.IsNullOrEmpty(s.Decision)
+														 && !string.Equals(s.Decision, "Pending", StringComparison.OrdinalIgnoreCase)
+														 && !string.Equals(s.Decision, "PENDING", StringComparison.OrdinalIgnoreCase));
+
+			string? newStatus = null;
+			if (anyRejected) newStatus = "Rejected";
+			else if (hasAnyDecision && !anyPending) newStatus = "Approved";
+
+			if (newStatus != null && !string.Equals(pr.Status, newStatus, StringComparison.OrdinalIgnoreCase))
+			{
+				pr.Status = newStatus;
+				pr.UpdatedOn = DateTime.UtcNow;
+				await _repo.UpdateRequisitionAsync(pr);
+			}
 		}
 
 		return _mapper.Map<ApprovalStepReadDto>(existing);

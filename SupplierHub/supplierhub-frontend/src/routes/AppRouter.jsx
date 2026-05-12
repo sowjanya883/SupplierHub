@@ -19,7 +19,9 @@ import CatalogsPage from '../pages/Catalogs/CatalogsPage'
 import ContractsPage from '../pages/Contracts/ContractsPage'
 
 import RFxPage from '../pages/RFx/RFxPage'
+import RFxDetailPage from '../pages/RFx/RFxDetailPage'
 import RequisitionsPage from '../pages/Requisitions/RequisitionsPage'
+import RequisitionDetailPage from '../pages/Requisitions/RequisitionDetailPage'
 import PurchaseOrdersPage from '../pages/PurchaseOrders/PurchaseOrdersPage'
 import PurchaseOrderDetailPage from '../pages/PurchaseOrders/PurchaseOrderDetailPage'
 
@@ -61,8 +63,8 @@ export default function AppRouter() {
                 </Route>
             </Route>
 
-            {/* ── Suppliers — Admin + CategoryManager ─────── */}
-            <Route element={<PrivateRoute roles={['Admin', 'CategoryManager']} />}>
+            {/* ── Suppliers — Admin, CategoryManager, ComplianceOfficer, Buyer, SupplierUser ── */}
+            <Route element={<PrivateRoute roles={['Admin', 'CategoryManager', 'ComplianceOfficer', 'Buyer', 'SupplierUser']} />}>
                 <Route element={<AppLayout />}>
                     <Route path="/suppliers" element={<SuppliersPage />} />
                     <Route path="/suppliers/:id" element={<SupplierDetailPage />} />
@@ -89,13 +91,15 @@ export default function AppRouter() {
             <Route element={<PrivateRoute roles={['Admin', 'Buyer', 'CategoryManager', 'SupplierUser']} />}>
                 <Route element={<AppLayout />}>
                     <Route path="/rfx" element={<RFxPage />} />
+                    <Route path="/rfx/:id" element={<RFxDetailPage />} />
                 </Route>
             </Route>
 
-            {/* ── Requisitions — Admin, Buyer, CategoryManager ── */}
-            <Route element={<PrivateRoute roles={['Admin', 'Buyer', 'CategoryManager']} />}>
+            {/* ── Requisitions — Admin, Buyer, CategoryManager, SupplierUser (read + respond) ── */}
+            <Route element={<PrivateRoute roles={['Admin', 'Buyer', 'CategoryManager', 'SupplierUser']} />}>
                 <Route element={<AppLayout />}>
                     <Route path="/requisitions" element={<RequisitionsPage />} />
+                    <Route path="/requisitions/:id" element={<RequisitionDetailPage />} />
                 </Route>
             </Route>
 

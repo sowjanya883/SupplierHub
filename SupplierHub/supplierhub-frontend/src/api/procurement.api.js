@@ -49,6 +49,8 @@ export const requisitionsApi = {
   getApprovals:        (prId)         => api.get(`/api/requisitions/${prId}/approvals`).then(r => r.data),
   createApprovalStep:  (dto)          => api.post('/api/requisitions/approvals', dto).then(r => r.data),
   updateApproval:      (stepId, dto)  => api.put(`/api/requisitions/approvals/${stepId}`, dto).then(r => r.data),
+  // Supplier-facing accept / decline of the PR overall
+  updateStatus:        (prId, status) => api.put(`/api/requisitions/${prId}/status`, { status }).then(r => r.data),
 }
 
 /* ── Purchase Orders ────────────────────────────────────── */

@@ -7,6 +7,7 @@ import { rfxApi } from '../../api/procurement.api'
 import { StatusPill } from '../../components/ui/StatusPill'
 import { Spinner, EmptyState } from '../../components/ui/index'
 import Modal from '../../components/ui/Modal'
+import useAuthStore from '../../store/auth.store'
 
 const TABS = ['Lines','Invites','Bids','Awards']
 
@@ -64,9 +65,13 @@ export default function RFxDetailPage() {
   )
 }
 
-/* ─── Lines ─── */
+/* ─── Lines ─── (Buyer / CategoryManager / Admin add; SupplierUser view only) */
 function LinesTab({ rfxId }) {
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canAdd = roles.some(r => ['Admin','Buyer','CategoryManager'].includes(r))
+
   const [open, setOpen] = useState(false)
   const { register, handleSubmit, reset } = useForm()
   const { data, isLoading } = useQuery({ queryKey: ['rfx-lines', rfxId], queryFn: () => rfxApi.getRfxLines(rfxId) })
@@ -74,7 +79,7 @@ function LinesTab({ rfxId }) {
 
   const addMut = useMutation({
     mutationFn: rfxApi.addRfxLine,
-    onSuccess: () => { qc.invalidateQueries(['rfx-lines', rfxId]); setOpen(false); reset(); toast.success('Line added') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rfx-lines', rfxId] }); setOpen(false); reset(); toast.success('Line added') },
     onError: e => toast.error(extract(e) ?? 'Failed to add line'),
   })
 
@@ -91,7 +96,9 @@ function LinesTab({ rfxId }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-600">Line items requested</div>
-        <button className="btn btn-primary btn-sm" onClick={() => { reset({ itemID: '', qty: 1, uoM: 'EA', targetPrice: '', notes: '' }); setOpen(true) }}>+ Add Line</button>
+        {canAdd && (
+          <button className="btn btn-primary btn-sm" onClick={() => { reset({ itemID: '', qty: 1, uoM: 'EA', targetPrice: '', notes: '' }); setOpen(true) }}>+ Add Line</button>
+        )}
       </div>
       <div className="sh-card p-0 overflow-hidden">
         {isLoading ? <div className="py-8 flex justify-center"><Spinner /></div>
@@ -129,6 +136,11 @@ function LinesTab({ rfxId }) {
 /* ─── Invites ─── */
 function InvitesTab({ rfxId }) {
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canInvite  = roles.some(r => ['Admin','Buyer','CategoryManager'].includes(r))
+  const isSupplier = roles.includes('SupplierUser')
+
   const [open, setOpen] = useState(false)
   const { register, handleSubmit, reset } = useForm()
   const { data, isLoading } = useQuery({ queryKey: ['rfx-invites', rfxId], queryFn: () => rfxApi.getInvites(rfxId) })
@@ -136,35 +148,85 @@ function InvitesTab({ rfxId }) {
 
   const addMut = useMutation({
     mutationFn: rfxApi.addInvite,
-    onSuccess: () => { qc.invalidateQueries(['rfx-invites', rfxId]); setOpen(false); reset(); toast.success('Supplier invited') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rfx-invites', rfxId] }); setOpen(false); reset(); toast.success('Supplier invited') },
     onError: e => toast.error(extract(e) ?? 'Failed to invite'),
+  })
+
+  const respondMut = useMutation({
+    mutationFn: ({ invite, decision }) => rfxApi.updateInvite({
+      inviteID:    invite.inviteID,
+      invitedDate: invite.invitedDate,
+      status:      decision,
+    }),
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ['rfx-invites', rfxId] })
+      toast.success(`Invitation ${vars.decision.toLowerCase()}`)
+    },
+    onError: e => toast.error(extract(e) ?? 'Failed to update invitation'),
   })
 
   const onSubmit = (form) => addMut.mutate({
     rfxID:       rfxId,
     supplierID:  Number(form.supplierID),
     invitedDate: new Date().toISOString(),
-    status:      form.status ?? 'Invited',
+    status:      'Invited',
   })
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <div className="text-sm text-gray-600">Suppliers invited to this RFx</div>
-        <button className="btn btn-primary btn-sm" onClick={() => { reset({ supplierID: '', status: 'Invited' }); setOpen(true) }}>+ Invite Supplier</button>
+        <div className="text-sm text-gray-600">
+          {isSupplier ? 'Your invitations for this RFx — accept or decline below.' : 'Suppliers invited to this RFx'}
+        </div>
+        {canInvite && (
+          <button className="btn btn-primary btn-sm" onClick={() => { reset({ supplierID: '' }); setOpen(true) }}>+ Invite Supplier</button>
+        )}
       </div>
+
       <div className="sh-card p-0 overflow-hidden">
         {isLoading ? <div className="py-8 flex justify-center"><Spinner /></div>
           : rows.length === 0 ? <EmptyState message="No suppliers invited." />
           : (
             <table className="sh-table">
-              <thead><tr><th>Invite ID</th><th>Supplier ID</th><th>Invited Date</th><th>Status</th></tr></thead>
-              <tbody>{rows.map(i => (
-                <tr key={i.inviteID}><td className="text-gray-400 text-xs">{i.inviteID}</td><td>{i.supplierID}</td>
-                  <td className="text-xs text-gray-500">{i.invitedDate ? new Date(i.invitedDate).toLocaleDateString() : '—'}</td>
-                  <td><StatusPill status={i.status} /></td>
+              <thead>
+                <tr>
+                  <th>Invite ID</th><th>Supplier ID</th><th>Invited Date</th><th>Status</th>
+                  {isSupplier && <th>Actions</th>}
                 </tr>
-              ))}</tbody>
+              </thead>
+              <tbody>
+                {rows.map(i => {
+                  const pending = (i.status ?? '').toLowerCase() === 'invited'
+                  return (
+                    <tr key={i.inviteID}>
+                      <td className="text-gray-400 text-xs">{i.inviteID}</td>
+                      <td>{i.supplierID}</td>
+                      <td className="text-xs text-gray-500">{i.invitedDate ? new Date(i.invitedDate).toLocaleDateString() : '—'}</td>
+                      <td><StatusPill status={i.status} /></td>
+                      {isSupplier && (
+                        <td>
+                          {pending ? (
+                            <div className="flex gap-1">
+                              <button
+                                className="btn btn-primary btn-sm"
+                                disabled={respondMut.isPending}
+                                onClick={() => respondMut.mutate({ invite: i, decision: 'Accepted' })}
+                              >Accept</button>
+                              <button
+                                className="btn btn-danger btn-sm"
+                                disabled={respondMut.isPending}
+                                onClick={() => respondMut.mutate({ invite: i, decision: 'Declined' })}
+                              >Decline</button>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-gray-400">Responded</span>
+                          )}
+                        </td>
+                      )}
+                    </tr>
+                  )
+                })}
+              </tbody>
             </table>
           )}
       </div>
@@ -175,11 +237,7 @@ function InvitesTab({ rfxId }) {
             <button className="btn btn-primary btn-sm" onClick={handleSubmit(onSubmit)} disabled={addMut.isPending}>{addMut.isPending ? 'Adding…' : 'Invite'}</button></>}>
           <form className="space-y-3" noValidate>
             <div><label className="sh-label">Supplier ID *</label><input type="number" className="sh-input" {...register('supplierID', { required: true })} /></div>
-            <div><label className="sh-label">Status</label>
-              <select className="sh-select" {...register('status')}>
-                <option>Invited</option><option>Accepted</option><option>Declined</option>
-              </select>
-            </div>
+            <p className="text-xs text-gray-500">Status will start as <strong>Invited</strong>. The supplier accepts or declines from their own login.</p>
           </form>
         </Modal>
       )}
@@ -187,9 +245,13 @@ function InvitesTab({ rfxId }) {
   )
 }
 
-/* ─── Bids ─── */
+/* ─── Bids ─── (SupplierUser submits; Buyer / CategoryManager / Admin view only) */
 function BidsTab({ rfxId }) {
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const isSupplier = roles.includes('SupplierUser')
+
   const [open, setOpen] = useState(false)
   const [linesFor, setLinesFor] = useState(null)
   const { register, handleSubmit, reset } = useForm()
@@ -198,7 +260,7 @@ function BidsTab({ rfxId }) {
 
   const addMut = useMutation({
     mutationFn: rfxApi.addBid,
-    onSuccess: () => { qc.invalidateQueries(['rfx-bids', rfxId]); setOpen(false); reset(); toast.success('Bid created') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rfx-bids', rfxId] }); setOpen(false); reset(); toast.success('Bid created') },
     onError: e => toast.error(extract(e) ?? 'Failed to create bid'),
   })
 
@@ -214,8 +276,12 @@ function BidsTab({ rfxId }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <div className="text-sm text-gray-600">Supplier bids submitted</div>
-        <button className="btn btn-primary btn-sm" onClick={() => { reset({ supplierID: '', totalValue: '', currency: 'USD', status: 'Submitted' }); setOpen(true) }}>+ Add Bid</button>
+        <div className="text-sm text-gray-600">
+          {isSupplier ? 'Submit your bid for this RFx.' : 'Supplier bids submitted (read-only for buyers)'}
+        </div>
+        {isSupplier && (
+          <button className="btn btn-primary btn-sm" onClick={() => { reset({ supplierID: '', totalValue: '', currency: 'USD', status: 'Submitted' }); setOpen(true) }}>+ Submit Bid</button>
+        )}
       </div>
       <div className="sh-card p-0 overflow-hidden">
         {isLoading ? <div className="py-8 flex justify-center"><Spinner /></div>
@@ -228,36 +294,41 @@ function BidsTab({ rfxId }) {
                   <td className="text-gray-400 text-xs">{b.bidID}</td><td>{b.supplierID}</td>
                   <td className="text-xs text-gray-500">{b.bidDate ? new Date(b.bidDate).toLocaleDateString() : '—'}</td>
                   <td>{b.totalValue}</td><td>{b.currency}</td><td><StatusPill status={b.status} /></td>
-                  <td><button className="btn btn-ghost btn-sm" onClick={() => setLinesFor(b.bidID)}>View / + Line</button></td>
+                  <td>
+                    <button className="btn btn-ghost btn-sm" onClick={() => setLinesFor(b.bidID)}>
+                      {isSupplier ? 'View / + Line' : 'View Lines'}
+                    </button>
+                  </td>
                 </tr>
               ))}</tbody>
             </table>
           )}
       </div>
 
-      {open && (
-        <Modal title="Add Bid" onClose={() => setOpen(false)}
+      {open && isSupplier && (
+        <Modal title="Submit Bid" onClose={() => setOpen(false)}
           footer={<><button className="btn btn-secondary btn-sm" onClick={() => setOpen(false)}>Cancel</button>
-            <button className="btn btn-primary btn-sm" onClick={handleSubmit(onSubmit)} disabled={addMut.isPending}>{addMut.isPending ? 'Adding…' : 'Add'}</button></>}>
+            <button className="btn btn-primary btn-sm" onClick={handleSubmit(onSubmit)} disabled={addMut.isPending}>{addMut.isPending ? 'Submitting…' : 'Submit'}</button></>}>
           <form className="space-y-3" noValidate>
-            <div><label className="sh-label">Supplier ID *</label><input type="number" className="sh-input" {...register('supplierID', { required: true })} /></div>
+            <div><label className="sh-label">Your Supplier ID *</label><input type="number" className="sh-input" {...register('supplierID', { required: true })} /></div>
             <div><label className="sh-label">Total Value *</label><input type="number" step="0.01" className="sh-input" {...register('totalValue', { required: true })} /></div>
-            <div><label className="sh-label">Currency</label><input className="sh-input" {...register('currency')} /></div>
+            <div><label className="sh-label">Currency</label><input className="sh-input" defaultValue="USD" {...register('currency')} /></div>
             <div><label className="sh-label">Status</label>
               <select className="sh-select" {...register('status')}>
                 <option>Submitted</option><option>Withdrawn</option>
               </select>
             </div>
+            <p className="text-xs text-gray-500">After submitting, use the Lines view to price each RFx line.</p>
           </form>
         </Modal>
       )}
 
-      {linesFor && <BidLinesModal bidId={linesFor} onClose={() => setLinesFor(null)} />}
+      {linesFor && <BidLinesModal bidId={linesFor} onClose={() => setLinesFor(null)} canAddLines={isSupplier} />}
     </div>
   )
 }
 
-function BidLinesModal({ bidId, onClose }) {
+function BidLinesModal({ bidId, onClose, canAddLines }) {
   const qc = useQueryClient()
   const { register, handleSubmit, reset } = useForm()
   const { data, isLoading } = useQuery({ queryKey: ['bid-lines', bidId], queryFn: () => rfxApi.getBidLines(bidId) })
@@ -265,7 +336,7 @@ function BidLinesModal({ bidId, onClose }) {
 
   const addMut = useMutation({
     mutationFn: rfxApi.addBidLine,
-    onSuccess: () => { qc.invalidateQueries(['bid-lines', bidId]); reset(); toast.success('Bid line added') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['bid-lines', bidId] }); reset(); toast.success('Bid line added') },
     onError: e => toast.error(extract(e) ?? 'Failed to add bid line'),
   })
 
@@ -293,19 +364,21 @@ function BidLinesModal({ bidId, onClose }) {
             </table>
           )}
 
-        <div className="border-t pt-4">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Add Bid Line</h4>
-          <form className="grid grid-cols-2 gap-2" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <input type="number" placeholder="RFx Line ID *" className="sh-input" {...register('rfxLineID', { required: true })} />
-            <input type="number" step="0.01" placeholder="Unit Price *" className="sh-input" {...register('unitPrice', { required: true })} />
-            <input type="number" placeholder="Lead Time (days)" className="sh-input" {...register('leadTimeDays')} />
-            <input placeholder="Currency" defaultValue="USD" className="sh-input" {...register('currency')} />
-            <input placeholder="Notes" className="sh-input col-span-2" {...register('notes')} />
-            <button type="submit" className="btn btn-primary btn-sm col-span-2" disabled={addMut.isPending}>
-              {addMut.isPending ? 'Adding…' : 'Add Bid Line'}
-            </button>
-          </form>
-        </div>
+        {canAddLines && (
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">Add Bid Line</h4>
+            <form className="grid grid-cols-2 gap-2" onSubmit={handleSubmit(onSubmit)} noValidate>
+              <input type="number" placeholder="RFx Line ID *" className="sh-input" {...register('rfxLineID', { required: true })} />
+              <input type="number" step="0.01" placeholder="Unit Price *" className="sh-input" {...register('unitPrice', { required: true })} />
+              <input type="number" placeholder="Lead Time (days)" className="sh-input" {...register('leadTimeDays')} />
+              <input placeholder="Currency" defaultValue="USD" className="sh-input" {...register('currency')} />
+              <input placeholder="Notes" className="sh-input col-span-2" {...register('notes')} />
+              <button type="submit" className="btn btn-primary btn-sm col-span-2" disabled={addMut.isPending}>
+                {addMut.isPending ? 'Adding…' : 'Add Bid Line'}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </Modal>
   )
@@ -314,15 +387,33 @@ function BidLinesModal({ bidId, onClose }) {
 /* ─── Awards ─── */
 function AwardsTab({ rfxId }) {
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canManage = roles.some(r => ['Admin','Buyer','CategoryManager'].includes(r))
+
   const [open, setOpen] = useState(false)
+  const [editingStatus, setEditingStatus] = useState(null)
   const { register, handleSubmit, reset } = useForm()
+  const statusForm = useForm()
+
   const { data, isLoading } = useQuery({ queryKey: ['rfx-awards', rfxId], queryFn: () => rfxApi.getAwards(rfxId) })
   const rows = (data?.data ?? data ?? [])
 
   const addMut = useMutation({
     mutationFn: rfxApi.addAward,
-    onSuccess: () => { qc.invalidateQueries(['rfx-awards', rfxId]); setOpen(false); reset(); toast.success('Award created') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rfx-awards', rfxId] }); setOpen(false); reset(); toast.success('Award created') },
     onError: e => toast.error(extract(e) ?? 'Failed to create award'),
+  })
+
+  const updateMut = useMutation({
+    mutationFn: rfxApi.updateAward,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['rfx-awards', rfxId] })
+      setEditingStatus(null)
+      statusForm.reset()
+      toast.success('Award updated')
+    },
+    onError: e => toast.error(extract(e) ?? 'Failed to update award'),
   })
 
   const onSubmit = (form) => addMut.mutate({
@@ -332,30 +423,60 @@ function AwardsTab({ rfxId }) {
     awardValue: Number(form.awardValue),
     currency:   form.currency || 'USD',
     notes:      form.notes ?? '',
-    status:     form.status ?? 'Awarded',
+    status:     'Awarded',
+  })
+
+  const onStatusSubmit = (form) => updateMut.mutate({
+    awardID: editingStatus.awardID,
+    status:  form.status,
+    notes:   form.notes ?? editingStatus.notes ?? '',
   })
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-600">Awards issued from this RFx</div>
-        <button className="btn btn-primary btn-sm" onClick={() => { reset({ supplierID: '', awardValue: '', currency: 'USD', notes: '', status: 'Awarded' }); setOpen(true) }}>+ Add Award</button>
+        {canManage && (
+          <button className="btn btn-primary btn-sm" onClick={() => { reset({ supplierID: '', awardValue: '', currency: 'USD', notes: '' }); setOpen(true) }}>+ Add Award</button>
+        )}
       </div>
       <div className="sh-card p-0 overflow-hidden">
         {isLoading ? <div className="py-8 flex justify-center"><Spinner /></div>
           : rows.length === 0 ? <EmptyState message="No awards yet." />
           : (
             <table className="sh-table">
-              <thead><tr><th>Award ID</th><th>Supplier ID</th><th>Award Date</th><th>Value</th><th>Currency</th><th>Status</th><th>Notes</th></tr></thead>
-              <tbody>{rows.map(a => (
-                <tr key={a.awardID}>
-                  <td className="text-gray-400 text-xs">{a.awardID}</td><td>{a.supplierID}</td>
-                  <td className="text-xs text-gray-500">{a.awardDate ? new Date(a.awardDate).toLocaleDateString() : '—'}</td>
-                  <td>{a.awardValue}</td><td>{a.currency}</td>
-                  <td><StatusPill status={a.status} /></td>
-                  <td className="max-w-xs truncate text-sm">{a.notes ?? '—'}</td>
+              <thead>
+                <tr>
+                  <th>Award ID</th><th>Supplier ID</th><th>Award Date</th><th>Value</th><th>Currency</th><th>Status</th><th>Notes</th>
+                  {canManage && <th>Actions</th>}
                 </tr>
-              ))}</tbody>
+              </thead>
+              <tbody>
+                {rows.map(a => (
+                  <tr key={a.awardID}>
+                    <td className="text-gray-400 text-xs">{a.awardID}</td>
+                    <td>{a.supplierID}</td>
+                    <td className="text-xs text-gray-500">{a.awardDate ? new Date(a.awardDate).toLocaleDateString() : '—'}</td>
+                    <td>{a.awardValue}</td>
+                    <td>{a.currency}</td>
+                    <td><StatusPill status={a.status} /></td>
+                    <td className="max-w-xs truncate text-sm">{a.notes ?? '—'}</td>
+                    {canManage && (
+                      <td>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => {
+                            statusForm.reset({ status: a.status ?? 'Awarded', notes: a.notes ?? '' })
+                            setEditingStatus(a)
+                          }}
+                        >
+                          Change Status
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
             </table>
           )}
       </div>
@@ -368,12 +489,34 @@ function AwardsTab({ rfxId }) {
             <div><label className="sh-label">Supplier ID *</label><input type="number" className="sh-input" {...register('supplierID', { required: true })} /></div>
             <div><label className="sh-label">Award Value *</label><input type="number" step="0.01" className="sh-input" {...register('awardValue', { required: true })} /></div>
             <div><label className="sh-label">Currency</label><input className="sh-input" {...register('currency')} /></div>
-            <div><label className="sh-label">Status</label>
-              <select className="sh-select" {...register('status')}>
-                <option>Awarded</option><option>Pending</option><option>Cancelled</option>
+            <div><label className="sh-label">Notes</label><textarea rows={2} className="sh-input" {...register('notes')} /></div>
+            <p className="text-xs text-gray-500">New awards start as <strong>Awarded</strong>. Use Change Status to mark <em>Pending</em> or <em>Cancelled</em>.</p>
+          </form>
+        </Modal>
+      )}
+
+      {editingStatus && (
+        <Modal title={`Change status — Award #${editingStatus.awardID}`} onClose={() => setEditingStatus(null)}
+          footer={<>
+            <button className="btn btn-secondary btn-sm" onClick={() => setEditingStatus(null)}>Cancel</button>
+            <button className="btn btn-primary btn-sm" onClick={statusForm.handleSubmit(onStatusSubmit)} disabled={updateMut.isPending}>
+              {updateMut.isPending ? 'Saving…' : 'Save'}
+            </button>
+          </>}>
+          <form className="space-y-3" noValidate>
+            <div>
+              <label className="sh-label">Status *</label>
+              <select className="sh-select" {...statusForm.register('status', { required: true })}>
+                <option>Awarded</option>
+                <option>Pending</option>
+                <option>Cancelled</option>
               </select>
             </div>
-            <div><label className="sh-label">Notes</label><textarea rows={2} className="sh-input" {...register('notes')} /></div>
+            <div>
+              <label className="sh-label">Notes (optional)</label>
+              <textarea rows={3} className="sh-input" {...statusForm.register('notes')} />
+            </div>
+            <p className="text-xs text-gray-500">SupplierUser, Buyer and Admin will be notified of the status change.</p>
           </form>
         </Modal>
       )}

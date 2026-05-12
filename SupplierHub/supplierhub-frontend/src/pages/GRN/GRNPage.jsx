@@ -13,6 +13,8 @@ export default function GRNPage() {
   const navigate = useNavigate()
   const qc = useQueryClient()
   const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canCreate = roles.some(r => ['Admin','ReceivingUser','WarehouseManager'].includes(r))
   const [open, setOpen] = useState(false)
 
   const { data, isLoading } = useQuery({ queryKey: ['grn'], queryFn: grnApi.getAll })
@@ -45,10 +47,12 @@ export default function GRNPage() {
       <PageHeader
         title="GRN — Receiving"
         subtitle="Goods receipt notes against POs / ASNs"
-        action={<button className="btn btn-primary btn-sm" onClick={() => {
-          reset({ poID: '', asnID: '', receivedDate: today(), receivedBy: user?.userId ?? '', status: 'Open' })
-          setOpen(true)
-        }}>+ Add GRN</button>}
+        action={canCreate ? (
+          <button className="btn btn-primary btn-sm" onClick={() => {
+            reset({ poID: '', asnID: '', receivedDate: today(), receivedBy: user?.userId ?? '', status: 'Open' })
+            setOpen(true)
+          }}>+ Add GRN</button>
+        ) : null}
       />
 
       <div className="sh-card p-0 overflow-hidden">

@@ -7,10 +7,14 @@ import { rfxApi } from '../../api/procurement.api'
 import { StatusPill } from '../../components/ui/StatusPill'
 import { PageHeader, Spinner, EmptyState } from '../../components/ui/index'
 import Modal from '../../components/ui/Modal'
+import useAuthStore from '../../store/auth.store'
 
 export default function RFxPage() {
   const navigate = useNavigate()
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canCreate = roles.some(r => ['Admin','Buyer','CategoryManager'].includes(r))
   const [showCreate, setShowCreate] = useState(false)
 
   const { data, isLoading } = useQuery({ queryKey: ['rfx'], queryFn: rfxApi.getAllRfx })
@@ -28,7 +32,9 @@ export default function RFxPage() {
       <PageHeader
         title="RFx Events"
         subtitle="RFI / RFP / RFQ events and bid management"
-        action={<button className="btn btn-primary" onClick={() => { reset(); setShowCreate(true) }}>+ New RFx</button>}
+        action={canCreate
+          ? <button className="btn btn-primary" onClick={() => { reset(); setShowCreate(true) }}>+ New RFx</button>
+          : null}
       />
       <div className="sh-card p-0 overflow-hidden">
         {isLoading ? <div className="flex justify-center py-12"><Spinner /></div>

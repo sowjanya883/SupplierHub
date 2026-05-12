@@ -9,20 +9,44 @@ import { Spinner, EmptyState } from '../../components/ui/index'
 import Modal from '../../components/ui/Modal'
 import useAuthStore from '../../store/auth.store'
 
-const TABS = ['Lines', 'Approvals']
+const ALL_TABS = ['Lines', 'Approvals']
 
 export default function RequisitionDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [tab, setTab] = useState('Lines')
+  const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const isSupplier = roles.includes('SupplierUser')
+  const isAdmin    = roles.includes('Admin')
+
+  // SupplierUsers only see PR Lines (read-only); no Approvals tab (internal).
+  const visibleTabs = isSupplier && !isAdmin ? ['Lines'] : ALL_TABS
+  const [tab, setTab] = useState(visibleTabs[0])
 
   const { data, isLoading } = useQuery({ queryKey: ['requisition', id], queryFn: () => requisitionsApi.getById(id) })
+
+  const statusMut = useMutation({
+    mutationFn: (status) => requisitionsApi.updateStatus(Number(id), status),
+    onSuccess: (_, status) => {
+      qc.invalidateQueries({ queryKey: ['requisition', id] })
+      qc.invalidateQueries({ queryKey: ['requisitions'] })
+      toast.success(`Marked as ${status}`)
+    },
+    onError: e => toast.error(extract(e) ?? 'Failed to update status'),
+  })
 
   if (isLoading) return <div className="flex justify-center py-16"><Spinner /></div>
   const pr = data?.data ?? data
   if (!pr) return <p>Requisition not found.</p>
 
   const prId = Number(id)
+  const currentStatus = (pr.status ?? '').toLowerCase()
+  // Supplier can act once internal approval is done (status 'Approved'), or on
+  // legacy DRAFT PRs. Don't allow further changes once already Accepted/Declined.
+  const supplierCanAct = isSupplier
+    && currentStatus !== 'accepted'
+    && currentStatus !== 'declined'
 
   return (
     <div>
@@ -43,10 +67,38 @@ export default function RequisitionDetailPage() {
           <div><span className="text-gray-500">Needed By</span><p className="font-medium mt-0.5">{pr.neededByDate ? new Date(pr.neededByDate).toLocaleDateString() : '—'}</p></div>
           <div><span className="text-gray-500">Justification</span><p className="font-medium mt-0.5">{pr.justification || '—'}</p></div>
         </div>
+
+        {isSupplier && (
+          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-3">
+            <p className="text-sm text-gray-600 flex-1">
+              {supplierCanAct
+                ? 'Respond to this requisition — accept to indicate you can fulfil it, decline if you cannot.'
+                : `You have already marked this PR as ${pr.status}. Buyer is notified.`}
+            </p>
+            {supplierCanAct && (
+              <>
+                <button
+                  className="btn btn-primary btn-sm"
+                  onClick={() => statusMut.mutate('Accepted')}
+                  disabled={statusMut.isPending}
+                >
+                  {statusMut.isPending ? '…' : 'Accept'}
+                </button>
+                <button
+                  className="btn btn-danger btn-sm"
+                  onClick={() => statusMut.mutate('Declined')}
+                  disabled={statusMut.isPending}
+                >
+                  {statusMut.isPending ? '…' : 'Decline'}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex gap-1 mb-4 border-b border-gray-200">
-        {TABS.map(t => (
+        {visibleTabs.map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               tab === t ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700'}`}>
@@ -61,9 +113,13 @@ export default function RequisitionDetailPage() {
   )
 }
 
-/* ─── PR Lines (list + add) ─── */
+/* ─── PR Lines ─── (Buyer / Admin add; CategoryManager / Approver view only) */
 function LinesSection({ prId }) {
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canAdd = roles.some(r => ['Admin','Buyer'].includes(r))
+
   const [modalOpen, setModalOpen] = useState(false)
   const { register, handleSubmit, reset } = useForm()
 
@@ -75,7 +131,7 @@ function LinesSection({ prId }) {
 
   const addMut = useMutation({
     mutationFn: requisitionsApi.addLine,
-    onSuccess: () => { qc.invalidateQueries(['pr-lines', prId]); setModalOpen(false); reset(); toast.success('Line added') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['pr-lines', prId] }); setModalOpen(false); reset(); toast.success('Line added') },
     onError: e => toast.error(extract(e) ?? 'Failed to add line'),
   })
 
@@ -98,10 +154,12 @@ function LinesSection({ prId }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-600">Line items on this requisition</div>
-        <button className="btn btn-primary btn-sm" onClick={() => {
-          reset({ itemID: '', description: '', qty: 1, uom: 'EA', targetPrice: '', currency: 'USD', supplierPreferredID: '', notes: '' })
-          setModalOpen(true)
-        }}>+ Add Line</button>
+        {canAdd && (
+          <button className="btn btn-primary btn-sm" onClick={() => {
+            reset({ itemID: '', description: '', qty: 1, uom: 'EA', targetPrice: '', currency: 'USD', supplierPreferredID: '', notes: '' })
+            setModalOpen(true)
+          }}>+ Add Line</button>
+        )}
       </div>
 
       <div className="sh-card p-0 overflow-hidden">
@@ -181,10 +239,14 @@ function LinesSection({ prId }) {
   )
 }
 
-/* ─── Approval steps (list + add + decide) ─── */
+/* ─── Approval steps ─── (Requester adds approver; Admin/CategoryManager decide) */
 function ApprovalsSection({ prId }) {
   const qc = useQueryClient()
   const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canAddApprover = roles.some(r => ['Admin','Buyer'].includes(r))
+  const canDecide      = roles.some(r => ['Admin','CategoryManager'].includes(r))
+
   const [modalOpen, setModalOpen] = useState(false)
   const [decisionOn, setDecisionOn] = useState(null)
   const { register, handleSubmit, reset } = useForm()
@@ -198,12 +260,12 @@ function ApprovalsSection({ prId }) {
 
   const createMut = useMutation({
     mutationFn: requisitionsApi.createApprovalStep,
-    onSuccess: () => { qc.invalidateQueries(['pr-approvals', prId]); setModalOpen(false); reset(); toast.success('Approval step added') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['pr-approvals', prId] }); setModalOpen(false); reset(); toast.success('Approval step added') },
     onError: e => toast.error(extract(e) ?? 'Failed to add approval'),
   })
   const updateMut = useMutation({
     mutationFn: ({ stepId, dto }) => requisitionsApi.updateApproval(stepId, dto),
-    onSuccess: () => { qc.invalidateQueries(['pr-approvals', prId]); setDecisionOn(null); decisionForm.reset(); toast.success('Decision recorded') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['pr-approvals', prId] }); setDecisionOn(null); decisionForm.reset(); toast.success('Decision recorded') },
     onError: e => toast.error(extract(e) ?? 'Failed to record decision'),
   })
 
@@ -233,10 +295,12 @@ function ApprovalsSection({ prId }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-600">Approval workflow chain</div>
-        <button className="btn btn-primary btn-sm" onClick={() => {
-          reset({ approverID: user?.userId ?? '', remarks: '' })
-          setModalOpen(true)
-        }}>+ Add Approver</button>
+        {canAddApprover && (
+          <button className="btn btn-primary btn-sm" onClick={() => {
+            reset({ approverID: user?.userId ?? '', remarks: '' })
+            setModalOpen(true)
+          }}>+ Add Approver</button>
+        )}
       </div>
 
       <div className="sh-card p-0 overflow-hidden">
@@ -263,12 +327,14 @@ function ApprovalsSection({ prId }) {
                     <td className="text-xs text-gray-500">{s.decisionDate ? new Date(s.decisionDate).toLocaleString() : '—'}</td>
                     <td className="max-w-xs truncate text-sm">{s.remarks || '—'}</td>
                     <td>
-                      {isPending && (
+                      {isPending && canDecide ? (
                         <button className="btn btn-ghost btn-sm" onClick={() => {
                           decisionForm.reset({ decision: 'Approved', remarks: '' })
                           setDecisionOn(s)
                         }}>Decide</button>
-                      )}
+                      ) : isPending ? (
+                        <span className="text-xs text-gray-400">Awaiting approver</span>
+                      ) : null}
                     </td>
                   </tr>
                 )

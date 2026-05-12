@@ -55,27 +55,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // FIX: Merge these and remove the second AddControllers() call later in the file
 
 builder.Services.AddControllers(options =>
-
 {
-
-	var adminPolicy = new AuthorizationPolicyBuilder()
-
+	// Global default: only require an authenticated user.
+	// Per-action [Authorize(Roles = "...")] attributes then decide who can do what.
+	// The previous RequireRole("Admin") policy here AND'd Admin onto every endpoint,
+	// which made it impossible for CategoryManager / Buyer / etc. to call anything.
+	var requireAuth = new AuthorizationPolicyBuilder()
 		.RequireAuthenticatedUser()
-
-		.RequireRole("Admin")
-
 		.Build();
- 
-	options.Filters.Add(new AuthorizeFilter(adminPolicy));
 
+	options.Filters.Add(new AuthorizeFilter(requireAuth));
 })
-
 .AddJsonOptions(opts =>
-
 {
-
 	opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-
 });
  
  

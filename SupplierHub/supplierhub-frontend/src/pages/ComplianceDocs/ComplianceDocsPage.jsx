@@ -6,9 +6,14 @@ import { complianceDocsApi } from '../../api/procurement.api'
 import { StatusPill } from '../../components/ui/StatusPill'
 import { PageHeader, Spinner, EmptyState } from '../../components/ui/index'
 import Modal from '../../components/ui/Modal'
+import useAuthStore from '../../store/auth.store'
 
 export default function ComplianceDocsPage() {
   const qc = useQueryClient()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canCreate = roles.some(r => ['Admin','SupplierUser','ComplianceOfficer'].includes(r))
+  const canDelete = roles.some(r => ['Admin','ComplianceOfficer'].includes(r))
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [confirmDelete, setConfirmDelete] = useState(null)
@@ -70,7 +75,7 @@ export default function ComplianceDocsPage() {
       <PageHeader
         title="Compliance Documents"
         subtitle="Certifications and compliance records"
-        action={<button className="btn btn-primary btn-sm" onClick={() => open(null)}>+ Add Doc</button>}
+        action={canCreate ? <button className="btn btn-primary btn-sm" onClick={() => open(null)}>+ Add Doc</button> : null}
       />
 
       <div className="sh-card p-0 overflow-hidden">
@@ -94,8 +99,9 @@ export default function ComplianceDocsPage() {
                       <td className="text-xs text-gray-500">{d.expiryDate ? new Date(d.expiryDate).toLocaleDateString() : '—'}</td>
                       <td><StatusPill status={d.status} /></td>
                       <td>
-                        <button className="btn btn-ghost btn-sm" onClick={() => open(d)}>Edit</button>
-                        <button className="btn btn-ghost btn-sm" onClick={() => setConfirmDelete(d)}>Delete</button>
+                        {canCreate && <button className="btn btn-ghost btn-sm" onClick={() => open(d)}>Edit</button>}
+                        {canDelete && <button className="btn btn-ghost btn-sm" onClick={() => setConfirmDelete(d)}>Delete</button>}
+                        {!canCreate && !canDelete && <span className="text-xs text-gray-300">—</span>}
                       </td>
                     </tr>
                   ))}

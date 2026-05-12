@@ -113,6 +113,12 @@ namespace SupplierHub.Repositories
 		}
 
 		/// <summary>
+		/// Retrieves an RFx invite by ID.
+		/// </summary>
+		public Task<RfxInvite?> GetInviteByIdAsync(long inviteId) =>
+			_db.RfxInvites.FirstOrDefaultAsync(x => x.InviteID == inviteId);
+
+		/// <summary>
 		/// Updates an existing RFx invite in the database.
 		/// </summary>
 		/// <param name="invite">RfxInvite to update</param>
@@ -227,5 +233,11 @@ namespace SupplierHub.Repositories
 			await _db.SaveChangesAsync();
 			return award;
 		}
+
+		/// <summary>
+		/// Retrieves an Award by ID.
+		/// </summary>
+		public Task<Award?> GetAwardByIdAsync(long awardId) =>
+			_db.Awards.FirstOrDefaultAsync(x => x.AwardID == awardId);
 	}
 }

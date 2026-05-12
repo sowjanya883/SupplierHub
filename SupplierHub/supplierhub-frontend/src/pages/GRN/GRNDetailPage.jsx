@@ -7,12 +7,19 @@ import { grnApi, grnItemApi, inspectionApi, ncrApi } from '../../api/operations.
 import { StatusPill } from '../../components/ui/StatusPill'
 import { Spinner, EmptyState } from '../../components/ui/index'
 import Modal from '../../components/ui/Modal'
+import useAuthStore from '../../store/auth.store'
 
 const TABS = ['Items', 'Inspections', 'NCRs']
 
 export default function GRNDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  // Only the receiving team and admin can record items / inspections / NCRs.
+  // Buyer / AccountsPayable / SupplierUser can view but not modify.
+  const canEdit = roles.some(r => ['Admin','ReceivingUser','WarehouseManager'].includes(r))
+
   const [tab, setTab] = useState('Items')
   const [selectedItemId, setSelectedItemId] = useState(null)
 
@@ -55,22 +62,22 @@ export default function GRNDetailPage() {
       </div>
 
       {tab === 'Items' && (
-        <ItemsSection grnId={Number(id)} items={items} onSelect={setSelectedItemId} selectedItemId={selectedItemId} />
+        <ItemsSection grnId={Number(id)} items={items} onSelect={setSelectedItemId} selectedItemId={selectedItemId} canEdit={canEdit} />
       )}
 
       {tab === 'Inspections' && (
-        <InspectionsSection items={items} selectedItemId={selectedItemId} setSelectedItemId={setSelectedItemId} />
+        <InspectionsSection items={items} selectedItemId={selectedItemId} setSelectedItemId={setSelectedItemId} canEdit={canEdit} />
       )}
 
       {tab === 'NCRs' && (
-        <NcrsSection items={items} selectedItemId={selectedItemId} setSelectedItemId={setSelectedItemId} />
+        <NcrsSection items={items} selectedItemId={selectedItemId} setSelectedItemId={setSelectedItemId} canEdit={canEdit} />
       )}
     </div>
   )
 }
 
 /* ─── Items: list + add (click row to select for Inspection/NCR tabs) ─── */
-function ItemsSection({ grnId, items, onSelect, selectedItemId }) {
+function ItemsSection({ grnId, items, onSelect, selectedItemId, canEdit = false }) {
   const qc = useQueryClient()
   const [open, setOpen] = useState(false)
   const { register, handleSubmit, reset } = useForm()
@@ -98,10 +105,12 @@ function ItemsSection({ grnId, items, onSelect, selectedItemId }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-600">Click a row to select for Inspections / NCR tabs</div>
-        <button className="btn btn-primary btn-sm"
-          onClick={() => { reset({ poLineID: '', receivedQty: 1, acceptedQty: '', reason: '' }); setOpen(true) }}>
-          + Add Item
-        </button>
+        {canEdit && (
+          <button className="btn btn-primary btn-sm"
+            onClick={() => { reset({ poLineID: '', receivedQty: 1, acceptedQty: '', reason: '' }); setOpen(true) }}>
+            + Add Item
+          </button>
+        )}
       </div>
 
       <div className="sh-card p-0 overflow-hidden">
@@ -143,7 +152,7 @@ function ItemsSection({ grnId, items, onSelect, selectedItemId }) {
 }
 
 /* ─── Inspections CRUD ─── */
-function InspectionsSection({ items, selectedItemId, setSelectedItemId }) {
+function InspectionsSection({ items, selectedItemId, setSelectedItemId, canEdit = false }) {
   const qc = useQueryClient()
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -218,7 +227,9 @@ function InspectionsSection({ items, selectedItemId, setSelectedItemId }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-600">Inspections for GRN Item <span className="font-mono font-medium">#{selectedItemId}</span></div>
-        <button className="btn btn-primary btn-sm" onClick={() => open(null)}>+ New Inspection</button>
+        {canEdit && (
+          <button className="btn btn-primary btn-sm" onClick={() => open(null)}>+ New Inspection</button>
+        )}
       </div>
 
       <div className="sh-card p-0 overflow-hidden">
@@ -236,8 +247,12 @@ function InspectionsSection({ items, selectedItemId, setSelectedItemId }) {
                     <td className="text-xs text-gray-500">{ins.inspDate ? new Date(ins.inspDate).toLocaleDateString() : '—'}</td>
                     <td><StatusPill status={ins.status} /></td>
                     <td>
-                      <button className="btn btn-ghost btn-sm" onClick={() => open(ins)}>Edit</button>
-                      <button className="btn btn-ghost btn-sm" onClick={() => setConfirmDelete(ins)}>Delete</button>
+                      {canEdit ? (
+                        <>
+                          <button className="btn btn-ghost btn-sm" onClick={() => open(ins)}>Edit</button>
+                          <button className="btn btn-ghost btn-sm" onClick={() => setConfirmDelete(ins)}>Delete</button>
+                        </>
+                      ) : <span className="text-xs text-gray-300">—</span>}
                     </td>
                   </tr>
                 ))}
@@ -299,7 +314,7 @@ function InspectionsSection({ items, selectedItemId, setSelectedItemId }) {
 }
 
 /* ─── NCRs (read + create against selected item) ─── */
-function NcrsSection({ items, selectedItemId, setSelectedItemId }) {
+function NcrsSection({ items, selectedItemId, setSelectedItemId, canEdit = false }) {
   const qc = useQueryClient()
   const [modalOpen, setModalOpen] = useState(false)
   const { register, handleSubmit, reset } = useForm()
@@ -346,7 +361,9 @@ function NcrsSection({ items, selectedItemId, setSelectedItemId }) {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div className="text-sm text-gray-600">NCRs for GRN Item <span className="font-mono font-medium">#{selectedItemId}</span></div>
-        <button className="btn btn-primary btn-sm" onClick={() => { reset({ severity: 'Minor', disposition: 'Rework' }); setModalOpen(true) }}>+ Raise NCR</button>
+        {canEdit && (
+          <button className="btn btn-primary btn-sm" onClick={() => { reset({ severity: 'Minor', disposition: 'Rework' }); setModalOpen(true) }}>+ Raise NCR</button>
+        )}
       </div>
 
       <div className="sh-card p-0 overflow-hidden">

@@ -13,7 +13,6 @@ namespace SupplierHub.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(Roles = nameof(RoleType.Admin) + "," + nameof(RoleType.CategoryManager))]
 	public class ContractsController : ControllerBase
 	{
 		private readonly IContractService _service;
@@ -90,8 +89,8 @@ namespace SupplierHub.Controllers
 		[HttpGet]
 		[Authorize(Roles =
 			nameof(RoleType.Admin) + "," +
-			nameof(RoleType.CategoryManager))]
-
+			nameof(RoleType.CategoryManager) + "," +
+			nameof(RoleType.SupplierUser))]
 		[ProducesResponseType(typeof(IEnumerable<ContractGetAllDto>), StatusCodes.Status200OK)]
 		public async Task<IActionResult> GetAll(CancellationToken ct)
 		{

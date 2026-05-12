@@ -8,7 +8,7 @@ namespace SupplierHub.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	[Authorize(Roles = "Admin, SupplierUser, CategoryManager, Buyer")]
+	[Authorize(Roles = "Admin,SupplierUser,CategoryManager,Buyer,AccountsPayable,ReceivingUser")]
 	public class PurchaseOrdersController : ControllerBase
 	{
 		private readonly IPurchaseOrderService _service;

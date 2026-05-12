@@ -2,11 +2,24 @@ import api from './axiosClient'
 
 /* ── Shipping / ASN ─────────────────────────────────────── */
 export const shippingApi = {
-	createShipment: (dto) => api.post('/api/shipping/shipments', dto).then(r => r.data),
-	createAsn: (dto) => api.post('/api/shipping/asn', dto).then(r => r.data),
-	addAsnItem: (dto) => api.post('/api/shipping/asn/items', dto).then(r => r.data),
-	createSlot: (dto) => api.post('/api/shipping/slots', dto).then(r => r.data),
-	getSlots: (siteId) => api.get(`/api/shipping/slots/${siteId}`).then(r => r.data),
+	// Shipments
+	getAllShipments: ()          => api.get('/api/shipping/shipments').then(r => r.data),
+	getShipmentById: (id)        => api.get(`/api/shipping/shipments/${id}`).then(r => r.data),
+	createShipment:  (dto)       => api.post('/api/shipping/shipments', dto).then(r => r.data),
+	updateShipment:  (id, dto)   => api.put(`/api/shipping/shipments/${id}`, dto).then(r => r.data),
+
+	// ASNs
+	getAllAsns:      ()          => api.get('/api/shipping/asn').then(r => r.data),
+	getAsnById:      (id)        => api.get(`/api/shipping/asn/${id}`).then(r => r.data),
+	createAsn:       (dto)       => api.post('/api/shipping/asn', dto).then(r => r.data),
+	updateAsn:       (id, dto)   => api.put(`/api/shipping/asn/${id}`, dto).then(r => r.data),
+	getAsnItems:     (asnId)     => api.get(`/api/shipping/asn/${asnId}/items`).then(r => r.data),
+	addAsnItem:      (dto)       => api.post('/api/shipping/asn/items', dto).then(r => r.data),
+
+	// Slots
+	createSlot:        (dto)             => api.post('/api/shipping/slots', dto).then(r => r.data),
+	getSlots:          (siteId)          => api.get(`/api/shipping/slots/${siteId}`).then(r => r.data),
+	updateSlotStatus:  (slotId, status)  => api.put(`/api/shipping/slots/${slotId}/status`, { status }).then(r => r.data),
 }
 
 /* ── GRN ────────────────────────────────────────────────── */

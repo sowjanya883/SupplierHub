@@ -51,7 +51,10 @@ export default function ItemsPage() {
       setModal(null)
       toast.success('Item created successfully')
     },
-    onError: e => toast.error(e.response?.data?.message ?? 'Failed to create item'),
+    onError: e => {
+      console.error('Item create failed:', e?.response?.status, e?.response?.data)
+      toast.error(extractApiError(e) ?? `Failed to create item (HTTP ${e?.response?.status ?? '?'})`)
+    },
   })
 
   const updateMut = useMutation({
@@ -61,7 +64,7 @@ export default function ItemsPage() {
       setModal(null)
       toast.success('Item updated successfully')
     },
-    onError: e => toast.error(e.response?.data?.message ?? 'Failed to update item'),
+    onError: e => toast.error(extractApiError(e) ?? 'Failed to update item'),
   })
 
   const deleteMut = useMutation({
@@ -71,7 +74,7 @@ export default function ItemsPage() {
       setModal(null)
       toast.success('Item deleted successfully')
     },
-    onError: e => toast.error(e.response?.data?.message ?? 'Failed to delete item'),
+    onError: e => toast.error(extractApiError(e) ?? 'Failed to delete item'),
   })
 
   // ── Handlers ───────────────────────────────────────────
@@ -359,4 +362,13 @@ export default function ItemsPage() {
       )}
     </div>
   )
+}
+
+function extractApiError(err) {
+  if (!err) return null
+  if (err.response?.status === 403) return 'You do not have permission to do this. Try logging out and back in to refresh your role.'
+  const data = err.response?.data
+  if (!data) return null
+  const firstModelError = data.errors ? Object.values(data.errors).flat().find(Boolean) : null
+  return firstModelError ?? data.message ?? data.detail ?? data.error ?? (typeof data === 'string' ? data : null)
 }

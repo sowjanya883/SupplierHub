@@ -64,7 +64,7 @@ const NAV = [
         links: [
             { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { to: '/organizations', label: 'Organizations', icon: Building2, roles: ['Admin'] },
-            { to: '/suppliers', label: 'Suppliers', icon: Users, roles: ['Admin', 'CategoryManager'] },
+            { to: '/suppliers', label: 'Suppliers', icon: Users, roles: ['Admin', 'CategoryManager', 'ComplianceOfficer', 'Buyer', 'SupplierUser'] },
         ],
     },
     {
@@ -82,7 +82,7 @@ const NAV = [
         family: 'amber',
         links: [
             { to: '/rfx', label: 'RFx Events', icon: Megaphone, badgeKey: 'rfx', roles: ['Admin', 'Buyer', 'CategoryManager', 'SupplierUser'] },
-            { to: '/requisitions', label: 'Requisitions', icon: ClipboardList, roles: ['Admin', 'Buyer', 'CategoryManager'] },
+            { to: '/requisitions', label: 'Requisitions', icon: ClipboardList, roles: ['Admin', 'Buyer', 'CategoryManager', 'SupplierUser'] },
             { to: '/purchase-orders', label: 'Purchase Orders', icon: ShoppingCart, badgeKey: 'po', roles: ['Admin', 'Buyer', 'CategoryManager', 'SupplierUser'] },
         ],
     },

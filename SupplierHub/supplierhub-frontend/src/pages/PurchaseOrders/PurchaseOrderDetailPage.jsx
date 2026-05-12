@@ -119,9 +119,9 @@ export default function PurchaseOrderDetailPage() {
                 ))}
             </div>
 
-            {tab === 'Lines' && <LinesTab po={po} />}
+            {tab === 'Lines' && <LinesTab po={po} canEdit={isAdmin || isBuyer} />}
             {tab === 'Acknowledgements' && <AcknowledgementsTab po={po} suppliers={suppliers} isSupplier={isSupplier} />}
-            {tab === 'Revisions' && <RevisionsTab po={po} user={user} />}
+            {tab === 'Revisions' && <RevisionsTab po={po} user={user} canEdit={isAdmin || isBuyer} />}
         </div>
     )
 }
@@ -139,7 +139,7 @@ function Detail({ label, value }) {
 // ─────────────────────────────────────────────────────────
 // LINES TAB
 // ─────────────────────────────────────────────────────────
-function LinesTab({ po }) {
+function LinesTab({ po, canEdit = false }) {
     const qc = useQueryClient()
     const [modal, setModal] = useState(null)   // 'form' | 'delete'
     const [selected, setSelected] = useState(null)
@@ -246,9 +246,11 @@ function LinesTab({ po }) {
                 <h4 className="text-sm font-medium text-gray-700">
                     PO Lines — {lines.length} item{lines.length !== 1 ? 's' : ''}
                 </h4>
-                <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                    + Add Line
-                </button>
+                {canEdit && (
+                    <button className="btn btn-primary btn-sm" onClick={openCreate}>
+                        + Add Line
+                    </button>
+                )}
             </div>
 
             <div className="sh-card p-0 overflow-hidden">
@@ -257,9 +259,11 @@ function LinesTab({ po }) {
                 ) : lines.length === 0 ? (
                     <div className="text-center py-8">
                         <p className="text-sm text-gray-400 mb-3">No lines added yet.</p>
-                        <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                            + Add First Line
-                        </button>
+                        {canEdit && (
+                            <button className="btn btn-primary btn-sm" onClick={openCreate}>
+                                + Add First Line
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <table className="sh-table">
@@ -294,11 +298,13 @@ function LinesTab({ po }) {
                                     </td>
                                     <td><span className={statusColor(l.status)}>{l.status}</span></td>
                                     <td>
-                                        <div className="flex gap-1">
-                                            <button className="btn btn-ghost btn-sm" onClick={() => openEdit(l)}>Edit</button>
-                                            <button className="btn btn-danger btn-sm"
-                                                onClick={() => { setSelected(l); setModal('delete') }}>Del</button>
-                                        </div>
+                                        {canEdit ? (
+                                            <div className="flex gap-1">
+                                                <button className="btn btn-ghost btn-sm" onClick={() => openEdit(l)}>Edit</button>
+                                                <button className="btn btn-danger btn-sm"
+                                                    onClick={() => { setSelected(l); setModal('delete') }}>Del</button>
+                                            </div>
+                                        ) : <span className="text-xs text-gray-300">—</span>}
                                     </td>
                                 </tr>
                             ))}
@@ -488,9 +494,11 @@ function AcknowledgementsTab({ po, suppliers, isSupplier }) {
                         Supplier must Accept, Counter, or Reject this PO
                     </p>
                 </div>
-                <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                    + Add Acknowledgement
-                </button>
+                {isSupplier && (
+                    <button className="btn btn-primary btn-sm" onClick={openCreate}>
+                        + Add Acknowledgement
+                    </button>
+                )}
             </div>
 
             <div className="sh-card p-0 overflow-hidden">
@@ -545,9 +553,11 @@ function AcknowledgementsTab({ po, suppliers, isSupplier }) {
                                         </td>
                                         <td><span className={statusColor(status)}>{status}</span></td>
                                         <td>
-                                            <button className="btn btn-ghost btn-sm" onClick={() => openEdit(a)}>
-                                                Edit
-                                            </button>
+                                            {isSupplier ? (
+                                                <button className="btn btn-ghost btn-sm" onClick={() => openEdit(a)}>
+                                                    Edit
+                                                </button>
+                                            ) : <span className="text-xs text-gray-300">—</span>}
                                         </td>
                                     </tr>
                                 )
@@ -628,7 +638,7 @@ function AcknowledgementsTab({ po, suppliers, isSupplier }) {
 // ─────────────────────────────────────────────────────────
 // REVISIONS TAB
 // ─────────────────────────────────────────────────────────
-function RevisionsTab({ po, user }) {
+function RevisionsTab({ po, user, canEdit = false }) {
     const qc = useQueryClient()
     const [showCreate, setShowCreate] = useState(false)
 
@@ -685,9 +695,11 @@ function RevisionsTab({ po, user }) {
                         Each change to this PO creates a new revision — immutable audit trail
                     </p>
                 </div>
-                <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                    + New Revision
-                </button>
+                {canEdit && (
+                    <button className="btn btn-primary btn-sm" onClick={openCreate}>
+                        + New Revision
+                    </button>
+                )}
             </div>
 
             <div className="sh-card p-0 overflow-hidden">
@@ -696,9 +708,11 @@ function RevisionsTab({ po, user }) {
                 ) : revisions.length === 0 ? (
                     <div className="text-center py-8">
                         <p className="text-sm text-gray-400 mb-3">No revisions yet.</p>
-                        <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                            + Record First Change
-                        </button>
+                        {canEdit && (
+                            <button className="btn btn-primary btn-sm" onClick={openCreate}>
+                                + Record First Change
+                            </button>
+                        )}
                     </div>
                 ) : (
                     <table className="sh-table">

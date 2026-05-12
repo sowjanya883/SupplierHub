@@ -13,6 +13,8 @@ export default function RequisitionsPage() {
   const navigate = useNavigate()
   const qc = useQueryClient()
   const user = useAuthStore(s => s.user)
+  const roles = user?.roles ?? []
+  const canCreate = roles.some(r => ['Admin','Buyer'].includes(r))
   const [modalOpen, setModalOpen] = useState(false)
 
   const { data, isLoading } = useQuery({
@@ -53,7 +55,7 @@ export default function RequisitionsPage() {
       <PageHeader
         title="Requisitions (PR)"
         subtitle="Purchase requisitions and approvals"
-        action={
+        action={canCreate ? (
           <button className="btn btn-primary btn-sm" onClick={() => {
             reset({
               requesterID: user?.userId ?? '',
@@ -63,7 +65,7 @@ export default function RequisitionsPage() {
             })
             setModalOpen(true)
           }}>+ New PR</button>
-        }
+        ) : null}
       />
 
       <div className="sh-card p-0 overflow-hidden">
