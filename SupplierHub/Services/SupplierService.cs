@@ -7,6 +7,7 @@ using SupplierHub.DTOs.SupplierDTO;
 using SupplierHub.Services.Interface;
 using SupplierHub.Repositories.Interface;
 using SupplierHub.Models;
+using Microsoft.Extensions.Logging;
 
 namespace SupplierHub.Services
 {
@@ -14,27 +15,35 @@ namespace SupplierHub.Services
     {
         private readonly ISuppliersRepository _repo;
         private readonly IMapper _mapper;
+		private readonly INotificationService _notif;
 
-        public SupplierService(ISuppliersRepository repo, IMapper mapper)
+		public SupplierService(ISuppliersRepository repo, IMapper mapper, INotificationService notif)
         {
             _repo = repo;
             _mapper = mapper;
+            _notif = notif;
         }
 
-        // CREATE
-        public async Task<GetSupplierByIdDto?> CreateAsync(SupplierCreateDto dto, CancellationToken ct)
-        {
-            var entity = _mapper.Map<Supplier>(dto);
+		// CREATE
+		public async Task<GetSupplierByIdDto?> CreateAsync(SupplierCreateDto dto, CancellationToken ct)
+		{
+			var entity = _mapper.Map<Supplier>(dto);
+			entity.CreatedOn = DateTime.UtcNow;
+			entity.UpdatedOn = DateTime.UtcNow;
 
-            entity.CreatedOn = DateTime.UtcNow;
-            entity.UpdatedOn = DateTime.UtcNow;
+			var created = await _repo.CreateAsync(entity, ct);
 
-            var created = await _repo.CreateAsync(entity, ct);
-            return _mapper.Map<GetSupplierByIdDto>(created);
-        }
+			// Notify Buyers and CategoryManagers
+			var msg = $"New supplier added: {created.LegalName}";
+			await _notif.SendToRoleAsync("Buyer", msg, "Supplier", created.SupplierID);
+			await _notif.SendToRoleAsync("CategoryManager", msg, "Supplier", created.SupplierID);
+			await _notif.SendToRoleAsync("Admin", msg, "Supplier", created.SupplierID);
 
-        // GET ALL
-        public async Task<IEnumerable<GetAllSupplierDto>> GetAllAsync(CancellationToken ct)
+			return _mapper.Map<GetSupplierByIdDto>(created);
+		}
+
+		// GET ALL
+		public async Task<IEnumerable<GetAllSupplierDto>> GetAllAsync(CancellationToken ct)
         {
             var suppliers = await _repo.GetAllAsync(ct);
             return _mapper.Map<List<GetAllSupplierDto>>(suppliers);

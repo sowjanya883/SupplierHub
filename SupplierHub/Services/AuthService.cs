@@ -74,14 +74,14 @@ namespace SupplierHub.Services
 			});
 
 			// Notification
-			await _notificationService.CreateAsync(new Notification
-			{
-				UserID = user.UserID,
-				Message = "User Logged In",
-				Category = "System",
-				Status = "Active",
-				CreatedDate = DateTime.UtcNow
-			});
+			// Notify Admin that a user has logged in
+			// Notify Admin on login
+			var loginTime = DateTime.UtcNow.ToString("dd MMM yyyy, HH:mm");
+			await _notificationService.SendToRoleAsync(
+				"Admin",
+				$"🔐 '{user.UserName}' ({user.Email}) logged in at {loginTime} UTC.",
+				"System",
+				user.UserID);
 
 			// Roles
 			var roles = await _userRepository

@@ -8,7 +8,7 @@ using SupplierHub.Services.Interface;
 
 namespace SupplierHub.Controllers
 {
-    [Authorize(Roles = "Admin,ReceivingUser,ComplianceOfficer,WarehouseManager,SupplierUser")]
+    [Authorize(Roles = "Admin,ReceivingUser,ComplianceOfficer,WarehouseManager")]
     [ApiController]
     [Route("api/[controller]")]
     public class NcrController : ControllerBase

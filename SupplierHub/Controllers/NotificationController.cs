@@ -1,175 +1,200 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SupplierHub.Models;
+using SupplierHub.Services.Interface;
 
 namespace SupplierHub.Controllers
 {
+	// Simple DTO for PATCH — avoids required-field binding issues
+	public class UpdateNotifStatusDto
+	{
+		public string Status { get; set; } = "Read";
+	}
+
 	[ApiController]
 	[Route("api/[controller]")]
+	[Authorize]
 	public class NotificationController : ControllerBase
 	{
-		private readonly AppDbContext _db;
+		private readonly INotificationService _service;
 		private readonly ILogger<NotificationController> _logger;
 
-		public NotificationController(AppDbContext db, ILogger<NotificationController> logger)
+		public NotificationController(
+			INotificationService service,
+			ILogger<NotificationController> logger)
 		{
-			_db = db;
+			_service = service;
 			_logger = logger;
 		}
 
-		// GET: api/notifications?userId=123
-		// When userId is provided, only that user's notifications are returned.
-		// When omitted, returns all (Admin-only use cases).
+		// GET api/notification
 		[HttpGet]
-		public async Task<IActionResult> GetAll([FromQuery] long? userId, CancellationToken ct = default)
+		public async Task<IActionResult> GetAll(
+			[FromQuery] string? status = null,
+			[FromQuery] string? category = null,
+			CancellationToken ct = default)
 		{
 			try
 			{
-				var query = _db.Notifications
-					.AsNoTracking()
-					.Where(n => !n.IsDeleted);
+				var userId = GetCurrentUserId();
+				if (userId == null)
+					return Unauthorized(new { message = "User identity not found." });
 
-				if (userId.HasValue)
-					query = query.Where(n => n.UserID == userId.Value);
+				var items = await _service.GetAllAsync(
+					userId: userId,
+					status: status,
+					category: category,
+					ct: ct);
 
-				var items = await query
-					.OrderByDescending(n => n.CreatedOn)
-					.ToListAsync(ct);
-
-				return Ok(items);
+				return Ok(new { data = items, count = items.Count() });
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error fetching notifications.");
-				return StatusCode(500, new { message = "An error occurred while retrieving notifications." });
+				return StatusCode(500, new { message = "Error retrieving notifications." });
 			}
 		}
 
-		// GET: api/notifications/{id}
+		// GET api/notification/{id}
 		[HttpGet("{id:long}")]
-		public async Task<IActionResult> GetById(long id, CancellationToken ct = default)
+		public async Task<IActionResult> GetById(
+			long id, CancellationToken ct = default)
 		{
 			try
 			{
-				var entity = await _db.Notifications
-					.AsNoTracking()
-					.FirstOrDefaultAsync(n => n.NotificationID == id, ct);
+				var entity = await _service.GetByIdAsync(id, ct: ct);
+				if (entity == null)
+					return NotFound(new { message = $"Notification {id} not found." });
 
-				if (entity == null || entity.IsDeleted)
-					return NotFound(new { message = $"Notification with ID {id} was not found or has been deleted." });
+				var userId = GetCurrentUserId();
+				if (entity.UserID != userId && !User.IsInRole("Admin"))
+					return Forbid();
 
 				return Ok(entity);
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error fetching notification {Id}", id);
-				return StatusCode(500, new { message = "An error occurred while fetching the notification details." });
+				return StatusCode(500, new { message = "Error retrieving notification." });
 			}
 		}
 
-		// POST: api/notifications
-		[HttpPost]
-		public async Task<IActionResult> Create([FromBody] Notification model, CancellationToken ct = default)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(new { message = "Invalid notification data.", errors = ModelState });
-
-			try
-			{
-				var userExists = await _db.Users.AnyAsync(u => u.UserID == model.UserID, ct);
-				if (!userExists)
-					return NotFound(new { message = $"User with ID {model.UserID} does not exist. Cannot create notification." });
-
-				var now = DateTime.UtcNow;
-				model.NotificationID = 0;
-				if (model.CreatedDate == default) model.CreatedDate = now;
-				model.CreatedOn = now;
-				model.UpdatedOn = now;
-				model.IsDeleted = false;
-
-				_db.Notifications.Add(model);
-				await _db.SaveChangesAsync(ct);
-
-				return CreatedAtAction(nameof(GetById), new { id = model.NotificationID }, new { message = "Notification created successfully.", data = model });
-			}
-			catch (DbUpdateException dbEx)
-			{
-				_logger.LogError(dbEx, "Database error creating notification.");
-				return BadRequest(new { message = "Could not save notification due to a database constraint error." });
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Unexpected error creating notification.");
-				return StatusCode(500, new { message = "An internal server error occurred during notification creation." });
-			}
-		}
-
-		
-
-		
-
-		// POST: api/notifications/{id}/restore
-		[HttpPost("{id:long}/restore")]
-		public async Task<IActionResult> Restore(long id, CancellationToken ct = default)
-		{
-			try
-			{
-				var entity = await _db.Notifications.FirstOrDefaultAsync(n => n.NotificationID == id, ct);
-
-				if (entity == null)
-					return NotFound(new { message = $"Restore failed: No notification exists with ID {id}." });
-
-				if (!entity.IsDeleted)
-					return BadRequest(new { message = "Notification is already active and does not need restoring." });
-
-				entity.IsDeleted = false;
-				entity.UpdatedOn = DateTime.UtcNow;
-
-				await _db.SaveChangesAsync(ct);
-				return Ok(new { message = "Notification restored successfully.", data = entity });
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error restoring notification {Id}", id);
-				return StatusCode(500, new { message = "An internal error occurred during restoration." });
-			}
-		}
-		// Tiny DTO for PATCH so the model's required fields don't block partial updates.
-		public class NotificationStatusPatchDto
-		{
-			public string? Status { get; set; }
-		}
-
-		// Patch: api/notification/{id}  body: { "status": "Read" }
+		// PATCH api/notification/{id} — mark as Read / Dismissed
 		[HttpPatch("{id:long}")]
-		public async Task<IActionResult> UpdateStatus(long id, [FromBody] NotificationStatusPatchDto patch, CancellationToken ct = default)
+		public async Task<IActionResult> UpdateStatus(
+			long id,
+			[FromBody] UpdateNotifStatusDto dto,
+			CancellationToken ct = default)
 		{
-			if (patch == null || string.IsNullOrWhiteSpace(patch.Status))
-				return BadRequest(new { message = "Status is required." });
+			if (dto == null)
+				return BadRequest(new { message = "Request body cannot be empty." });
 
 			try
 			{
-				var entity = await _db.Notifications.FirstOrDefaultAsync(n => n.NotificationID == id, ct);
+				var entity = await _service.GetByIdAsync(id, ct: ct);
 				if (entity == null)
-					return NotFound(new { message = $"Notification with ID {id} not found." });
+					return NotFound(new { message = $"Notification {id} not found." });
 
-				entity.Status = patch.Status;
+				var userId = GetCurrentUserId();
+				if (entity.UserID != userId && !User.IsInRole("Admin"))
+					return Forbid();
+
+				// Only update Status — all other fields stay intact
+				entity.Status = dto.Status;
 				entity.UpdatedOn = DateTime.UtcNow;
 
-				await _db.SaveChangesAsync(ct);
-				return Ok(new { message = "Notification status updated successfully.", data = entity });
+				await _service.UpdateAsync(id, entity, ct);
+
+				return Ok(new
+				{
+					message = "Notification status updated successfully.",
+					data = entity
+				});
 			}
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error patching notification {Id}", id);
 				return StatusCode(500, new { message = "An error occurred during the update." });
 			}
+		}
+
+		// POST api/notification/mark-all-read
+		[HttpPost("mark-all-read")]
+		public async Task<IActionResult> MarkAllRead(CancellationToken ct = default)
+		{
+			try
+			{
+				var userId = GetCurrentUserId();
+				if (userId == null)
+					return Unauthorized();
+
+				await _service.MarkAllReadAsync(userId.Value, ct);
+				return Ok(new { message = "All notifications marked as read." });
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error marking all read.");
+				return StatusCode(500, new { message = "Error marking notifications as read." });
+			}
+		}
+
+		// DELETE api/notification/{id}
+		[HttpDelete("{id:long}")]
+		public async Task<IActionResult> Delete(
+			long id, CancellationToken ct = default)
+		{
+			try
+			{
+				var entity = await _service.GetByIdAsync(id, ct: ct);
+				if (entity == null)
+					return NotFound(new { message = $"Notification {id} not found." });
+
+				var userId = GetCurrentUserId();
+				if (entity.UserID != userId && !User.IsInRole("Admin"))
+					return Forbid();
+
+				await _service.SoftDeleteAsync(id, ct);
+				return Ok(new { message = "Notification deleted." });
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error deleting notification {Id}", id);
+				return StatusCode(500, new { message = "Error deleting notification." });
+			}
+		}
+
+		// POST api/notification/{id}/restore
+		[HttpPost("{id:long}/restore")]
+		public async Task<IActionResult> Restore(
+			long id, CancellationToken ct = default)
+		{
+			try
+			{
+				var ok = await _service.RestoreAsync(id, ct);
+				if (!ok)
+					return NotFound(new { message = $"Notification {id} not found." });
+
+				return Ok(new { message = "Notification restored." });
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error restoring notification {Id}", id);
+				return StatusCode(500, new { message = "Error restoring notification." });
+			}
+		}
+
+		// ── Helper ─────────────────────────────────────
+		private long? GetCurrentUserId()
+		{
+			var raw = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+				   ?? User.FindFirst("sub")?.Value;
+			return long.TryParse(raw, out var id) ? id : null;
 		}
 	}
 }

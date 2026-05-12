@@ -11,11 +11,16 @@ namespace SupplierHub.Services
 	{
 		private readonly IPoAckRepository _repository;
 		private readonly IMapper _mapper;
+		private readonly INotificationService _notif;
 
-		public PoAckService(IPoAckRepository repository, IMapper mapper)
+		public PoAckService(
+			IPoAckRepository repository,
+			IMapper mapper,
+			INotificationService notif)
 		{
 			_repository = repository;
 			_mapper = mapper;
+			_notif = notif;
 		}
 
 		public async Task<IEnumerable<PoAckResponseDto>> GetAllAsync()
@@ -33,9 +38,11 @@ namespace SupplierHub.Services
 		public async Task<PoAckResponseDto> CreateAsync(PoAckCreateDto createDto)
 		{
 			// Business Rule: Require notes if countering
-			if (createDto.Decision == PoAckDecision.Counter && string.IsNullOrWhiteSpace(createDto.CounterNotes))
+			if (createDto.Decision == PoAckDecision.Counter &&
+				string.IsNullOrWhiteSpace(createDto.CounterNotes))
 			{
-				throw new ArgumentException("Counter notes are strictly required when countering a Purchase Order.");
+				throw new ArgumentException(
+					"Counter notes are strictly required when countering a Purchase Order.");
 			}
 
 			var ack = _mapper.Map<PoAck>(createDto);
@@ -45,12 +52,25 @@ namespace SupplierHub.Services
 			ack.IsDeleted = false;
 
 			if (string.IsNullOrWhiteSpace(ack.Status))
-			{
 				ack.Status = nameof(PoAckStatus.Active);
-			}
 
 			await _repository.AddAsync(ack);
 			await _repository.SaveChangesAsync();
+
+			// ── Notifications ──────────────────────────
+			var decision = ack.Decision?.ToString() ?? "responded";
+
+			await _notif.SendToRoleAsync(
+				"Buyer",
+				$"Supplier has {decision} PO-{ack.PoID}. Please review the acknowledgement.",
+				"PurchaseOrder",
+				ack.PoID);
+
+			await _notif.SendToRoleAsync(
+				"Admin",
+				$"PO-{ack.PoID} acknowledged by supplier with decision: {decision}.",
+				"PurchaseOrder",
+				ack.PoID);
 
 			return _mapper.Map<PoAckResponseDto>(ack);
 		}
@@ -60,9 +80,11 @@ namespace SupplierHub.Services
 			var existingAck = await _repository.GetByIdAsync(id);
 			if (existingAck == null) return null;
 
-			if (updateDto.Decision == PoAckDecision.Counter && string.IsNullOrWhiteSpace(updateDto.CounterNotes))
+			if (updateDto.Decision == PoAckDecision.Counter &&
+				string.IsNullOrWhiteSpace(updateDto.CounterNotes))
 			{
-				throw new ArgumentException("Counter notes are strictly required when countering a Purchase Order.");
+				throw new ArgumentException(
+					"Counter notes are strictly required when countering a Purchase Order.");
 			}
 
 			_mapper.Map(updateDto, existingAck);

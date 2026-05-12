@@ -14,46 +14,56 @@ namespace SupplierHub.Services
 	{
 		private readonly IOrganizationRepository _repo;
 		private readonly IMapper _mapper;
+		private readonly INotificationService _notif;
 
-		public OrganizationService(IOrganizationRepository repo, IMapper mapper)
+		public OrganizationService(
+			IOrganizationRepository repo,
+			IMapper mapper,
+			INotificationService notif)
 		{
 			_repo = repo;
 			_mapper = mapper;
+			_notif = notif;
 		}
 
 		public async Task<OrganizationGetByIdDto> CreateAsync(
-			OrganizationCreateDto dto,
-			CancellationToken ct)
+			OrganizationCreateDto dto, CancellationToken ct)
 		{
 			var entity = _mapper.Map<Organization>(dto);
-
 			entity.IsDeleted = false;
 			entity.CreatedOn = DateTime.UtcNow;
 			entity.UpdatedOn = DateTime.UtcNow;
 
 			var created = await _repo.CreateAsync(entity, ct);
+
+			await _notif.SendToRoleAsync(
+				"Admin",
+				$"🏢 New organization added: '{created.OrganizationName}'.",
+				"System",
+				created.OrgID);
+
 			return _mapper.Map<OrganizationGetByIdDto>(created);
 		}
 
-		public async Task<OrganizationGetByIdDto?> GetByIdAsync(long orgId, CancellationToken ct)
+		public async Task<OrganizationGetByIdDto?> GetByIdAsync(
+			long orgId, CancellationToken ct)
 		{
 			var org = await _repo.GetByIdAsync(orgId, ct);
 			return _mapper.Map<OrganizationGetByIdDto>(org);
 		}
 
-		public async Task<IEnumerable<OrganizationGetAllDto>> GetAllAsync(CancellationToken ct)
+		public async Task<IEnumerable<OrganizationGetAllDto>> GetAllAsync(
+			CancellationToken ct)
 		{
 			var orgs = await _repo.GetAllAsync(ct);
 			return _mapper.Map<List<OrganizationGetAllDto>>(orgs);
 		}
 
 		public async Task<OrganizationGetByIdDto?> UpdateAsync(
-			OrganizationUpdateDto dto,
-			CancellationToken ct)
+			OrganizationUpdateDto dto, CancellationToken ct)
 		{
 			var org = await _repo.GetByIdAsync(dto.OrgID, ct);
-			if (org == null)
-				return null;
+			if (org == null) return null;
 
 			_mapper.Map(dto, org);
 			org.UpdatedOn = DateTime.UtcNow;
@@ -63,8 +73,7 @@ namespace SupplierHub.Services
 		}
 
 		public async Task<bool> DeleteAsync(
-			OrganizationDeleteDto dto,
-			CancellationToken ct)
+			OrganizationDeleteDto dto, CancellationToken ct)
 		{
 			return await _repo.DeleteAsync(dto, ct);
 		}
